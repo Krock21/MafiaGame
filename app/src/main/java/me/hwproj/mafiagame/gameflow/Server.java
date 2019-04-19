@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.gameflow;
 
 import org.jetbrains.annotations.NotNull;
 

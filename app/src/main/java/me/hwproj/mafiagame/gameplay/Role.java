@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.gameplay;
 
 public enum Role {
     CITIZEN,

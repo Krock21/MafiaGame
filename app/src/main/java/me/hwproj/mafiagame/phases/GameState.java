@@ -1,13 +1,13 @@
 package me.hwproj.mafiagame.phases;
 
-import me.hwproj.mafiagame.gameflow.GameData;
+import android.os.Parcelable;
 
 /**
  * Information which is sent from server to clients.
  */
-public abstract class GameState {
-    /**
-     * A copy of GameData
-     */
-    GameData data;
+public abstract class GameState implements Parcelable {
+//    /**
+//     * A copy of ClientGameData
+//     */
+//    ClientGameData data; TODO think of smth
 }

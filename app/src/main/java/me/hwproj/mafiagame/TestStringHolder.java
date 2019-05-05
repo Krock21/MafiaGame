@@ -15,18 +15,6 @@ public class TestStringHolder extends ViewModel {
         synchronized (sync) {
             modifyData();
         }
-
-        Thread threadPrinter = new Thread(() -> {
-            while (!Thread.interrupted()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    break;
-                }
-                append('t');
-            }
-        });
-        threadPrinter.start();
     }
 
     public void append(char c) {

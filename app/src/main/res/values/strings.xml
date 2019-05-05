@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">MafiaGame</string>
+    <string name="title_activity_test_phase">TestPhaseActivity</string>
 </resources>

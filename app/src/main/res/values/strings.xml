@@ -1,4 +1,6 @@
 <resources>
     <string name="app_name">MafiaGame</string>
     <string name="title_activity_test_phase">TestPhaseActivity</string>
+    <string name="signin_other_error">Sign In Error</string>
+    <string name="server_client_id">190773835478-kifc15ei8p42qd6idrjtssue2tanrgkj.apps.googleusercontent.com</string>
 </resources>

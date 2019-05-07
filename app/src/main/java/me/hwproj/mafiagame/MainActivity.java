@@ -37,6 +37,7 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import me.hwproj.mafiagame.gameflow.Client;
@@ -122,7 +123,7 @@ public class MainActivity extends AppCompatActivity {
         invitePlayers();
     }
 
-    private void setGoogleSignInAccount(GoogleSignInAccount googleSignInAccount) {
+    private void setGoogleSignInAccount(@NotNull GoogleSignInAccount googleSignInAccount) {
         boolean firstSignIn = false;
         synchronized (this) {
             if (this.googleSignInAccount == null) {
@@ -138,8 +139,6 @@ public class MainActivity extends AppCompatActivity {
     private void signInSilently() {
         GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
                 //.requestIdToken(MainActivity.this.getResources().getString(R.string.server_client_id))
-                .requestScopes(Games.SCOPE_GAMES_LITE)
-                .requestEmail()
                 .build();
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (GoogleSignIn.hasPermissions(account, signInOptions.getScopeArray())) {
@@ -175,8 +174,6 @@ public class MainActivity extends AppCompatActivity {
     private void startSignInIntent() {
         GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
                 //.requestIdToken(MainActivity.this.getResources().getString(R.string.server_client_id))
-                .requestScopes(Games.SCOPE_GAMES_LITE)
-                .requestEmail()
                 .build();
         GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
                 signInOptions);

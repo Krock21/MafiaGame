@@ -5,7 +5,7 @@ import android.os.Parcelable;
 /**
  * Information which is sent from server to clients.
  */
-public abstract class GameState implements Parcelable {
+public abstract class GameState {
 //    /**
 //     * A copy of ClientGameData
 //     */

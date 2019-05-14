@@ -15,29 +15,8 @@ public class TestPhaseGameState extends GameState {
         return sum;
     }
 
-    @Override
-    public int describeContents() {
-        return 0;
-    }
-
-    @Override
-    public void writeToParcel(Parcel dest, int flags) {
-        dest.writeInt(sum);
-    }
-
     private TestPhaseGameState(Parcel in) {
         sum = in.readInt();
     }
 
-    public static final Creator CREATOR = new Creator<TestPhaseGameState>() {
-        @Override
-        public TestPhaseGameState createFromParcel(Parcel source) {
-            return new TestPhaseGameState(source);
-        }
-
-        @Override
-        public TestPhaseGameState[] newArray(int size) {
-            return new TestPhaseGameState[size];
-        }
-    };
 }

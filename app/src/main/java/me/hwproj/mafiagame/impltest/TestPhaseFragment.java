@@ -1,6 +1,7 @@
 package me.hwproj.mafiagame.impltest;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -48,6 +49,10 @@ public class TestPhaseFragment extends PhaseFragment {
 
         Button bnext = view.findViewById(R.id.nextButton);
         bnext.setOnClickListener(v -> client.sendPlayerAction(TestPhasePlayerAction.nextPhase()));
+
+        client.getLatestGameState().observe(this, this::processGameState);
+
+        Log.d("Ok", "Created view");
 
         return view;
     }

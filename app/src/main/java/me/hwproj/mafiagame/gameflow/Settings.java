@@ -6,5 +6,5 @@ import me.hwproj.mafiagame.phases.GamePhase;
 
 public class Settings {
     public List<GamePhase> phases;
-    int playerCount;
+    public List<PlayerSettings> playerSettings;
 }

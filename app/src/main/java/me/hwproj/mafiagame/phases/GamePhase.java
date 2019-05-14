@@ -17,7 +17,7 @@ public abstract class GamePhase {
     /**
      * @return description of server-side phase behavior.
      */
-    public abstract GamePhaseServer getServerPhase();
+    public abstract GamePhaseServer getServerPhase(Server server);
 
     /**
      * @return description of client-side phase behavior.

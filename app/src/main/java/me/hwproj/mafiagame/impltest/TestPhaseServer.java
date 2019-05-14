@@ -6,9 +6,14 @@ import me.hwproj.mafiagame.phases.PlayerAction;
 
 public class TestPhaseServer implements GamePhaseServer {
     private int sum = 0;
+    private Server server;
+
+    public TestPhaseServer(Server server) {
+        this.server = server;
+    }
 
     @Override
-    public void processPlayerAction(PlayerAction action, Server server) {
+    public void processPlayerAction(PlayerAction action) {
         if (!(action instanceof TestPhasePlayerAction)) {
             return;
         }

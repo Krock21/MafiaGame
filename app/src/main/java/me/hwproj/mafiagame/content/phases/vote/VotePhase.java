@@ -1,24 +1,18 @@
-package me.hwproj.mafiagame.impltest;
+package me.hwproj.mafiagame.content.phases.vote;
 
-import android.os.Handler;
-
-import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.phases.GamePhase;
 import me.hwproj.mafiagame.phases.GamePhaseClient;
 import me.hwproj.mafiagame.phases.GamePhaseServer;
 
-public class TestPhase extends GamePhase {
-
-    public static final String PHASE_NAME = "GamePhase";
-
+public class VotePhase extends GamePhase {
     @Override
     public GamePhaseServer getServerPhase(Server server) {
-        return new TestPhaseServer(server);
+        return new VotePhaseServer(server);
     }
 
     @Override
     public GamePhaseClient getClientPhase() {
-        return new TestPhaseClient();
+        return new VotePhaseClient();
     }
 }

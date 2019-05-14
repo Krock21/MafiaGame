@@ -10,10 +10,15 @@ import me.hwproj.mafiagame.gameplay.Role;
 
 public class Player {
     final public Role role;
+    final public String name;
     public  boolean hasDead;
     public Set<Effect> effects = new TreeSet<>();
 
-    public Player(Role role) {
+    public Player(Role role, String name) {
         this.role = role;
+        this.name = name;
+    }
+
+    public void kill() {
     }
 }

@@ -36,10 +36,13 @@ import com.google.android.gms.tasks.Task;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.gameflow.Client;
+import me.hwproj.mafiagame.gameflow.PlayerSettings;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameflow.ServerGameData;
 import me.hwproj.mafiagame.gameflow.Settings;
+import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.impltest.NetworkSimulator;
 import me.hwproj.mafiagame.impltest.TestPhase;
 
@@ -272,17 +275,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void startTestPhase(View v) {
-        NetworkSimulator net = new NetworkSimulator();
-
-        Settings settings = new Settings();
-        settings.phases = Arrays.asList(new TestPhase(), new TestPhase());
-
-        Client.ConstructClient(net, settings);
-        Client cl = Client.getClient(this);
-        Server serv = new Server(settings, new ServerGameData(), net);
-
-        net.start(cl, serv);
-
-        startActivity(new Intent(this, PhaseActivity2.class));
+        startActivity(new Intent(this, PhaseActivity.class));
     }
 }

@@ -1,32 +1,28 @@
-package me.hwproj.mafiagame.phases;
-
-import android.content.Intent;
-import android.os.Bundle;
+package me.hwproj.mafiagame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
+import android.os.Bundle;
 import android.util.Log;
 
 import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phases.PhaseFragment;
 
-public abstract class PhaseActivity extends AppCompatActivity {
+public class PhaseActivity2 extends AppCompatActivity {
 
-    protected abstract void processGameState(GameState state);
-
-    /**
-     * <code>setContentView</code> here
-     * Don't bind <code>processGameState</code>, it will be bound in <code>onCreate</code>
-     */
-    protected abstract void initialize();
+    private PhaseFragment currentPhaseFragment;
+    private GameState lastGameState;
 
     @Override
-    protected final void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        initialize();
+        setContentView(R.layout.activity_phase2);
 
         Intent intent = getIntent();
         thisPhaseNumber = intent.getIntExtra(Client.THIS_PHASE_NUMBER, -1);
+
 
         Client client = Client.getClient(this);
 
@@ -37,6 +33,13 @@ public abstract class PhaseActivity extends AppCompatActivity {
         dealWithPhaseNumber(client.getPhaseNumberData().getValue());
     }
 
+    private void processGameState(GameState gameState) {
+        lastGameState = gameState;
+        if (currentPhaseFragment != null) {
+            currentPhaseFragment.processGameState(gameState);
+        }
+    }
+
     private void dealWithPhaseNumber(Integer number) {
         if (number < thisPhaseNumber || thisPhaseNumber == -1) {
             Log.d("Bad", "Wrong phase number:" + thisPhaseNumber + " -> " + number);
@@ -44,9 +47,17 @@ public abstract class PhaseActivity extends AppCompatActivity {
 
         if (number > thisPhaseNumber) {
             Log.d("Ok", "transition to next phase:" + thisPhaseNumber + " -> " + number);
-            startActivity(Client.getClient(this).nextPhaseActivity(this));
+            startPhaseFragment(Client.getClient(this).nextPhaseFragment(this));
         }
+    }
+
+    private void startPhaseFragment(PhaseFragment fg) {
+        currentPhaseFragment = fg;
+        currentPhaseFragment.processGameState(lastGameState);
+        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, fg).commit();
+        findViewById(R.id.testid);
     }
 
     private int thisPhaseNumber;
 }
+

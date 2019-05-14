@@ -1,17 +1,11 @@
 package me.hwproj.mafiagame.phases;
 
-import androidx.appcompat.app.AppCompatActivity;
+import me.hwproj.mafiagame.gameflow.Client;
 
 public interface GamePhaseClient {
     /**
-     * Creates activity corresponding to this phase.
-     * Actually it should probably create smth else, like View or smth, because all activities for
-     * phases have similar things in them
+     * Returns a fragment corresponding to this phase.
      */
-    Class<? extends AppCompatActivity> createActivity(/*ClientGameData data, ClientSender sender*/);
+    PhaseFragment createFragment(Client client);
 
-    /**
-     * This method should be called by when new GameState arrives.
-     */
-    void processGameState(GameState state);
 }

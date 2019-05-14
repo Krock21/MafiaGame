@@ -11,8 +11,6 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -25,8 +23,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
 import com.google.android.gms.games.multiplayer.Multiplayer;
@@ -46,9 +42,6 @@ import me.hwproj.mafiagame.gameflow.ServerGameData;
 import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.impltest.NetworkSimulator;
 import me.hwproj.mafiagame.impltest.TestPhase;
-import me.hwproj.mafiagame.impltest.TestPhaseActivity;
-import me.hwproj.mafiagame.impltest.TestPhaseGameState;
-import me.hwproj.mafiagame.impltest.TestPhaseServer;
 
 public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9000;
@@ -290,6 +283,6 @@ public class MainActivity extends AppCompatActivity {
 
         net.start(cl, serv);
 
-        startActivity(cl.nextPhaseActivity(this));
+        startActivity(new Intent(this, PhaseActivity2.class));
     }
 }

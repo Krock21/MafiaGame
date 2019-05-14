@@ -3,6 +3,7 @@ package me.hwproj.mafiagame.gameflow;
 import android.content.Context;
 import android.content.Intent;
 
+import androidx.fragment.app.Fragment;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import me.hwproj.mafiagame.impltest.NetworkSimulator;
@@ -11,6 +12,7 @@ import me.hwproj.mafiagame.networking.ClientSender;
 import me.hwproj.mafiagame.networking.MetaCrouch;
 import me.hwproj.mafiagame.phases.GamePhase;
 import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phases.PhaseFragment;
 import me.hwproj.mafiagame.phases.PlayerAction;
 
 // TODO separate phases' interface from interractor's and other code
@@ -27,10 +29,9 @@ public class Client {
         }
     }
     // from activity
-    public Intent nextPhaseActivity(Context context) {
+    public PhaseFragment nextPhaseFragment(Context context) {
         currentGameData.nextPhase();
-        Intent intent = new Intent(context, currentGameData.currentPhase.createActivity());
-        return intent.putExtra(THIS_PHASE_NUMBER, currentGameData.phaseNumber);
+        return currentGameData.currentPhase.createFragment(this);
     }
 
     // from interractor's thread
@@ -44,7 +45,7 @@ public class Client {
     // from interractor's thread
     public void receiveMeta(MetaCrouch metaCrouch) {
         if (metaCrouch.what() == MetaCrouch.NEXT_PHASE) {
-            currentPhaseNumber.postValue(metaCrouch.getNumber());
+            startNextPhase(metaCrouch.getNumber());
             return;
         }
     }

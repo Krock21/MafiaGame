@@ -81,9 +81,14 @@ public class MainActivity extends AppCompatActivity {
         threadPrinter.start();
         h.getData().observe(this, text::setText);
 
-        Button start = findViewById(R.id.startTest);
-        start.setOnClickListener(this::startTestPhase);
+        Button createGame = findViewById(R.id.startTest);
+        createGame.setOnClickListener(v -> {
+            Intent intent = new Intent(this, GameCreate.class);
+            startActivity(intent);
+        });
 
+
+        // move this to GameCreate activity
         bSignIn.setOnClickListener(v -> {
             startSignInIntent();
         });
@@ -272,9 +277,5 @@ public class MainActivity extends AppCompatActivity {
                     .create(mJoinedRoomConfig);
         }
 
-    }
-
-    private void startTestPhase(View v) {
-        startActivity(new Intent(this, PhaseActivity.class));
     }
 }

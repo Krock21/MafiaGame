@@ -11,6 +11,8 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -25,11 +27,16 @@ import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
+import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
+import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
+import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
+import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
@@ -45,13 +52,18 @@ import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.impltest.NetworkSimulator;
 import me.hwproj.mafiagame.impltest.TestPhase;
+import me.hwproj.mafiagame.impltest.TestPhaseGameState;
+import me.hwproj.mafiagame.impltest.TestPhaseServer;
 
 public class MainActivity extends AppCompatActivity {
     private static final int RC_SIGN_IN = 9000;
+    private static final int RC_GAMES_SIGN_IN = 9001;
     private static final int RC_SELECT_PLAYERS = 9006;
     private static final int RC_WAITING_ROOM = 9007;
+    private static final int RC_INVITATION_INBOX = 9008;
     private GoogleSignInAccount googleSignInAccount;
     private RoomConfig mJoinedRoomConfig;
+    private String mMyParticipantId;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
         Button bAddC = findViewById(R.id.button);
         Button bReset = findViewById(R.id.button2);
         Button bSignIn = findViewById(R.id.signin);
+        Button bInvitationInbox = findViewById(R.id.invitation_inbox);
         TextView text = findViewById(R.id.textView);
 
         bAddC.setOnClickListener(v -> h.append('c'));
@@ -87,17 +100,31 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
+        signInSilently(new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
+                .requestEmail()
+                .build(), RC_GAMES_SIGN_IN);
 
-        // move this to GameCreate activity
         bSignIn.setOnClickListener(v -> {
-            startSignInIntent();
+            makeRoom();
         });
 
-        //signInSilently();
+        bInvitationInbox.setOnClickListener(v -> showInvitationInbox());
+    }
+
+    private void showInvitationInbox() {
+        Games.getInvitationsClient(this, getGoogleSignInAccount())
+                .getInvitationInboxIntent()
+                .addOnSuccessListener(new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        startActivityForResult(intent, RC_INVITATION_INBOX);
+                    }
+                });
     }
 
     private void showWaitingRoom(Room room, int maxPlayersToStartGame) {
-        Games.getRealTimeMultiplayerClient(this, GoogleSignIn.getLastSignedInAccount(this))
+        Log.d("MafiaGame", "Show Wainting Room");
+        Games.getRealTimeMultiplayerClient(this, getGoogleSignInAccount())
                 .getWaitingRoomIntent(room, maxPlayersToStartGame)
                 .addOnSuccessListener(new OnSuccessListener<Intent>() {
                     @Override
@@ -109,13 +136,31 @@ public class MainActivity extends AppCompatActivity {
 
     private void invitePlayers() {
         // launch the player selection screen
-        // minimum: 1 other player; maximum: 7 other players
-        Games.getRealTimeMultiplayerClient(this, googleSignInAccount)
+        // minimum: 1 other player; maximum: 7 other players= null
+        Log.d("MafiaGame", "Invite Players");
+        new AlertDialog.Builder(this).setMessage(getGoogleSignInAccount().toString())
+                .setNeutralButton(android.R.string.ok, null).show();
+        Games.getRealTimeMultiplayerClient(this, getGoogleSignInAccount())
                 .getSelectOpponentsIntent(1, 7, true)
                 .addOnSuccessListener(new OnSuccessListener<Intent>() {
                     @Override
                     public void onSuccess(Intent intent) {
                         startActivityForResult(intent, RC_SELECT_PLAYERS);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        new AlertDialog.Builder(MainActivity.this).
+                                setMessage(getGoogleSignInAccount().getEmail())
+                                .setNeutralButton(android.R.string.ok, null).show();
+                    }
+                })
+                .addOnCanceledListener(new OnCanceledListener() {
+                    @Override
+                    public void onCanceled() {
+                        new AlertDialog.Builder(MainActivity.this).setMessage("Starting selecting Canceled")
+                                .setNeutralButton(android.R.string.ok, null).show();
                     }
                 });
     }
@@ -125,22 +170,24 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void setGoogleSignInAccount(@NotNull GoogleSignInAccount googleSignInAccount) {
-        boolean firstSignIn = false;
+        new AlertDialog.Builder(this).setMessage("Sign in is done").
+                setNeutralButton(android.R.string.ok, null).show();
         synchronized (this) {
             if (this.googleSignInAccount == null) {
                 this.googleSignInAccount = googleSignInAccount;
-                firstSignIn = true;
             }
-        }
-        if (firstSignIn) {
-            makeRoom();
         }
     }
 
-    private void signInSilently() {
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
-                //.requestIdToken(MainActivity.this.getResources().getString(R.string.server_client_id))
-                .build();
+    private GoogleSignInAccount getGoogleSignInAccount() {
+        GoogleSignInAccount answer;
+        synchronized (this) {
+            answer = googleSignInAccount;
+        }
+        return answer;
+    }
+
+    private void signInSilently(GoogleSignInOptions signInOptions, int requestCode) {
         GoogleSignInAccount account = GoogleSignIn.getLastSignedInAccount(this);
         if (GoogleSignIn.hasPermissions(account, signInOptions.getScopeArray())) {
             // Already signed in.
@@ -165,22 +212,150 @@ public class MainActivity extends AppCompatActivity {
                                         // and [Performing Interactive Sign-in](http://developers.google.com/games/services/android/signin#performing_interactive_sign-in) for details on how to implement
                                         // Interactive Sign-in.
                                         // signing in
-                                        startSignInIntent();
+                                        startSignInIntent(signInOptions, requestCode);
                                     }
                                 }
                             });
         }
     }
 
-    private void startSignInIntent() {
-        GoogleSignInOptions signInOptions = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
-                //.requestIdToken(MainActivity.this.getResources().getString(R.string.server_client_id))
-                .build();
+    private void startSignInIntent(GoogleSignInOptions signInOptions, int requestCode) {
         GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
                 signInOptions);
         Intent intent = signInClient.getSignInIntent();
-        startActivityForResult(intent, RC_SIGN_IN);
+        startActivityForResult(intent, requestCode);
     }
+
+    // are we already playing?
+    boolean mPlaying = false;
+
+    // at least 2 players required for our game
+    final static int MIN_PLAYERS = 2;
+
+    // returns whether there are enough players to start the game
+    boolean shouldStartGame(Room room) {
+        int connectedPlayers = 0;
+        for (Participant p : room.getParticipants()) {
+            if (p.isConnectedToRoom()) {
+                ++connectedPlayers;
+            }
+        }
+        return connectedPlayers >= MIN_PLAYERS;
+    }
+
+    // Returns whether the room is in a state where the game should be canceled.
+    boolean shouldCancelGame(Room room) {
+        // TODO: Your game-specific cancellation logic here. For example, you might decide to
+        // cancel the game if enough people have declined the invitation or left the room.
+        // You can check a participant's status with Participant.getStatus().
+        // (Also, your UI should have a Cancel button that cancels the game too)
+        return false;
+    }
+
+    private Activity thisActivity = this;
+    private Room mRoom;
+    private RoomStatusUpdateCallback mRoomStatusCallbackHandler = new RoomStatusUpdateCallback() {
+        @Override
+        public void onRoomConnecting(@Nullable Room room) {
+            // Update the UI status since we are in the process of connecting to a specific room.
+        }
+
+        @Override
+        public void onRoomAutoMatching(@Nullable Room room) {
+            // Update the UI status since we are in the process of matching other players.
+        }
+
+        @Override
+        public void onPeerInvitedToRoom(@Nullable Room room, @NonNull List<String> list) {
+            // Update the UI status since we are in the process of matching other players.
+        }
+
+        @Override
+        public void onPeerDeclined(@Nullable Room room, @NonNull List<String> list) {
+            // Peer declined invitation, see if game should be canceled
+            if (!mPlaying && shouldCancelGame(room)) {
+                Games.getRealTimeMultiplayerClient(thisActivity,
+                        getGoogleSignInAccount())
+                        .leave(mJoinedRoomConfig, room.getRoomId());
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
+
+        @Override
+        public void onPeerJoined(@Nullable Room room, @NonNull List<String> list) {
+            // Update UI status indicating new players have joined!
+        }
+
+        @Override
+        public void onPeerLeft(@Nullable Room room, @NonNull List<String> list) {
+            // Peer left, see if game should be canceled.
+            if (!mPlaying && shouldCancelGame(room)) {
+                Games.getRealTimeMultiplayerClient(thisActivity,
+                        getGoogleSignInAccount())
+                        .leave(mJoinedRoomConfig, room.getRoomId());
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
+
+        @Override
+        public void onConnectedToRoom(@Nullable Room room) {
+            // Connected to room, record the room Id.
+            mRoom = room;
+            Games.getPlayersClient(thisActivity, getGoogleSignInAccount())
+                    .getCurrentPlayerId().addOnSuccessListener(new OnSuccessListener<String>() {
+                @Override
+                public void onSuccess(String playerId) {
+                    mMyParticipantId = mRoom.getParticipantId(playerId);
+                }
+            });
+        }
+
+        @Override
+        public void onDisconnectedFromRoom(@Nullable Room room) {
+            // This usually happens due to a network error, leave the game.
+            Games.getRealTimeMultiplayerClient(thisActivity, getGoogleSignInAccount())
+                    .leave(mJoinedRoomConfig, room.getRoomId());
+            getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            // show error message and return to main screen
+            mRoom = null;
+            mJoinedRoomConfig = null;
+        }
+
+        @Override
+        public void onPeersConnected(@Nullable Room room, @NonNull List<String> list) {
+            if (mPlaying) {
+                // add new player to an ongoing game
+            } else if (shouldStartGame(room)) {
+                // start game!
+            }
+        }
+
+        @Override
+        public void onPeersDisconnected(@Nullable Room room, @NonNull List<String> list) {
+            if (mPlaying) {
+                // do game-specific handling of this -- remove player's avatar
+                // from the screen, etc. If not enough players are left for
+                // the game to go on, end the game and leave the room.
+            } else if (shouldCancelGame(room)) {
+                // cancel the game
+                Games.getRealTimeMultiplayerClient(thisActivity,
+                        getGoogleSignInAccount())
+                        .leave(mJoinedRoomConfig, room.getRoomId());
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
+
+        @Override
+        public void onP2PConnected(@NonNull String participantId) {
+            // Update status due to new peer to peer connection.
+        }
+
+        @Override
+        public void onP2PDisconnected(@NonNull String participantId) {
+            // Update status due to  peer to peer connection being disconnected.
+        }
+    };
+
 
     private RoomUpdateCallback mRoomUpdateCallback = new RoomUpdateCallback() {
         @Override
@@ -253,7 +428,8 @@ public class MainActivity extends AppCompatActivity {
                 // Canceled or some other error.
                 return;
             }
-
+            // TODO start game
+            Log.d("MafiaGame", "SELECT_PLAYERS");
             // Get the invitee list.
             final ArrayList<String> invitees = data.getStringArrayListExtra(Games.EXTRA_PLAYER_IDS);
 
@@ -264,7 +440,7 @@ public class MainActivity extends AppCompatActivity {
             // Create the room configuration.
             RoomConfig.Builder roomBuilder = RoomConfig.builder(mRoomUpdateCallback)
                     //.setOnMessageReceivedListener(mMessageReceivedHandler)
-                    //.setRoomStatusUpdateCallback(mRoomStatusCallbackHandler)
+                    .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler)
                     .addPlayersToInvite(invitees);
             if (minAutoPlayers > 0) {
                 roomBuilder.setAutoMatchCriteria(
@@ -273,9 +449,28 @@ public class MainActivity extends AppCompatActivity {
 
             // Save the roomConfig so we can use it if we call leave().
             mJoinedRoomConfig = roomBuilder.build();
-            Games.getRealTimeMultiplayerClient(this, googleSignInAccount)
+            Games.getRealTimeMultiplayerClient(this, getGoogleSignInAccount())
                     .create(mJoinedRoomConfig);
         }
+
+        if (requestCode == RC_INVITATION_INBOX) {
+            if (resultCode != Activity.RESULT_OK) {
+                // Canceled or some error.
+                return;
+            }
+            Invitation invitation = data.getExtras().getParcelable(Multiplayer.EXTRA_INVITATION);
+            if (invitation != null) {
+                RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)
+                        .setInvitationIdToAccept(invitation.getInvitationId());
+                mJoinedRoomConfig = builder.build();
+                Games.getRealTimeMultiplayerClient(thisActivity,
+                        getGoogleSignInAccount())
+                        .join(mJoinedRoomConfig);
+                // prevent screen from sleeping during handshake
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
+
 
     }
 }

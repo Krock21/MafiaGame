@@ -6,6 +6,16 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
+    <Button
+        android:id="@+id/invitation_inbox"
+        android:layout_width="172dp"
+        android:layout_height="57dp"
+        android:text="invitation_inbox"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
     <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
@@ -75,19 +85,19 @@
 
     <Button
         android:id="@+id/signin"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="106dp"
+        android:layout_height="52dp"
         android:layout_marginStart="153dp"
         android:layout_marginLeft="153dp"
         android:layout_marginTop="341dp"
         android:layout_marginEnd="170dp"
         android:layout_marginRight="170dp"
         android:layout_marginBottom="89dp"
-        android:text="signin"
+        android:text="makeroom"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/button"
+        app:layout_constraintTop_toTopOf="@+id/button"
         app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>

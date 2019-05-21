@@ -125,6 +125,6 @@ class VotePhaseFragment extends PhaseFragment {
     }
 
     private boolean[] cantChoose;
-    int currentPick = -1;
+    private int currentPick = -1;
     private List<RadioButton> choiceButtons;
 }

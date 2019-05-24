@@ -35,6 +35,11 @@ public class TestPhaseFragment extends PhaseFragment {
     }
 
     @Override
+    public void onPhaseEnd() {
+
+    }
+
+    @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment

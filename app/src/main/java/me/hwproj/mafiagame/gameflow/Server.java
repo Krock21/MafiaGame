@@ -4,11 +4,7 @@ import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-
-import me.hwproj.mafiagame.impltest.NetworkSimulator;
-import me.hwproj.mafiagame.impltest.TestPhaseGameState;
-import me.hwproj.mafiagame.impltest.TestPhaseServer;
+import me.hwproj.mafiagame.networking.FullGameState;
 import me.hwproj.mafiagame.networking.MetaCrouch;
 import me.hwproj.mafiagame.networking.ServerSender;
 import me.hwproj.mafiagame.phases.GamePhase;
@@ -38,12 +34,15 @@ public class Server {
     }
 
     public void acceptPlayerAction(PlayerAction action) {
+        Log.d("Ok", "acceptPlayerAction: server got an acton " + action.getClass());
+        Log.d("Ok", "server phase is: " + currentGameData.currentPhase.getClass());
         currentGameData.currentPhase.processPlayerAction(action);
     }
 
     // interface for phases
-    public void sendGameState(GameState testPhaseGameState) {
-        sender.sendGameState(testPhaseGameState);
+    public void sendGameState(GameState gameState) {
+        Log.d("Ok", "sendGameState: server sends a GameState " + gameState.getClass());
+        sender.sendGameState(new FullGameState(currentGameData, gameState));
     }
     // interface for phases
     public void startNextPhase() {
@@ -55,7 +54,7 @@ public class Server {
     public int playerAliveCount() {
         int count = 0;
         for (Player p : currentGameData.players) {
-            if (!p.hasDead) {
+            if (!p.dead) {
                 count++;
             }
         }

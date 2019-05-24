@@ -25,5 +25,6 @@ public class ServerGameData {
             phaseNumber++;
             currentPhase = phases.get(phaseNumber % phases.size());
         }
+        currentPhase.initPhase();
     }
 }

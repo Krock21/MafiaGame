@@ -3,14 +3,14 @@ package me.hwproj.mafiagame.impltest;
 import android.util.Log;
 
 import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingDeque;
 import java.util.concurrent.LinkedBlockingQueue;
-import java.util.function.Consumer;
 
 import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.networking.ClientSender;
+import me.hwproj.mafiagame.networking.FullGameState;
 import me.hwproj.mafiagame.networking.MetaCrouch;
+import me.hwproj.mafiagame.networking.ServerNetworkPackage;
 import me.hwproj.mafiagame.networking.ServerSender;
 import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PlayerAction;
@@ -19,11 +19,10 @@ import me.hwproj.mafiagame.util.MyConsumer;
 public class NetworkSimulator implements ClientSender, ServerSender {
 
     private final BlockingQueue<PlayerAction> actionQueue = new LinkedBlockingQueue<>();
-    private final BlockingQueue<GameStateOrMeta> stateQueue = new LinkedBlockingQueue<>();
+    private final BlockingQueue<ServerNetworkPackage> packQueue = new LinkedBlockingQueue<>();
 
     private MyConsumer<PlayerAction> actionConsumer;
-    private MyConsumer<GameState> stateConsumer;
-    private MyConsumer<MetaCrouch> metaConsumer;
+    private MyConsumer<ServerNetworkPackage> clientConsumer;
 
     @Override
     public void sendPlayerAction(PlayerAction action) {
@@ -36,9 +35,9 @@ public class NetworkSimulator implements ClientSender, ServerSender {
     }
 
     @Override
-    public void sendGameState(GameState state) {
+    public void sendGameState(FullGameState state) {
         try {
-            stateQueue.put(new GameStateOrMeta(state));
+            packQueue.put(new ServerNetworkPackage(state));
         } catch (InterruptedException e) {
             e.printStackTrace();
             Log.d("Bad", "Interrupt while sending");
@@ -48,7 +47,7 @@ public class NetworkSimulator implements ClientSender, ServerSender {
     @Override
     public void sendMetaInformation(MetaCrouch info) {
         try {
-            stateQueue.put(new GameStateOrMeta(info));
+            packQueue.put(new ServerNetworkPackage(info));
         } catch (InterruptedException e) {
             e.printStackTrace();
             Log.d("Bad", "Interrupt while sending");
@@ -57,8 +56,7 @@ public class NetworkSimulator implements ClientSender, ServerSender {
 
     public void start(Client client, Server server) {
         this.actionConsumer = server::acceptPlayerAction;
-        this.stateConsumer = client::receiveGameState;
-        this.metaConsumer = client::receiveMeta;
+        this.clientConsumer = client::receivePackage;
 
         Thread consumeAction = new Thread(() -> {
             while (!Thread.interrupted()) {
@@ -66,22 +64,18 @@ public class NetworkSimulator implements ClientSender, ServerSender {
                     actionConsumer.accept(actionQueue.take());
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
-                    Log.d("Bad", "didnt work");
+                    Log.d("Bad", "consume action thread throws");
                 }
             }
         });
         Thread consumeState = new Thread(() -> {
             while (!Thread.interrupted()) {
                 try {
-                    GameStateOrMeta taken = stateQueue.take();
-                    if (taken.state != null) {
-                        stateConsumer.accept(taken.state);
-                    } else {
-                        metaConsumer.accept(taken.meta);
-                    }
+                    ServerNetworkPackage taken = packQueue.take();
+                    clientConsumer.accept(taken);
                 } catch (Throwable throwable) {
                     throwable.printStackTrace();
-                    Log.d("Bad", "didnt work");
+                    Log.d("Bad", "consume state throws");
                 }
             }
         });
@@ -89,27 +83,5 @@ public class NetworkSimulator implements ClientSender, ServerSender {
         consumeState.start();
     }
 
-    public NetworkSimulator() {
-    }
-
-    private static class GameStateOrMeta {
-        private GameState state;
-        private MetaCrouch meta;
-
-        public GameStateOrMeta(GameState state) {
-            this.state = state;
-        }
-
-        public GameStateOrMeta(MetaCrouch meta) {
-            this.meta = meta;
-        }
-
-        public GameState getState() {
-            return state;
-        }
-
-        public MetaCrouch getMeta() {
-            return meta;
-        }
-    }
+    public NetworkSimulator() { }
 }

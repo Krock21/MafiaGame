@@ -29,6 +29,11 @@ public class TestPhaseServer implements GamePhaseServer {
     }
 
     @Override
+    public void initPhase() {
+
+    }
+
+    @Override
     public void onEnd() {
         sum = sum % 1000000;
         sum *= 1000;

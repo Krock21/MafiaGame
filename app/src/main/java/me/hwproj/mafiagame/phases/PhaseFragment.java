@@ -24,4 +24,6 @@ public abstract class PhaseFragment extends Fragment {
 
     public abstract void processGameState(GameState state);
 
+    public abstract void onPhaseEnd();
+
 }

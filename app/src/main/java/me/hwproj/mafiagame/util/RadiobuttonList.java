@@ -1,44 +1,73 @@
 package me.hwproj.mafiagame.util;
 
 import android.content.Context;
+import android.util.Log;
 import android.widget.RadioButton;
-
-import androidx.lifecycle.LiveData;
-import androidx.lifecycle.MutableLiveData;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class RadiobuttonList {
-    private final List<RadioButton> buttons;
-    private final MutableLiveData<Integer> currentPick = new MutableLiveData<>();
+    private final List<RadioButton> buttons = new ArrayList<>();
+    private int currentPick = -1;
+    private final List<RadiolistPickListener> listeners = new ArrayList<>();
 
-    public RadiobuttonList(Context context, int buttonNumber) {
-        buttons = new ArrayList<>();
-        for (int i = 0; i < buttonNumber; i++) {
+    public RadiobuttonList(Context context, int buttonsNumber) {
+        for (int i = 0; i < buttonsNumber; i++) {
             buttons.add(new RadioButton(context));
         }
 
         for (int i = 0; i < buttons.size(); i++) {
             RadioButton b = buttons.get(i);
-            final int iCopy = i;
+            final int thisButtonNumber = i;
             b.setOnCheckedChangeListener((button, state) -> {
                 if (!state) {
                     return;
-                }
+                } // proceed only if checked a button
 
-                for (int j = 0; j < buttons.size(); j++) {
-                    if (j != iCopy) {
-                        buttons.get(j).setChecked(false);
-                    }
-                }
-
-                currentPick.setValue(iCopy);
+                setNewCurrentPick(thisButtonNumber);
             });
         }
     }
 
-    public LiveData<Integer> getCurrentPick() {
+    public void setNewCurrentPick(int newPick) {
+        for (int j = 0; j < buttons.size(); j++) {
+            if (j != newPick) {
+                buttons.get(j).setChecked(false);
+            } else {
+                buttons.get(j).setChecked(true);
+            }
+        }
+        updateCurrentPick(newPick);
+    }
+
+    public void setOnPickListener(RadiolistPickListener listener) {
+        listeners.add(listener);
+    }
+
+    public RadioButton getButton(int index) {
+        return buttons.get(index);
+    }
+
+    public void setEnabledAll(boolean enabled) {
+        for (RadioButton button :
+                buttons) {
+            button.setEnabled(enabled);
+        }
+    }
+
+    public int size() {
+        return buttons.size();
+    }
+
+    public int getCurrentPick() {
         return currentPick;
+    }
+
+    private void updateCurrentPick(int newPick) {
+        currentPick = newPick;
+        for (RadiolistPickListener listener : listeners) {
+            listener.acceptNewPick(newPick);
+        }
     }
 }

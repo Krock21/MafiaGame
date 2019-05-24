@@ -12,18 +12,23 @@ import me.hwproj.mafiagame.phases.PlayerAction;
 
 class VotePhaseServer implements GamePhaseServer {
     private int[] playersChoices;
-    private boolean[] choiseFixed;
+    private boolean[] choiceFixed;
     private boolean[] cantChoose;
     private int fixedCount;
     private Server serv;
 
     public VotePhaseServer(Server server) {
-        int playerCount = server.currentGameData.players.size();
+        serv = server;
+    }
+
+    @Override
+    public void initPhase() {
+        int playerCount = serv.currentGameData.players.size();
         playersChoices = new int[playerCount];
-        choiseFixed = new boolean[playerCount];
+        Arrays.fill(playersChoices, -1);
+        choiceFixed = new boolean[playerCount];
         cantChoose = new boolean[playerCount];
         fixedCount = 0;
-        serv = server;
     }
 
     @Override
@@ -41,18 +46,17 @@ class VotePhaseServer implements GamePhaseServer {
 
         playersChoices[p] = castedAction.chosenPlayerNumber;
 
-        if (choiseFixed[p]) {
-            fixedCount--;
-        }
-        if (castedAction.fixed) {
-            fixedCount++;
-        }
-        choiseFixed[p] = castedAction.fixed;
+        // update choiceFixed[p] and fixedCount
+        updateFixed(p, castedAction.fixed);
 
-        if (fixedCount == serv.playerAliveCount()) {
+        if (fixedCount == 1) {
+//        if (fixedCount == serv.playerAliveCount()) { TODO DEBUG replace if condition
+            Log.d("qwe", Arrays.toString(playersChoices));
             int[] chosenBy = new int[serv.playerCount()];
             for (int i = 0; i < serv.playerCount(); i++) {
-                chosenBy[playersChoices[i]]++;
+                if (playersChoices[i] != -1) {
+                    chosenBy[playersChoices[i]]++;
+                }
             }
 
             int maxVotes = -1;
@@ -71,19 +75,31 @@ class VotePhaseServer implements GamePhaseServer {
                 VotePhaseGameState s = new VotePhaseGameState();
                 s.end = true;
                 s.killedPlayer = maxChosen.get(0);
+                serv.currentGameData.players.get(s.killedPlayer).dead = true;
+                Log.d("qwe", "processPlayerAction: killed " + s.killedPlayer);
                 serv.sendGameState(s);
                 serv.startNextPhase();
+            } else {
+                Arrays.fill(cantChoose, true);
+                for (int pl : maxChosen) {
+                    cantChoose[pl] = false;
+                }
+                VotePhaseGameState s = new VotePhaseGameState();
+                s.end = false;
+                s.cantChoose = cantChoose;
+                serv.sendGameState(s);
             }
-
-            Arrays.fill(cantChoose, true);
-            for (int pl : maxChosen) {
-                cantChoose[pl] = false;
-            }
-            VotePhaseGameState s = new VotePhaseGameState();
-            s.end = false;
-            s.cantChoose = cantChoose;
-            serv.sendGameState(s);
         }
+    }
+
+    private void updateFixed(int p, boolean fixed) {
+        if (choiceFixed[p]) {
+            fixedCount--;
+        }
+        if (fixed) {
+            fixedCount++;
+        }
+        choiceFixed[p] = fixed;
     }
 
     @Override

@@ -2,6 +2,7 @@ package me.hwproj.mafiagame;
 
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Button;
 
@@ -27,5 +28,8 @@ public class GameCreate extends AppCompatActivity {
 
 
         Button start = findViewById(R.id.startConnect); // a button for you
+        start.setOnClickListener(v -> {
+            startActivity(new Intent(this, PhaseActivity.class));
+        });
     }
 }

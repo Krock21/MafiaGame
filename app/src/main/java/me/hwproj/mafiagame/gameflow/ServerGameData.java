@@ -24,7 +24,16 @@ public class ServerGameData {
         } else {
             phaseNumber++;
             currentPhase = phases.get(phaseNumber % phases.size());
+            if (phaseNumber % phases.size() == 1) {
+                applyEffects();
+            }
         }
         currentPhase.initPhase();
+    }
+
+    private void applyEffects() {
+        for (Player p : players) {
+            p.resolveEffects(this);
+        }
     }
 }

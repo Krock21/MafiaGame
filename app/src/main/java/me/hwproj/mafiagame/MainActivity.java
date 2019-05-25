@@ -15,6 +15,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
+import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -22,6 +23,7 @@ import com.google.android.gms.tasks.Task;
 import me.hwproj.mafiagame.networking.NetworkData;
 
 import static me.hwproj.mafiagame.networking.NetworkData.RC_GAMES_SIGN_IN;
+import static me.hwproj.mafiagame.networking.NetworkData.getGoogleSignInAccount;
 
 public class MainActivity extends AppCompatActivity {
     public static String TAG = "MafiaGame";
@@ -47,8 +49,8 @@ public class MainActivity extends AppCompatActivity {
         Button signIn = findViewById(R.id.signIn);
         signIn.setOnClickListener(v -> {
             startSignInIntent(new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
-                              .requestEmail().build(),
-                              RC_GAMES_SIGN_IN);
+                            .requestEmail().build(),
+                    RC_GAMES_SIGN_IN);
         });
     }
 
@@ -114,7 +116,7 @@ public class MainActivity extends AppCompatActivity {
                 if (message == null || message.isEmpty()) {
                     message = getString(R.string.signin_other_error);
                 }
-                new AlertDialog.Builder(this).setMessage(message)
+                new AlertDialog.Builder(this).setMessage( message)
                         .setNeutralButton(android.R.string.ok, null).show();
             }
         }

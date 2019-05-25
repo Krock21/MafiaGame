@@ -1,6 +1,11 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/home/krock21/.android/debug.keystore')
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "me.hwproj.mafiagame"

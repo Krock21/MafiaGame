@@ -25,10 +25,13 @@ import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
 import com.google.android.gms.tasks.OnCanceledListener;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
 
 import me.hwproj.mafiagame.networking.Network;
@@ -130,6 +133,40 @@ public class GameCreate extends AppCompatActivity {
 
         }
     }
+
+    void sendToAllReliably(byte[] message) {
+        for (String participantId : mRoom.getParticipantIds()) {
+            if (!participantId.equals(mMyParticipantId)) {
+                Task<Integer> task = Games.
+                        getRealTimeMultiplayerClient(this, getGoogleSignInAccount())
+                        .sendReliableMessage(message, mRoom.getRoomId(), participantId,
+                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Integer> task) {
+                                // Keep track of which messages are sent, if desired.
+                                recordMessageToken(task.getResult());
+                            }
+                        });
+            }
+        }
+    }
+
+    HashSet<Integer> pendingMessageSet = new HashSet<>();
+
+    synchronized void recordMessageToken(int tokenId) {
+        pendingMessageSet.add(tokenId);
+    }
+
+    private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
+            new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
+                @Override
+                public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
+                    // handle the message being sent.
+                    synchronized (this) {
+                        pendingMessageSet.remove(tokenId);
+                    }
+                }
+            };
 
     private OnRealTimeMessageReceivedListener mMessageReceivedHandler =
             new OnRealTimeMessageReceivedListener() {

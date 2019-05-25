@@ -17,8 +17,8 @@ public class GameConfigure extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_configure);
 
-        Button start = findViewById(R.id.startTest);
-        start.setOnClickListener(this::startTestPhase);
+        //Button start = findViewById(R.id.startTest);
+        //start.setOnClickListener(this::startTestPhase);
     }
 
     private void startTestPhase(View v) {

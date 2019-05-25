@@ -14,8 +14,10 @@ import android.widget.Button;
 
 import com.google.android.gms.auth.api.signin.GoogleSignIn;
 import com.google.android.gms.games.Games;
+import com.google.android.gms.games.GamesActivityResultCodes;
 import com.google.android.gms.games.GamesCallbackStatusCodes;
 import com.google.android.gms.games.RealTimeMultiplayerClient;
+import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.OnRealTimeMessageReceivedListener;
@@ -50,12 +52,13 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
  */
 public class GameCreate extends AppCompatActivity {
 
-    int minPlayerCount = 1; // minimum Player count other players
-    int maxPlayerCount = 7; // maximum Player count other players
+    public boolean mWaitingRoomFinishedFromCode = false;
 
-    private RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
-    private RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
+    public int minPlayerCount = 1; // minimum Player count other players
+    public int maxPlayerCount = 7; // maximum Player count other players
 
+    public RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
+    public RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,10 +82,15 @@ public class GameCreate extends AppCompatActivity {
             //startActivity(new Intent(this, PhaseActivity.class));
             invitePlayers(minPlayerCount, maxPlayerCount);
         });
+
+        Button checkForInvitation = findViewById(R.id.checkForInvitation);
+        checkForInvitation.setOnClickListener(v -> {
+            checkForInvitation();
+        });
     }
 
     private RealTimeMultiplayerClient makeRealTimeMultiplayerClient() {
-        return Games.getRealTimeMultiplayerClient(this, NetworkData.getGoogleSignInAccount());
+        return Games.getRealTimeMultiplayerClient(this, getGoogleSignInAccount());
     }
 
     private void invitePlayers(int minPlayerCount, int maxPlayerCount) {
@@ -134,9 +142,52 @@ public class GameCreate extends AppCompatActivity {
             mJoinedRoomConfig = roomBuilder.build();
             getRealTimeMultiplayerClient()
                     .create(mJoinedRoomConfig);
+        }
+        if (requestCode == RC_WAITING_ROOM) {
 
+            // Look for finishing the waiting room from code, for example if a
+            // "start game" message is received.  In this case, ignore the result. TODO Start Game received
+            if (mWaitingRoomFinishedFromCode) {
+                return;
+            }
+
+            if (resultCode == Activity.RESULT_OK) {
+                // Start the game! TODO start the game in client
+            } else if (resultCode == Activity.RESULT_CANCELED) {
+                // Waiting room was dismissed with the back button. The meaning of this
+                // action is up to the game. You may choose to leave the room and cancel the
+                // match, or do something else like minimize the waiting room and
+                // continue to connect in the background.
+
+                // in this example, we take the simple approach and just leave the room:
+                getRealTimeMultiplayerClient()
+                        .leave(mJoinedRoomConfig, mRoom.getRoomId());
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
+                // player wants to leave the room.
+                getRealTimeMultiplayerClient()
+                        .leave(mJoinedRoomConfig, mRoom.getRoomId());
+                getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
+        }
+        if (requestCode == RC_INVITATION_INBOX) {
+            if (resultCode != Activity.RESULT_OK) {
+                // Canceled or some error.
+                return;
+            }
+            Invitation invitation = data.getExtras().getParcelable(Multiplayer.EXTRA_INVITATION);
+            if (invitation != null) {
+                RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)
+                        .setInvitationIdToAccept(invitation.getInvitationId());
+                mJoinedRoomConfig = builder.build();
+                getRealTimeMultiplayerClient()
+                        .join(mJoinedRoomConfig);
+                // prevent screen from sleeping during handshake
+                getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+            }
         }
     }
+
     void sendToAllReliably(byte[] message) {
         for (String participantId : mRoom.getParticipantIds()) {
             if (!participantId.equals(mMyParticipantId)) {
@@ -152,12 +203,13 @@ public class GameCreate extends AppCompatActivity {
             }
         }
     }
-    HashSet<Integer> pendingMessageSet = new HashSet<>();
 
+    HashSet<Integer> pendingMessageSet = new HashSet<>();
 
     synchronized void recordMessageToken(int tokenId) {
         pendingMessageSet.add(tokenId);
     }
+
     private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
             new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
                 @Override
@@ -200,5 +252,50 @@ public class GameCreate extends AppCompatActivity {
         // You can check a participant's status with Participant.getStatus().
         // (Also, your UI should have a Cancel button that cancels the game too)
         return false;
+    }
+
+    public void showWaitingRoom(Room room, int maxPlayersToStartGame) {
+        getRealTimeMultiplayerClient()
+                .getWaitingRoomIntent(room, maxPlayersToStartGame)
+                .addOnSuccessListener(new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        startActivityForResult(intent, RC_WAITING_ROOM);
+                    }
+                });
+    }
+
+    public void checkForInvitation() {
+        Games.getGamesClient(this, getGoogleSignInAccount())
+                .getActivationHint()
+                .addOnSuccessListener(
+                        new OnSuccessListener<Bundle>() {
+                            @Override
+                            public void onSuccess(Bundle bundle) {
+                                Invitation invitation = bundle.getParcelable(Multiplayer.EXTRA_INVITATION);
+                                if (invitation != null) {
+                                    RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)
+                                            .setInvitationIdToAccept(invitation.getInvitationId());
+                                    mJoinedRoomConfig = builder.build();
+                                    getRealTimeMultiplayerClient()
+                                            .join(mJoinedRoomConfig);
+                                    // prevent screen from sleeping during handshake
+                                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
+                                }
+                            }
+                        }
+                );
+
+    }
+
+    private void showInvitationInbox() {
+        Games.getInvitationsClient(this, getGoogleSignInAccount())
+                .getInvitationInboxIntent()
+                .addOnSuccessListener(new OnSuccessListener<Intent>() {
+                    @Override
+                    public void onSuccess(Intent intent) {
+                        startActivityForResult(intent, RC_INVITATION_INBOX);
+                    }
+                });
     }
 }

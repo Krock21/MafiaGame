@@ -25,6 +25,7 @@ class MyRoomUpdateCallback extends RoomUpdateCallback {
         NetworkData.mRoom = room;
         if (code == GamesCallbackStatusCodes.OK && room != null) {
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " created.");
+            activity.showWaitingRoom(room, activity.maxPlayerCount + 1);
         } else {
             Log.w(MainActivity.TAG, "Error creating room: " + code);
             // let screen go to sleep

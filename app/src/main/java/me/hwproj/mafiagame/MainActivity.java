@@ -3,6 +3,7 @@ package me.hwproj.mafiagame;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.WindowManager;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -16,14 +17,20 @@ import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.games.Games;
+import com.google.android.gms.games.multiplayer.Invitation;
+import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import me.hwproj.mafiagame.networking.NetworkData;
 
 import static me.hwproj.mafiagame.networking.NetworkData.RC_GAMES_SIGN_IN;
 import static me.hwproj.mafiagame.networking.NetworkData.getGoogleSignInAccount;
+import static me.hwproj.mafiagame.networking.NetworkData.mJoinedRoomConfig;
+import static me.hwproj.mafiagame.networking.NetworkData.setGoogleSignInAccount;
 
 public class MainActivity extends AppCompatActivity {
     public static String TAG = "MafiaGame";
@@ -51,6 +58,11 @@ public class MainActivity extends AppCompatActivity {
             startSignInIntent(new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
                             .requestEmail().build(),
                     RC_GAMES_SIGN_IN);
+        });
+
+        Button signOut = findViewById(R.id.signOut);
+        signOut.setOnClickListener(v -> {
+            signOut();
         });
     }
 
@@ -116,9 +128,24 @@ public class MainActivity extends AppCompatActivity {
                 if (message == null || message.isEmpty()) {
                     message = getString(R.string.signin_other_error);
                 }
-                new AlertDialog.Builder(this).setMessage( message)
+                new AlertDialog.Builder(this).setMessage(message)
                         .setNeutralButton(android.R.string.ok, null).show();
             }
         }
+    }
+
+    private void signOut() {
+        GoogleSignInClient signInClient = GoogleSignIn.getClient(this,
+                GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
+        setGoogleSignInAccount(null);
+        signInClient.signOut().addOnCompleteListener(this,
+                new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        // at this point, the user is signed out.
+                        new AlertDialog.Builder(MainActivity.this).setMessage("You has signed out")
+                                .setNeutralButton(android.R.string.ok, null).show();
+                    }
+                });
     }
 }

@@ -1,13 +1,14 @@
 package me.hwproj.mafiagame.gameflow;
 
-import android.content.Context;
 import android.util.Log;
 
+import androidx.core.util.Consumer;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
+import me.hwproj.mafiagame.content.phases.mafia.MafiaState;
 import me.hwproj.mafiagame.networking.ClientSender;
 import me.hwproj.mafiagame.networking.FullGameState;
 import me.hwproj.mafiagame.networking.MetaCrouch;
@@ -21,6 +22,7 @@ import me.hwproj.mafiagame.phases.PlayerAction;
 public class Client {
 
     private final int thisPlayer;
+    private final Consumer<GameState> gameStateHandler;
 
     // from activity
     public void sendPlayerAction(PlayerAction action) {
@@ -37,17 +39,29 @@ public class Client {
     // from interractor's thread
     public void receivePackage(ServerNetworkPackage pack) {
         Log.d("qwe", "receivePackage: meta: " + pack.isMeta());
-        if (pack.isMeta()) {
-            metaQueue.add(pack.getMeta());
-            metaData.postValue(pack.getMeta());
-        } else {
-            receiveGameState(pack.getGameState());
-        }
+        packageQueue.add(pack);
+        packageData.postValue(pack); // mostly to call listeners
     }
 
-    // from interractor's thread
-    private void receiveGameState(FullGameState state) {
-        fullGameState.postValue(state);
+    private void receiveState(FullGameState state) {
+        getGameData().update(state);
+        gameStateHandler.accept(state.getPhaseState());
+    }
+
+    private void handlePackage(ServerNetworkPackage pack) {
+        Log.d("qwe", "handlePackage: handle meta " + pack.isMeta());
+        if (pack.isMeta()) {
+            Log.d("qwe", "handlePackage: META PACKAGE");
+            receiveMeta(pack.getMeta());
+        } else {
+            if (pack.getGameState().getPhaseState() instanceof MafiaState) {
+                MafiaState s = (MafiaState) pack.getGameState().getPhaseState();
+                if (s.picks.end) {
+                    Log.d("qwe", "MAFIA END");
+                }
+            }
+            receiveState(pack.getGameState());
+        }
     }
 
     public void startNextPhase(int number) {
@@ -68,10 +82,11 @@ public class Client {
     private MutableLiveData<GameState> latestGameState = new MutableLiveData<>();
     private MutableLiveData<FullGameState> fullGameState = new MutableLiveData<>();
     private MutableLiveData<Integer> currentPhaseNumber = new MutableLiveData<>();
-    private MutableLiveData<MetaCrouch> metaData = new MutableLiveData<>();
-    private final ConcurrentLinkedQueue<MetaCrouch> metaQueue = new ConcurrentLinkedQueue<>();
+    private MutableLiveData<ServerNetworkPackage> packageData = new MutableLiveData<>();
+    private final ConcurrentLinkedQueue<ServerNetworkPackage> packageQueue = new ConcurrentLinkedQueue<>();
 
-    public Client(ClientSender sender, Settings settings, int thisPlayer) {
+    public Client(ClientSender sender, Settings settings, int thisPlayer, Consumer<GameState> gameStateHandler) {
+        this.gameStateHandler = gameStateHandler;
         currentGameState = new ClientGameData();
         for (GamePhase p : settings.phases) {
             currentGameState.phases.add(p.getClientPhase());
@@ -82,9 +97,9 @@ public class Client {
 
         currentPhaseNumber.setValue(0);
 
-        metaData.observeForever(meta -> {
-            while (!metaQueue.isEmpty()) {
-                receiveMeta(metaQueue.poll());
+        packageData.observeForever(pack -> {
+            while (!packageQueue.isEmpty()) {
+                handlePackage(packageQueue.poll());
             }
         });
         fullGameState.observeForever(state -> {
@@ -97,8 +112,8 @@ public class Client {
         this.thisPlayer = thisPlayer;
     }
 
-    public LiveData<GameState> getLatestGameState() {
-        return latestGameState;
+    public GameState getLatestGameState() {
+        return latestGameState.getValue();
     }
 
     public LiveData<Integer> getPhaseNumberData() {

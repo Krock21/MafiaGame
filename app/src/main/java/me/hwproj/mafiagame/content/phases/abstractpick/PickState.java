@@ -5,5 +5,5 @@ import me.hwproj.mafiagame.phases.GameState;
 public class PickState extends GameState {
     int pickedPlayer; // TODO mb not package visible?
     int[] picks;
-    boolean end;
+    public boolean end; // todo PACKAGE VISIBLE
 }

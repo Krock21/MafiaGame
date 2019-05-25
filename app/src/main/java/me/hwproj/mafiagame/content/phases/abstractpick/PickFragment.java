@@ -104,7 +104,7 @@ abstract public class PickFragment extends PhaseFragment {
     protected void processPickedState(PickState data) {
         if (data.end) {
             Log.d("pick", "processPickedState: end");
-            onPickComplete(thisRolePlayers[data.pickedPlayer]);
+            onPickComplete(data.pickedPlayer);
             return;
         }
 

@@ -19,6 +19,8 @@ import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PhaseFragment;
 import me.hwproj.mafiagame.util.table.TablePick;
 
+import static me.hwproj.mafiagame.util.Alerter.alert;
+
 class VotePhaseFragment extends PhaseFragment {
 
     public VotePhaseFragment(Client client) {
@@ -33,15 +35,7 @@ class VotePhaseFragment extends PhaseFragment {
         VotePhaseGameState s = (VotePhaseGameState) state;
 
         if (s.end) {
-            Log.d("qwe", "got end");
-
-            AlertDialog alert = new AlertDialog.Builder(getActivity()).create();
-            alert.setTitle("Evening news");
-            alert.setMessage(client.getGameData().players.get(s.killedPlayer).name + " was killed today");
-            alert.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok", (dialog, which) -> dialog.dismiss());
-            alert.show();
-
-            Log.d("qwe", "processGameState: show");
+            alert(getContext(), "Evening news", client.getGameData().players.get(s.killedPlayer).name + " was killed today");
 
         } else {
             for (int i = 0; i < s.cantChoose.length; i++) {
@@ -52,7 +46,7 @@ class VotePhaseFragment extends PhaseFragment {
 
     @Override
     public void onPhaseEnd() {
-        GameState latest = client.getLatestGameState().getValue();
+        GameState latest = client.getLatestGameState();
         if (latest instanceof VotePhaseGameState) {
             Log.d("qwe", "onPhaseEnd: end is " + ((VotePhaseGameState) latest).end);
         } else {
@@ -85,8 +79,7 @@ class VotePhaseFragment extends PhaseFragment {
             client.sendPlayerAction(action);
         });
 
-        client.getLatestGameState().observe(this, this::processGameState);
-        processGameState(client.getLatestGameState().getValue());
+        subscribeToGameState();
 
         view.findViewById(R.id.votenext).setOnClickListener(v -> client.sendPlayerAction(TestPhasePlayerAction.nextPhase()));
         view.findViewById(R.id.voteFinal).setOnClickListener(v -> {

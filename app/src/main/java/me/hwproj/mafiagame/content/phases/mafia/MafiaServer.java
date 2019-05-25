@@ -27,6 +27,7 @@ public class MafiaServer extends PickServer {
     @Override
     protected void sendPickState(PickState data) {
         serv.sendGameState(new MafiaState(data));
+        Log.d("qwe", "sendPickState: " + data.end);
     }
 
     @Override

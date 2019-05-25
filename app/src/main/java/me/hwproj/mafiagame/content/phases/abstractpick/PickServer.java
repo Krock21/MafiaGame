@@ -51,7 +51,8 @@ public abstract class PickServer implements GamePhaseServer {
                 PickState finalData = new PickState();
                 finalData.end = true;
                 finalData.pickedPlayer = pickedPlayer;
-                sendPickState(data);
+                sendPickState(finalData);
+                Log.d("pick", "server: send end");
                 onPickComplete(pickedPlayer);
             }
         }

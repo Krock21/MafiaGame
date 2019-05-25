@@ -26,4 +26,13 @@ public abstract class PhaseFragment extends Fragment {
 
     public abstract void onPhaseEnd();
 
+    protected final void subscribeToGameState() {
+        subscribedToGameState = true;
+        processGameState(client.getLatestGameState());
+    }
+    private boolean subscribedToGameState = false;
+
+    public final boolean isSubscribedToGameState() {
+        return subscribedToGameState;
+    }
 }

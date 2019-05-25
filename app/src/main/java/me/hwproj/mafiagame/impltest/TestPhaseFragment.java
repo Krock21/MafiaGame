@@ -55,7 +55,7 @@ public class TestPhaseFragment extends PhaseFragment {
         Button bnext = view.findViewById(R.id.nextButton);
         bnext.setOnClickListener(v -> client.sendPlayerAction(TestPhasePlayerAction.nextPhase()));
 
-        client.getLatestGameState().observe(this, this::processGameState);
+        subscribeToGameState();
 
         Log.d("Ok", "Created view");
 

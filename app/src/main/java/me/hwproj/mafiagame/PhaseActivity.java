@@ -39,7 +39,7 @@ public class PhaseActivity extends AppCompatActivity {
         );
 
 
-        client = new Client(net, settings, 2);
+        client = new Client(net, settings, 2, this::dealWithGameState);
         Server server = new Server(settings, net);
 
         net.start(client, server);
@@ -57,8 +57,7 @@ public class PhaseActivity extends AppCompatActivity {
         client.startNextPhase(0);
 
         client.getPhaseNumberData().observe(this, this::dealWithPhaseNumber);
-        dealWithPhaseNumber(client.getPhaseNumberData().getValue());
-//        client.getLatestGameState().observe(this, this::dealWithGameState);
+//        client.getLatestGameState().observe(this, this::dealWithGameState); client calls it itself
 
         Button b = findViewById(R.id.testid); // TODO delete
         b.setOnClickListener(v -> client.startNextPhase(thisPhaseNumber + 1));
@@ -79,11 +78,13 @@ public class PhaseActivity extends AppCompatActivity {
         }
     }
 
-//    private void dealWithGameState(GameState state) {
-//        if (currentPhaseFragment != null) {
-//            currentPhaseFragment.processGameState(state);
-//        }
-//    }
+    private void dealWithGameState(GameState state) {
+        if (currentPhaseFragment != null) {
+            if (currentPhaseFragment.isSubscribedToGameState()) {
+                currentPhaseFragment.processGameState(state);
+            }
+        }
+    }
 
     private void startPhaseFragment(PhaseFragment fg) {
         if (currentPhaseFragment != null) {

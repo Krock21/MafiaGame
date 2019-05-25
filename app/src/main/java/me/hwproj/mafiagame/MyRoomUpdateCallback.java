@@ -36,6 +36,7 @@ class MyRoomUpdateCallback extends RoomUpdateCallback {
     @Override
     public void onJoinedRoom(int code, @Nullable Room room) {
         // Update UI and internal state based on room updates. VLAD TODO
+        activity.showWaitingRoom(room, activity.maxPlayerCount + 1);
         NetworkData.mRoom = room;
         if (code == GamesCallbackStatusCodes.OK && room != null) {
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " joined.");

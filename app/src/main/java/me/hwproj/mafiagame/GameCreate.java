@@ -158,6 +158,7 @@ public class GameCreate extends AppCompatActivity {
 
             if (resultCode == Activity.RESULT_OK) {
                 // Start the game! TODO start the game in client
+                sendToAllReliably("TEST_MESSAGE".getBytes());
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // Waiting room was dismissed with the back button. The meaning of this
                 // action is up to the game. You may choose to leave the room and cancel the
@@ -185,7 +186,9 @@ public class GameCreate extends AppCompatActivity {
             Invitation invitation = data.getExtras().getParcelable(Multiplayer.EXTRA_INVITATION);
             if (invitation != null) {
                 RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)
-                        .setInvitationIdToAccept(invitation.getInvitationId());
+                        .setInvitationIdToAccept(invitation.getInvitationId())
+                        .setOnMessageReceivedListener(mMessageReceivedHandler)
+                        .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler);
                 mJoinedRoomConfig = builder.build();
                 getRealTimeMultiplayerClient()
                         .join(mJoinedRoomConfig);
@@ -236,6 +239,7 @@ public class GameCreate extends AppCompatActivity {
                     byte[] message = realTimeMessage.getMessageData();
                     // process message contents...
                     // VLAD TODO
+                    Log.d(MainActivity.TAG, message.toString());
                 }
             };
 

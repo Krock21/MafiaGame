@@ -87,6 +87,11 @@ public class GameCreate extends AppCompatActivity {
         checkForInvitation.setOnClickListener(v -> {
             checkForInvitation();
         });
+
+        Button invitationInbox = findViewById(R.id.invitationInbox);
+        invitationInbox.setOnClickListener(v -> {
+            showInvitationInbox();
+        });
     }
 
     private RealTimeMultiplayerClient makeRealTimeMultiplayerClient() {
@@ -171,10 +176,12 @@ public class GameCreate extends AppCompatActivity {
             }
         }
         if (requestCode == RC_INVITATION_INBOX) {
+            Log.d(MainActivity.TAG, "RC_INVITATION_INBOX");
             if (resultCode != Activity.RESULT_OK) {
                 // Canceled or some error.
                 return;
             }
+            Log.d(MainActivity.TAG, "RC_INVITATION_INBOX is OK");
             Invitation invitation = data.getExtras().getParcelable(Multiplayer.EXTRA_INVITATION);
             if (invitation != null) {
                 RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)

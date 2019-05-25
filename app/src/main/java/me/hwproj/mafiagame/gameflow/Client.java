@@ -116,4 +116,8 @@ public class Client {
     public int thisPlayerId() {
         return thisPlayer;
     }
+
+    public Player thisPlayer() {
+        return getGameData().players.get(thisPlayerId());
+    }
 }

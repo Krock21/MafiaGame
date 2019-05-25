@@ -10,6 +10,7 @@ import com.google.android.gms.games.Game;
 
 import java.util.Arrays;
 
+import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.PlayerSettings;
@@ -30,7 +31,7 @@ public class PhaseActivity extends AppCompatActivity {
         NetworkSimulator net = new NetworkSimulator();
 
         Settings settings = new Settings();
-        settings.phases = Arrays.asList(new TestPhase(), new VotePhase());
+        settings.phases = Arrays.asList(new TestPhase(), new VotePhase(), new MafiaPhase());
         settings.playerSettings = Arrays.asList(
                 new PlayerSettings(Role.CITIZEN, "Pathfinder"),
                 new PlayerSettings(Role.HEALER, "Lifeline"),
@@ -38,7 +39,7 @@ public class PhaseActivity extends AppCompatActivity {
         );
 
 
-        client = new Client(net, settings, 0);
+        client = new Client(net, settings, 2);
         Server server = new Server(settings, net);
 
         net.start(client, server);

@@ -12,8 +12,4 @@ public class VotePhasePlayerAction extends PlayerAction {
         this.thisPlayer = thisPlayer;
     }
 
-    @Override
-    public String getPhaseName() {
-        return null;
-    }
 }

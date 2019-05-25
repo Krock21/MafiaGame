@@ -13,11 +13,6 @@ public class TestPhasePlayerAction extends PlayerAction {
         return n;
     }
 
-    @Override
-    public String getPhaseName() {
-        return TestPhase.PHASE_NAME;
-    }
-
     public TestPhasePlayerAction(int x) {
         added = x;
     }

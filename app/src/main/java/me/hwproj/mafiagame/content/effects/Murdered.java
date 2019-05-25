@@ -10,7 +10,7 @@ public class Murdered extends Effect {
     public static final String PRIORITY = "M";
     public static final String DELETE_TAG = "delete_murdered";
 
-    protected Murdered() {
+    public Murdered() {
         super(PRIORITY);
     }
 

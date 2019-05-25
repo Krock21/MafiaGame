@@ -1,5 +1,7 @@
 package me.hwproj.mafiagame.content.effects;
 
+import android.util.Log;
+
 import me.hwproj.mafiagame.gameflow.ClientGameData;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameflow.ServerGameData;
@@ -17,6 +19,7 @@ public class Murdered extends Effect {
     @Override
     public boolean affect(Player p, ServerGameData data) {
         p.dead = true;
+        Log.d("Effect", "murdered: ");
         return true;
     }
 

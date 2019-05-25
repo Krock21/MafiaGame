@@ -19,7 +19,6 @@ public class MafiaFragment extends PickFragment {
     @Override
     protected void onPickComplete(int pickedPlayer) {
         Player victim = client.getGameData().players.get(pickedPlayer);
-        victim.addEffect(new Murdered());
 
         AlertDialog alert = new AlertDialog.Builder(getActivity()).create();
         alert.setTitle("Murder log");

@@ -33,8 +33,6 @@ public abstract class PickServer implements GamePhaseServer {
         playersChoices[action.playerNumber] = action.pick;
         updateFixed(action.playerNumber, action.isFixed);
 
-        Log.d("pick", "server.processPickAction: final " + fixedCount);
-
         PickState data = new PickState();
         data.end = false;
         data.picks = Arrays.copyOf(playersChoices, playersChoices.length);
@@ -54,10 +52,12 @@ public abstract class PickServer implements GamePhaseServer {
                 finalData.end = true;
                 finalData.pickedPlayer = pickedPlayer;
                 sendPickState(data);
-                serv.startNextPhase();
+                onPickComplete(pickedPlayer);
             }
         }
     }
+
+    protected abstract void onPickComplete(int pickedPlayer);
 
     protected abstract void sendPickState(PickState data);
 

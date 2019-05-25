@@ -1,6 +1,7 @@
 package me.hwproj.mafiagame.content.phases.abstractpick;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,6 +103,7 @@ abstract public class PickFragment extends PhaseFragment {
 
     protected void processPickedState(PickState data) {
         if (data.end) {
+            Log.d("pick", "processPickedState: end");
             onPickComplete(thisRolePlayers[data.pickedPlayer]);
             return;
         }

@@ -2,8 +2,10 @@ package me.hwproj.mafiagame.content.phases.mafia;
 
 import android.util.Log;
 
+import me.hwproj.mafiagame.content.effects.Murdered;
 import me.hwproj.mafiagame.content.phases.abstractpick.PickState;
 import me.hwproj.mafiagame.content.phases.abstractpick.PickServer;
+import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.phases.PlayerAction;
@@ -11,6 +13,15 @@ import me.hwproj.mafiagame.phases.PlayerAction;
 public class MafiaServer extends PickServer {
     protected MafiaServer(Server serv) {
         super(serv, Role.MAFIA);
+    }
+
+    @Override
+    protected void onPickComplete(int pickedPlayer) {
+
+        Player victim = serv.currentGameData.players.get(pickedPlayer);
+        victim.addEffect(new Murdered());
+
+        serv.startNextPhase();
     }
 
     @Override

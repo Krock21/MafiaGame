@@ -6,10 +6,9 @@ import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
 
-import com.google.android.gms.games.Game;
-
 import java.util.Arrays;
 
+import me.hwproj.mafiagame.content.phases.doctor.DoctorPhase;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.gameflow.Client;
@@ -31,15 +30,15 @@ public class PhaseActivity extends AppCompatActivity {
         NetworkSimulator net = new NetworkSimulator();
 
         Settings settings = new Settings();
-        settings.phases = Arrays.asList(new TestPhase(), new VotePhase(), new MafiaPhase());
+        settings.phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
         settings.playerSettings = Arrays.asList(
                 new PlayerSettings(Role.CITIZEN, "Pathfinder"),
-                new PlayerSettings(Role.HEALER, "Lifeline"),
+                new PlayerSettings(Role.DOCTOR, "Lifeline"),
                 new PlayerSettings(Role.MAFIA, "Caustic")
         );
 
 
-        client = new Client(net, settings, 2, this::dealWithGameState);
+        client = new Client(net, settings, 1, this::dealWithGameState);
         Server server = new Server(settings, net);
 
         net.start(client, server);

@@ -9,7 +9,7 @@ public class Healed extends Effect {
 
     public static final String PRIORITY = "H";
 
-    protected Healed() {
+    public Healed() {
         super(PRIORITY);
     }
 

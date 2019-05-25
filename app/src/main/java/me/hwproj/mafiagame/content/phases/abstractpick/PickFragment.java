@@ -83,13 +83,12 @@ abstract public class PickFragment extends PhaseFragment {
 
         table.setColumnListener(0, pick -> {
             currentPick = pick;
+            sendPickAction(new PickAction(currentPick, false, thisPlayerNumber));
         });
 
         view.findViewById(R.id.pickFinal).setOnClickListener(v -> {
             if (currentPick != -1) {
-                sendPickAction(
-                        new PickAction(currentPick, true, thisPlayerNumber)
-                );
+                sendPickAction(new PickAction(currentPick, true, thisPlayerNumber));
             }
         });
 

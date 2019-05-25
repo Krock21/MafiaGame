@@ -53,6 +53,10 @@ public class GameCreate extends AppCompatActivity {
     int minPlayerCount = 1; // minimum Player count other players
     int maxPlayerCount = 7; // maximum Player count other players
 
+    private RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
+    private RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -128,17 +132,15 @@ public class GameCreate extends AppCompatActivity {
 
             // Save the roomConfig so we can use it if we call leave().
             mJoinedRoomConfig = roomBuilder.build();
-            Games.getRealTimeMultiplayerClient(this, getGoogleSignInAccount())
+            getRealTimeMultiplayerClient()
                     .create(mJoinedRoomConfig);
 
         }
     }
-
     void sendToAllReliably(byte[] message) {
         for (String participantId : mRoom.getParticipantIds()) {
             if (!participantId.equals(mMyParticipantId)) {
-                Task<Integer> task = Games.
-                        getRealTimeMultiplayerClient(this, getGoogleSignInAccount())
+                Task<Integer> task = getRealTimeMultiplayerClient()
                         .sendReliableMessage(message, mRoom.getRoomId(), participantId,
                                 handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
                             @Override
@@ -150,13 +152,12 @@ public class GameCreate extends AppCompatActivity {
             }
         }
     }
-
     HashSet<Integer> pendingMessageSet = new HashSet<>();
+
 
     synchronized void recordMessageToken(int tokenId) {
         pendingMessageSet.add(tokenId);
     }
-
     private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
             new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
                 @Override
@@ -179,9 +180,9 @@ public class GameCreate extends AppCompatActivity {
                 }
             };
 
-    private RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
 
     // returns whether there are enough players to start the game
+
     boolean shouldStartGame(Room room) {
         int connectedPlayers = 0;
         for (Participant p : room.getParticipants()) {
@@ -191,8 +192,8 @@ public class GameCreate extends AppCompatActivity {
         }
         return connectedPlayers >= MIN_PLAYERS;
     }
-
     // Returns whether the room is in a state where the game should be canceled.
+
     boolean shouldCancelGame(Room room) {
         // TODO: Your game-specific cancellation logic here. For example, you might decide to
         // cancel the game if enough people have declined the invitation or left the room.
@@ -200,7 +201,4 @@ public class GameCreate extends AppCompatActivity {
         // (Also, your UI should have a Cancel button that cancels the game too)
         return false;
     }
-
-    // TODO
-    private RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
 }

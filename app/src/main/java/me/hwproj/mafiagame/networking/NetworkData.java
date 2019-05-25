@@ -62,6 +62,4 @@ public class NetworkData {
         NetworkData.realTimeMultiplayerClient = realTimeMultiplayerClient;
         realTimeMultiplayerClientLock.unlock();
     }
-
-
 }

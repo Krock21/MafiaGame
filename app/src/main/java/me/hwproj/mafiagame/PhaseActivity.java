@@ -1,47 +1,76 @@
 package me.hwproj.mafiagame;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.util.Log;
-import android.widget.Button;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.Arrays;
+import java.util.List;
 
 import me.hwproj.mafiagame.content.phases.doctor.DoctorPhase;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
-import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.PlayerSettings;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.impltest.NetworkSimulator;
 import me.hwproj.mafiagame.impltest.TestPhase;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PhaseFragment;
+import me.hwproj.mafiagame.networking.serialization.DeserializationException;
+import me.hwproj.mafiagame.networking.serialization.SerializationException;
+import me.hwproj.mafiagame.phases.GamePhase;
+import me.hwproj.mafiagame.startup.ClientGame;
+import me.hwproj.mafiagame.startup.InitGamePackage;
 
 public class PhaseActivity extends AppCompatActivity {
 
-    private PhaseFragment currentPhaseFragment;
-    private Client client;
+    private ClientGame game;
 
-    private void startClient() {
+    private void startTestClient() {
         NetworkSimulator net = new NetworkSimulator();
 
-        Settings settings = new Settings();
-        settings.phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
-        settings.playerSettings = Arrays.asList(
+        List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
+        List<PlayerSettings> playerSettings = Arrays.asList(
                 new PlayerSettings(Role.CITIZEN, "Pathfinder"),
                 new PlayerSettings(Role.DOCTOR, "Lifeline"),
                 new PlayerSettings(Role.MAFIA, "Caustic")
         );
+        Settings settings = new Settings(phases, playerSettings);
 
-
-        client = new Client(net, settings, 1, this::dealWithGameState);
         Server server = new Server(settings, net);
 
-        net.start(client, server);
+//        client = new Client(net, settings, 1, this::dealWithGameState);
+        game = new ClientGame(net, this, this::transactionProvider);
+
+        ByteArrayOutputStream outs = new ByteArrayOutputStream();
+        DataOutputStream dataStream = new DataOutputStream(outs);
+        try {
+            dataStream.write(ClientGame.INIT_PACKAGE_HEADER);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            new InitGamePackage(settings, 1).serialize(dataStream);
+        } catch (SerializationException e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        byte[] message = outs.toByteArray();
+        Log.d("ser", "startTestClient: serialized to " + Arrays.toString(message));
+        try {
+            game.receiveBytes(message);
+        } catch (DeserializationException e) {
+            Log.d("Bug", "startTestClient: deserialize exception");
+//            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+        net.start(game.getClient(), server);
     }
 
     @Override
@@ -49,57 +78,21 @@ public class PhaseActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_phase);
 
-        startClient(); // TODO
+        startTestClient();
 
-        thisPhaseNumber = -1;
-
-        client.startNextPhase(0);
-
-        client.getPhaseNumberData().observe(this, this::dealWithPhaseNumber);
-//        client.getLatestGameState().observe(this, this::dealWithGameState); client calls it itself
-
-        Button b = findViewById(R.id.testid); // TODO delete
-        b.setOnClickListener(v -> client.startNextPhase(thisPhaseNumber + 1));
+//        Button b = findViewById(R.id.testid); // TODO delete
+//        b.setOnClickListener(v -> client.startNextPhase(thisPhaseNumber + 1));
     }
 
-    private void dealWithPhaseNumber(Integer number) {
-        if (number < thisPhaseNumber) {
-            Log.d("Bad", "Wrong phase number:" + thisPhaseNumber + " -> " + number);
-        }
 
-        if (number > thisPhaseNumber) {
-            Log.d("Ok", "transition to next phase:" + thisPhaseNumber + " -> " + number);
-            if (currentPhaseFragment != null) {
-                currentPhaseFragment.onPhaseEnd();
-            }
-            startPhaseFragment(client.nextPhaseFragment());
-            thisPhaseNumber = number;
-        }
-    }
 
-    private void dealWithGameState(GameState state) {
-        if (currentPhaseFragment != null) {
-            if (currentPhaseFragment.isSubscribedToGameState()) {
-                currentPhaseFragment.processGameState(state);
-            }
-        }
-    }
 
-    private void startPhaseFragment(PhaseFragment fg) {
-        if (currentPhaseFragment != null) {
-            getSupportFragmentManager().beginTransaction().remove(currentPhaseFragment).commit();
-        }
-        currentPhaseFragment = fg;
 
-//        GameState state = client.getLatestGameState().getValue();
-//        if (state != null) {
-//            dealWithGameState(state);
-//        }
 
-        getSupportFragmentManager().beginTransaction().add(R.id.fragmentLayout, fg).commit();
 
-        Button b = findViewById(R.id.testid); // TODO delete
-        b.setText(fg.getClass().getName());
+
+    public FragmentTransaction transactionProvider() {
+        return getSupportFragmentManager().beginTransaction();
     }
 
     private int thisPhaseNumber;

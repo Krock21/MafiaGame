@@ -80,7 +80,6 @@ public class Client {
     private ClientSender sender; // TODO make smth out of it
 
     private MutableLiveData<GameState> latestGameState = new MutableLiveData<>();
-    private MutableLiveData<FullGameState> fullGameState = new MutableLiveData<>();
     private MutableLiveData<Integer> currentPhaseNumber = new MutableLiveData<>();
     private MutableLiveData<ServerNetworkPackage> packageData = new MutableLiveData<>();
     private final ConcurrentLinkedQueue<ServerNetworkPackage> packageQueue = new ConcurrentLinkedQueue<>();
@@ -101,10 +100,6 @@ public class Client {
             while (!packageQueue.isEmpty()) {
                 handlePackage(packageQueue.poll());
             }
-        });
-        fullGameState.observeForever(state -> {
-            getGameData().update(state);
-            latestGameState.setValue(state.getPhaseState());
         });
 
 

@@ -5,7 +5,7 @@ import android.util.Log;
 import org.jetbrains.annotations.NotNull;
 
 import me.hwproj.mafiagame.networking.FullGameState;
-import me.hwproj.mafiagame.networking.MetaCrouch;
+import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerSender;
 import me.hwproj.mafiagame.phases.GamePhase;
 import me.hwproj.mafiagame.phases.GameState;
@@ -48,7 +48,7 @@ public class Server {
     public void startNextPhase() {
         currentGameData.currentPhase.onEnd();
         currentGameData.nextPhase();
-        sender.sendMetaInformation(MetaCrouch.nextPhase(currentGameData.phaseNumber));
+        sender.sendMetaInformation(MetaInformation.nextPhase(currentGameData.phaseNumber));
     }
 
     public int playerAliveCount() {

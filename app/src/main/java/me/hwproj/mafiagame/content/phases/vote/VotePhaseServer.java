@@ -2,15 +2,18 @@ package me.hwproj.mafiagame.content.phases.vote;
 
 import android.util.Log;
 
+import java.io.DataOutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 import me.hwproj.mafiagame.gameflow.Server;
+import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phases.GamePhaseServer;
+import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PlayerAction;
 
-class VotePhaseServer implements GamePhaseServer {
+public class VotePhaseServer implements GamePhaseServer {
     private int[] playersChoices;
     private boolean[] choiceFixed;
     private boolean[] cantChoose;
@@ -105,5 +108,13 @@ class VotePhaseServer implements GamePhaseServer {
     @Override
     public void onEnd() {
 
+    }
+
+    @Override
+    public void serializeGameState(DataOutputStream dataOut, GameState state) throws SerializationException {
+        if (!(state instanceof VotePhaseGameState)) {
+            throw new SerializationException("wrong state");
+        }
+        ((VotePhaseGameState) state).serialize(dataOut);
     }
 }

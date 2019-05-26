@@ -2,15 +2,18 @@ package me.hwproj.mafiagame.content.phases.mafia;
 
 import android.util.Log;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 import me.hwproj.mafiagame.content.effects.Murdered;
+import me.hwproj.mafiagame.content.phases.abstractpick.PickAction;
 import me.hwproj.mafiagame.content.phases.abstractpick.PickState;
 import me.hwproj.mafiagame.content.phases.abstractpick.PickServer;
-import me.hwproj.mafiagame.content.phases.doctor.DoctorState;
+import me.hwproj.mafiagame.content.phases.doctor.DoctorAction;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameplay.Role;
+import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PlayerAction;
@@ -56,5 +59,10 @@ public class MafiaServer extends PickServer {
         }
         MafiaState s = (MafiaState) state;
         s.picks.serialize(dataOut);
+    }
+
+    @Override
+    public PlayerAction deserialize(DataInputStream dataStream) throws DeserializationException {
+        return new MafiaAction(PickAction.deserialize(dataStream));
     }
 }

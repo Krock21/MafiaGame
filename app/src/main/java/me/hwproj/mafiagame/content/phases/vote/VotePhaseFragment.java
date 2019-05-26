@@ -21,7 +21,7 @@ import me.hwproj.mafiagame.util.table.TablePick;
 
 import static me.hwproj.mafiagame.util.Alerter.alert;
 
-class VotePhaseFragment extends PhaseFragment {
+public class VotePhaseFragment extends PhaseFragment {
 
     public VotePhaseFragment(Client client) {
         super(client);

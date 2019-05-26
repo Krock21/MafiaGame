@@ -1,9 +1,11 @@
 package me.hwproj.mafiagame.impltest;
 
+import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 
 import me.hwproj.mafiagame.gameflow.Server;
+import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phases.GamePhaseServer;
 import me.hwproj.mafiagame.phases.GameState;
@@ -55,6 +57,19 @@ public class TestPhaseServer implements GamePhaseServer {
             dataOut.writeInt(s.getSum());
         } catch (IOException e) {
             throw new SerializationException(e);
+        }
+    }
+
+    @Override
+    public PlayerAction deserialize(DataInputStream dataStream) throws DeserializationException {
+        try {
+            boolean b = dataStream.readBoolean();
+            if (b) {
+                return TestPhasePlayerAction.nextPhase();
+            }
+            return new TestPhasePlayerAction(dataStream.readInt());
+        } catch (IOException e) {
+            throw new DeserializationException(e);
         }
     }
 }

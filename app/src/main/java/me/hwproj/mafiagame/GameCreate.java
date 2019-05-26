@@ -40,6 +40,7 @@ import me.hwproj.mafiagame.networking.NetworkData;
 import me.hwproj.mafiagame.networking.messaging.ClientByteSender;
 import me.hwproj.mafiagame.networking.messaging.ClientCallback;
 import me.hwproj.mafiagame.networking.messaging.Senders;
+
 import java.util.HashSet;
 import java.util.List;
 
@@ -238,10 +239,12 @@ public class GameCreate extends AppCompatActivity {
                     Log.d(MainActivity.TAG, "MESSAGE RECIEVED: " + Arrays.toString(message));
                     if (message[0] == (byte) 0) { // to client
                         message = Senders.removeFromBegin(message);
-                        callbacks.clientCallback.receiveServerMessage(message);
+                        if (callbacks.clientCallback != null)
+                            callbacks.clientCallback.receiveServerMessage(message);
                     } else if (message[0] == (byte) 1) { // to server
-                        callbacks.serverCallback.receiveClientMessage(realTimeMessage.getSenderParticipantId(),
-                                Senders.removeFromBegin(message));
+                        message = Senders.removeFromBegin(message);
+                        if (callbacks.serverCallback != null)
+                            callbacks.serverCallback.receiveClientMessage(realTimeMessage.getSenderParticipantId(), message);
                     } else {
                         Log.e(MainActivity.TAG, "message's first byte isn't 0 or 1");
                     }
@@ -374,6 +377,7 @@ public class GameCreate extends AppCompatActivity {
 
         net.start(clientGame, serverGame);
     }
+
     public FragmentTransaction transactionProvider() {
         return getSupportFragmentManager().beginTransaction();
     }

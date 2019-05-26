@@ -79,9 +79,9 @@ public class GameCreate extends AppCompatActivity {
         return newMessage;
     }
 
-    public static ServerSender serverSender = new ServerSender() {
+    public static ServerByteSender serverSender = new ServerByteSender() {
         @Override
-        public void broadcastMesage(byte[] message) {
+        public void broadcastMessage(byte[] message) {
             message = addToBegin(message, (byte) 0);
             for (String participantId : getmRoom().getParticipantIds()) {
                 Task<Integer> task = getRealTimeMultiplayerClient()
@@ -129,9 +129,9 @@ public class GameCreate extends AppCompatActivity {
     };
 
 
-    public static ClientSender clientSender = new ClientSender() {
+    public static ClientByteSender clientSender = new ClientByteSender() {
         @Override
-        public void sendToServer(byte[] message) {
+        public void sendBytesToServer(byte[] message) {
             message = addToBegin(message, (byte) 1);
             for (String participantId : getmRoom().getParticipantIds()) {
                 Task<Integer> task = getRealTimeMultiplayerClient()

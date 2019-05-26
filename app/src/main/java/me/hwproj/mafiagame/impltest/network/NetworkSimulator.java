@@ -5,6 +5,8 @@ import android.util.Log;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
+import me.hwproj.mafiagame.ClientByteSender;
+import me.hwproj.mafiagame.ServerByteSender;
 import me.hwproj.mafiagame.startup.ClientGame;
 import me.hwproj.mafiagame.startup.ServerGame;
 import me.hwproj.mafiagame.util.MyConsumer;
@@ -23,8 +25,13 @@ public class NetworkSimulator implements ClientByteSender, ServerByteSender {
     }
 
     @Override
-    public void sendToEveryone(byte[] message) {
+    public void broadcastMessage(byte[] message) {
         serverMessages.add(message);
+    }
+
+    @Override
+    public void sendMessage(String participantId, byte[] message) {
+        // TODO or not to do
     }
 
     public void start(ClientGame client, ServerGame server) {

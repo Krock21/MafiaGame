@@ -1,7 +1,7 @@
 package me.hwproj.mafiagame;
 
 // теперь к клиенту
-public interface ClientSender {
+public interface ClientByteSender {
     // посылает сообщение серверу
-    void sendToServer(byte[] message);
+    void sendBytesToServer(byte[] message);
 }

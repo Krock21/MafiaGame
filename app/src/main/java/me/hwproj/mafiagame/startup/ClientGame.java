@@ -14,9 +14,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import me.hwproj.mafiagame.ClientByteSender;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Client;
-import me.hwproj.mafiagame.impltest.network.ClientByteSender;
 import me.hwproj.mafiagame.networking.ClientSender;
 import me.hwproj.mafiagame.networking.FullGameState;
 import me.hwproj.mafiagame.networking.MetaInformation;

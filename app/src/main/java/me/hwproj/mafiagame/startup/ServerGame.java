@@ -11,10 +11,9 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import me.hwproj.mafiagame.gameflow.Player;
+import me.hwproj.mafiagame.ServerByteSender;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameflow.Settings;
-import me.hwproj.mafiagame.impltest.network.ServerByteSender;
 import me.hwproj.mafiagame.networking.FullGameState;
 import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerSender;
@@ -83,7 +82,7 @@ public class ServerGame {
                 e.printStackTrace();
                 return;
             }
-            sender.sendToEveryone(bout.toByteArray());
+            sender.broadcastMessage(bout.toByteArray());
         }
 
         @Override
@@ -98,7 +97,7 @@ public class ServerGame {
                 e.printStackTrace();
                 return;
             }
-            sender.sendToEveryone(bout.toByteArray());
+            sender.broadcastMessage(bout.toByteArray());
         }
     }
 }

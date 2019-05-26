@@ -71,7 +71,7 @@ public class GameCreate extends AppCompatActivity {
 
     public boolean mWaitingRoomFinishedFromCode = false;
 
-    public int minPlayerCount = 1; // minimum Player count other players
+    public int minPlayerCount = 0; // minimum Player count other players
     public int maxPlayerCount = 7; // maximum Player count other players
 
     public final Senders senders = new Senders();
@@ -177,11 +177,13 @@ public class GameCreate extends AppCompatActivity {
             // Look for finishing the waiting room from code, for example if a
             // "start game" message is received.  In this case, ignore the result. TODO Start Game received
             if (mWaitingRoomFinishedFromCode) {
+                startMultiplayerGame();// TODO idk if it really needs to be here
                 return;
             }
 
             if (resultCode == Activity.RESULT_OK) {
                 // Start the game! TODO start the game in client
+                startMultiplayerGame();
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // Waiting room was dismissed with the back button. The meaning of this
                 // action is up to the game. You may choose to leave the room and cancel the

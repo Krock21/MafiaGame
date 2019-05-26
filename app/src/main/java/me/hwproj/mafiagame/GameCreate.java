@@ -177,13 +177,18 @@ public class GameCreate extends AppCompatActivity {
             // Look for finishing the waiting room from code, for example if a
             // "start game" message is received.  In this case, ignore the result. TODO Start Game received
             if (mWaitingRoomFinishedFromCode) {
+                Log.d("START", "calling startMultiplayerGame from higher if");
                 startMultiplayerGame();// TODO idk if it really needs to be here
                 return;
             }
 
             if (resultCode == Activity.RESULT_OK) {
                 // Start the game! TODO start the game in client
+                Log.d("START", "calling startMultiplayerGame from lower if");
                 startMultiplayerGame();
+
+                initClient();
+                Log.d(MainActivity.TAG, "Client initialized");
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // Waiting room was dismissed with the back button. The meaning of this
                 // action is up to the game. You may choose to leave the room and cancel the

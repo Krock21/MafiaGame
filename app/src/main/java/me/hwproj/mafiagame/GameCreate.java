@@ -72,10 +72,10 @@ public class GameCreate extends AppCompatActivity {
 
     public boolean mWaitingRoomFinishedFromCode = false;
 
-    public int minPlayerCount = 0; // minimum Player count other players
+    public int minPlayerCount = 1; // minimum Player count other players
     public int maxPlayerCount = 7; // maximum Player count other players
 
-    public final Senders senders = new Senders();
+    public final Senders senders = new Senders(this);
     public final Callbacks callbacks = new Callbacks();
     public final RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
     public final RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
@@ -188,6 +188,10 @@ public class GameCreate extends AppCompatActivity {
                 Log.d("START", "calling startMultiplayerGame from lower if");
                 startMultiplayerGame();
 
+                if (isServer) {
+                    initServer();
+                    Log.d(MainActivity.TAG, "Server initialized");
+                }
                 initClient();
                 Log.d(MainActivity.TAG, "Client initialized");
             } else if (resultCode == Activity.RESULT_CANCELED) {
@@ -229,6 +233,21 @@ public class GameCreate extends AppCompatActivity {
         }
     }
 
+    public void messageReceived(String ParticipantId, byte[] message) {
+        Log.d(MainActivity.TAG, "MESSAGE RECIEVED FROM: " + ParticipantId + ", msg: " + Arrays.toString(message));
+        if (message[0] == (byte) 0) { // to client
+            message = Senders.removeFromBegin(message);
+            if (callbacks.clientCallback != null)
+                callbacks.clientCallback.receiveServerMessage(message);
+        } else if (message[0] == (byte) 1) { // to server
+            message = Senders.removeFromBegin(message);
+            if (callbacks.serverCallback != null)
+                callbacks.serverCallback.receiveClientMessage(ParticipantId, message);
+        } else {
+            Log.e(MainActivity.TAG, "message's first byte isn't 0 or 1");
+        }
+    }
+
     private OnRealTimeMessageReceivedListener mMessageReceivedHandler =
             new OnRealTimeMessageReceivedListener() {
                 @Override
@@ -236,18 +255,7 @@ public class GameCreate extends AppCompatActivity {
                     // Handle messages received here.
                     byte[] message = realTimeMessage.getMessageData();
                     // process message contents...
-                    Log.d(MainActivity.TAG, "MESSAGE RECIEVED: " + Arrays.toString(message));
-                    if (message[0] == (byte) 0) { // to client
-                        message = Senders.removeFromBegin(message);
-                        if (callbacks.clientCallback != null)
-                            callbacks.clientCallback.receiveServerMessage(message);
-                    } else if (message[0] == (byte) 1) { // to server
-                        message = Senders.removeFromBegin(message);
-                        if (callbacks.serverCallback != null)
-                            callbacks.serverCallback.receiveClientMessage(realTimeMessage.getSenderParticipantId(), message);
-                    } else {
-                        Log.e(MainActivity.TAG, "message's first byte isn't 0 or 1");
-                    }
+                    messageReceived(realTimeMessage.getSenderParticipantId(), message);
                 }
             };
 
@@ -274,6 +282,7 @@ public class GameCreate extends AppCompatActivity {
     }
 
     public void showWaitingRoom(Room room, int maxPlayersToStartGame) {
+        Log.d(MainActivity.TAG, "showing Waiting Room");
         getRealTimeMultiplayerClient()
                 .getWaitingRoomIntent(room, maxPlayersToStartGame)
                 .addOnSuccessListener(new OnSuccessListener<Intent>() {

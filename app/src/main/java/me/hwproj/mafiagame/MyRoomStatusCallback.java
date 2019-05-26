@@ -60,7 +60,6 @@ class MyRoomStatusCallback extends RoomStatusUpdateCallback {
         public void onPeerJoined(@Nullable Room room, @NonNull List<String> list) {
             NetworkData.setmRoom(room);
             // Update UI status indicating new players have joined! VLAD TODO
-            activity.showWaitingRoom(room, activity.maxPlayerCount + 1);
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onPeerJoined.");
         }
 

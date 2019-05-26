@@ -8,10 +8,19 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.HashSet;
 
+import me.hwproj.mafiagame.GameCreate;
+
 import static me.hwproj.mafiagame.networking.NetworkData.getRealTimeMultiplayerClient;
+import static me.hwproj.mafiagame.networking.NetworkData.getmMyParticipantId;
 import static me.hwproj.mafiagame.networking.NetworkData.getmRoom;
 
 public class Senders {
+    private GameCreate activity;
+
+    public Senders(GameCreate activity) {
+        this.activity = activity;
+    }
+
     public static byte[] addToBegin(byte[] message, byte firstByte) {
         byte[] newMessage = new byte[message.length + 1];
         newMessage[0] = firstByte;
@@ -32,8 +41,28 @@ public class Senders {
     public ServerByteSender serverSender = new ServerByteSender() {
         @Override
         public void broadcastMessage(byte[] message) {
-            message = addToBegin(message, (byte) 0);
+            message = addToBegin(message, (byte) 0); // to client
             for (String participantId : getmRoom().getParticipantIds()) {
+                if(!participantId.equals(getmMyParticipantId())) {
+                    Task<Integer> task = getRealTimeMultiplayerClient()
+                            .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+                                    handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Integer> task) {
+                                    // Keep track of which messages are sent, if desired.
+                                    recordMessageToken(task.getResult());
+                                }
+                            });
+                } else {
+                    activity.messageReceived(getmMyParticipantId(), message);
+                }
+            }
+        }
+
+        @Override
+        public void sendMessage(String participantId, byte[] message) {
+            message = addToBegin(message, (byte) 0); // to client
+            if(!participantId.equals(getmMyParticipantId())) {
                 Task<Integer> task = getRealTimeMultiplayerClient()
                         .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
                                 handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
@@ -43,21 +72,9 @@ public class Senders {
                                 recordMessageToken(task.getResult());
                             }
                         });
+            } else {
+                activity.messageReceived(getmMyParticipantId(), message);
             }
-        }
-
-        @Override
-        public void sendMessage(String participantId, byte[] message) {
-            message = addToBegin(message, (byte) 0);
-            Task<Integer> task = getRealTimeMultiplayerClient()
-                    .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
-                            handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Integer> task) {
-                            // Keep track of which messages are sent, if desired.
-                            recordMessageToken(task.getResult());
-                        }
-                    });
         }
 
         private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
@@ -82,17 +99,21 @@ public class Senders {
     public ClientByteSender clientSender = new ClientByteSender() {
         @Override
         public void sendBytesToServer(byte[] message) {
-            message = addToBegin(message, (byte) 1);
+            message = addToBegin(message, (byte) 1); // to server
             for (String participantId : getmRoom().getParticipantIds()) {
-                Task<Integer> task = getRealTimeMultiplayerClient()
-                        .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
-                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Integer> task) {
-                                // Keep track of which messages are sent, if desired.
-                                recordMessageToken(task.getResult());
-                            }
-                        });
+                if(!participantId.equals(getmMyParticipantId())) {
+                    Task<Integer> task = getRealTimeMultiplayerClient()
+                            .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+                                    handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                                @Override
+                                public void onComplete(@NonNull Task<Integer> task) {
+                                    // Keep track of which messages are sent, if desired.
+                                    recordMessageToken(task.getResult());
+                                }
+                            });
+                } else {
+                    activity.messageReceived(getmMyParticipantId(), message);
+                }
             }
         }
 

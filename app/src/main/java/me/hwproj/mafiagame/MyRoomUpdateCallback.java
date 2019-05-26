@@ -28,11 +28,6 @@ class MyRoomUpdateCallback extends RoomUpdateCallback {
 
             activity.isServer = true;
 
-            if (activity.isServer) {
-                activity.initServer();
-                Log.d(MainActivity.TAG, "Server initialized");
-            }
-
             activity.showWaitingRoom(room, activity.maxPlayerCount + 1);
         } else {
             Log.w(MainActivity.TAG, "Error creating room: " + code);
@@ -47,7 +42,6 @@ class MyRoomUpdateCallback extends RoomUpdateCallback {
         NetworkData.setmRoom(room);
         if (code == GamesCallbackStatusCodes.OK && room != null) {
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " joined.");
-            activity.initClient();
             activity.showWaitingRoom(room, activity.maxPlayerCount + 1);
         } else {
             Log.w(MainActivity.TAG, "Error joining room: " + code);

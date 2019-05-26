@@ -69,110 +69,6 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
  */
 public class GameCreate extends AppCompatActivity {
 
-    public static byte[] addToBegin(byte[] message, byte firstByte) {
-        byte[] newMessage = new byte[message.length + 1];
-        newMessage[0] = firstByte;
-        for (int i = 0; i < message.length; i++) {
-            newMessage[i + 1] = message[i];
-        }
-        return newMessage;
-    }
-
-    public static byte[] removeFromBegin(byte[] message) {
-        byte[] newMessage = new byte[message.length - 1];
-        for (int i = 0; i < message.length - 1; i++) {
-            newMessage[i] = message[i + 1];
-        }
-        return newMessage;
-    }
-
-    public static ServerByteSender serverSender = new ServerByteSender() {
-        @Override
-        public void broadcastMessage(byte[] message) {
-            message = addToBegin(message, (byte) 0);
-            for (String participantId : getmRoom().getParticipantIds()) {
-                Task<Integer> task = getRealTimeMultiplayerClient()
-                        .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
-                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Integer> task) {
-                                // Keep track of which messages are sent, if desired.
-                                recordMessageToken(task.getResult());
-                            }
-                        });
-            }
-        }
-
-        @Override
-        public void sendMessage(String participantId, byte[] message) {
-            message = addToBegin(message, (byte) 0);
-            Task<Integer> task = getRealTimeMultiplayerClient()
-                    .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
-                            handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                        @Override
-                        public void onComplete(@NonNull Task<Integer> task) {
-                            // Keep track of which messages are sent, if desired.
-                            recordMessageToken(task.getResult());
-                        }
-                    });
-        }
-
-        private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
-                new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
-                    @Override
-                    public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
-                        // handle the message being sent.
-                        synchronized (this) {
-                            pendingMessageSet.remove(tokenId);
-                        }
-                    }
-                };
-
-        HashSet<Integer> pendingMessageSet = new HashSet<>();
-
-        synchronized void recordMessageToken(int tokenId) {
-            pendingMessageSet.add(tokenId);
-        }
-    };
-
-
-    public static ClientByteSender clientSender = new ClientByteSender() {
-        @Override
-        public void sendBytesToServer(byte[] message) {
-            message = addToBegin(message, (byte) 1);
-            for (String participantId : getmRoom().getParticipantIds()) {
-                Task<Integer> task = getRealTimeMultiplayerClient()
-                        .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
-                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Integer> task) {
-                                // Keep track of which messages are sent, if desired.
-                                recordMessageToken(task.getResult());
-                            }
-                        });
-            }
-        }
-
-        private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
-                new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
-                    @Override
-                    public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
-                        // handle the message being sent.
-                        synchronized (this) {
-                            pendingMessageSet.remove(tokenId);
-                        }
-                    }
-                };
-
-        HashSet<Integer> pendingMessageSet = new HashSet<>();
-
-        synchronized void recordMessageToken(int tokenId) {
-            pendingMessageSet.add(tokenId);
-        }
-    };
-    public ServerCallback serverCallback;
-    public ClientCallback clientCallback;
-
     public boolean mWaitingRoomFinishedFromCode = false;
 
     public int minPlayerCount = 1; // minimum Player count other players
@@ -220,9 +116,6 @@ public class GameCreate extends AppCompatActivity {
         start.setOnClickListener(v -> {
             startMultiplayerGame();
         });
-
-        initServer();
-        initClient();
     }
 
     private RealTimeMultiplayerClient makeRealTimeMultiplayerClient() {
@@ -479,7 +372,7 @@ public class GameCreate extends AppCompatActivity {
 
     private ServerGame serverGame;
 
-    private void initServer() {
+    public void initServer() {
         List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
         List<PlayerSettings> playerSettings = Arrays.asList(
                 new PlayerSettings(Role.CITIZEN, "Pathfinder"),
@@ -488,9 +381,9 @@ public class GameCreate extends AppCompatActivity {
         );
         Settings settings = new Settings(phases, playerSettings);
 
-        serverGame = new ServerGame(settings, serverSender);
+        serverGame = new ServerGame(settings, senders.serverSender);
 
-        serverCallback = (participantId, message) -> {
+        callbacks.serverCallback = (participantId, message) -> {
             try {
                 serverGame.receiveClientMessage(message, participantId);
             } catch (DeserializationException e) {
@@ -501,9 +394,9 @@ public class GameCreate extends AppCompatActivity {
 
     private ClientGame clientGame;
 
-    private void initClient() {
-        clientGame = new ClientGame(clientSender, this, this::transactionProvider);
-        clientCallback = message -> {
+    public void initClient() {
+        clientGame = new ClientGame(senders.clientSender, this, this::transactionProvider);
+        callbacks.clientCallback = message -> {
             try {
                 clientGame.receiveServerMessage(message);
             } catch (DeserializationException e) {

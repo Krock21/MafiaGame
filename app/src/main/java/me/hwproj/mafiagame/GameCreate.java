@@ -206,6 +206,14 @@ public class GameCreate extends AppCompatActivity {
         invitationInbox.setOnClickListener(v -> {
             showInvitationInbox();
         });
+
+        Button start = findViewById(R.id.test_run);
+        start.setOnClickListener(v -> {
+            startMultiplayerGame();
+        });
+
+        initServer();
+        initClient();
     }
 
     private RealTimeMultiplayerClient makeRealTimeMultiplayerClient() {
@@ -399,13 +407,19 @@ public class GameCreate extends AppCompatActivity {
                 });
     }
 
+    // ------------- end of trash pile -------------
 
+    private void startMultiplayerGame() {
+        setContentView(R.layout.activity_phase); // !!
+    }
+
+    public boolean isServer;
 
     // starting a game
 
-    private ClientGame game;
-
     private void startTestClient() {
+        setContentView(R.layout.activity_phase); // !!
+
         NetworkSimulator net = new NetworkSimulator();
 
         List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
@@ -419,7 +433,7 @@ public class GameCreate extends AppCompatActivity {
         ServerGame serverGame = new ServerGame(settings, net);
 
 //        client = new Client(net, settings, 1, this::dealWithGameState);
-        game = new ClientGame(net, this, this::transactionProvider);
+        clientGame = new ClientGame(net, this, this::transactionProvider);
 
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         DataOutputStream dataStream = new DataOutputStream(outs);
@@ -429,7 +443,11 @@ public class GameCreate extends AppCompatActivity {
             throw new RuntimeException(e);
         }
         try {
-            new InitGamePackage(settings, 1).serialize(dataStream);
+            int thisPlayer = 1;
+            if (isServer) {
+                thisPlayer = 2;
+            }
+            new InitGamePackage(settings, thisPlayer).serialize(dataStream);
         } catch (SerializationException e) {
 //            e.printStackTrace();
             throw new RuntimeException(e);
@@ -437,16 +455,52 @@ public class GameCreate extends AppCompatActivity {
         byte[] message = outs.toByteArray();
         Log.d("ser", "startTestClient: serialized to " + Arrays.toString(message));
         try {
-            game.receiveServerMessage(message);
+            clientGame.receiveServerMessage(message);
         } catch (DeserializationException e) {
             Log.d("Bug", "startTestClient: deserialize exception");
 //            e.printStackTrace();
             throw new RuntimeException(e);
         }
 
-        net.start(game, serverGame);
+        net.start(clientGame, serverGame);
     }
     public FragmentTransaction transactionProvider() {
         return getSupportFragmentManager().beginTransaction();
+    }
+
+    private ServerGame serverGame;
+
+    private void initServer() {
+        List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
+        List<PlayerSettings> playerSettings = Arrays.asList(
+                new PlayerSettings(Role.CITIZEN, "Pathfinder"),
+                new PlayerSettings(Role.DOCTOR, "Lifeline"),
+                new PlayerSettings(Role.MAFIA, "Caustic")
+        );
+        Settings settings = new Settings(phases, playerSettings);
+
+        serverGame = new ServerGame(settings, serverSender);
+
+        serverCallback = (participantId, message) -> {
+            try {
+                serverGame.receiveClientMessage(message, participantId);
+            } catch (DeserializationException e) {
+                e.printStackTrace();
+            }
+        };
+    }
+
+    private ClientGame clientGame;
+
+    private void initClient() {
+        clientGame = new ClientGame(clientSender, this, this::transactionProvider);
+        clientCallback = message -> {
+            try {
+                clientGame.receiveServerMessage(message);
+            } catch (DeserializationException e) {
+                Log.d("Bug", "startMultiplayerGame: ...");
+                e.printStackTrace();
+            }
+        };
     }
 }

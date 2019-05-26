@@ -49,6 +49,8 @@ public class ClientGame {
         this.sender = sender;
         this.activityReference = activityReference;
         this.transactionSupplier = transactionSupplier;
+
+        sendInitRequest();
     }
 
     public void receiveServerMessage(byte[] message) throws DeserializationException {
@@ -77,6 +79,12 @@ public class ClientGame {
         } catch (IOException e) {
             throw new DeserializationException("Cant read first byte", e);
         }
+    }
+
+
+    private void sendInitRequest() {
+        byte[] m = { ServerGame.INIT_REQUEST_HEADER };
+        sender.sendBytesToServer(m);
     }
 
     private void receiveMeta(DataInputStream data) {

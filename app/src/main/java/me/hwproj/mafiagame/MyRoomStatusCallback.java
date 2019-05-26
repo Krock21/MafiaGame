@@ -110,6 +110,7 @@ class MyRoomStatusCallback extends RoomStatusUpdateCallback {
                 // add new player to an ongoing game
             } else if (activity.shouldStartGame(room)) {
                 // start game! VLAD TODO what we have to do?
+                activity.isServer = true;
             }
         }
 

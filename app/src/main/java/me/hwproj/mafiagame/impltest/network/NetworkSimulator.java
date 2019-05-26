@@ -35,7 +35,9 @@ public class NetworkSimulator implements ClientByteSender, ServerByteSender {
     }
 
     public void start(ClientGame client, ServerGame server) {
-        this.actionConsumer = server::receiveClientMessage;
+        this.actionConsumer = m -> {
+            server.receiveClientMessage(m, "");
+        };
         this.clientConsumer = client::receiveServerMessage;
 
         Thread consumeAction = new Thread(() -> {

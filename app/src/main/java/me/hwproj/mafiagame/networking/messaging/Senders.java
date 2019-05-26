@@ -8,8 +8,6 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.HashSet;
 
-import me.hwproj.mafiagame.ServerSender;
-
 import static me.hwproj.mafiagame.networking.NetworkData.getRealTimeMultiplayerClient;
 import static me.hwproj.mafiagame.networking.NetworkData.getmRoom;
 
@@ -31,9 +29,9 @@ public class Senders {
         return newMessage;
     }
 
-    public me.hwproj.mafiagame.ServerSender serverSender = new ServerSender() {
+    public ServerByteSender serverSender = new ServerByteSender() {
         @Override
-        public void broadcastMesage(byte[] message) {
+        public void broadcastMessage(byte[] message) {
             message = addToBegin(message, (byte) 0);
             for (String participantId : getmRoom().getParticipantIds()) {
                 Task<Integer> task = getRealTimeMultiplayerClient()
@@ -81,9 +79,9 @@ public class Senders {
     };
 
 
-    public ClientSender clientSender = new ClientSender() {
+    public ClientByteSender clientSender = new ClientByteSender() {
         @Override
-        public void sendToServer(byte[] message) {
+        public void sendBytesToServer(byte[] message) {
             message = addToBegin(message, (byte) 1);
             for (String participantId : getmRoom().getParticipantIds()) {
                 Task<Integer> task = getRealTimeMultiplayerClient()

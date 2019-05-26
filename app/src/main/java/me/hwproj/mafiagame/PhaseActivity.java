@@ -16,10 +16,8 @@ import me.hwproj.mafiagame.content.phases.doctor.DoctorPhase;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.gameflow.PlayerSettings;
-import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.gameplay.Role;
-import me.hwproj.mafiagame.impltest.network.NaiveNetworkSimulator;
 import me.hwproj.mafiagame.impltest.TestPhase;
 import me.hwproj.mafiagame.impltest.network.NetworkSimulator;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
@@ -65,7 +63,7 @@ public class PhaseActivity extends AppCompatActivity {
         byte[] message = outs.toByteArray();
         Log.d("ser", "startTestClient: serialized to " + Arrays.toString(message));
         try {
-            game.receiveBytes(message);
+            game.receiveServerMessage(message);
         } catch (DeserializationException e) {
             Log.d("Bug", "startTestClient: deserialize exception");
 //            e.printStackTrace();

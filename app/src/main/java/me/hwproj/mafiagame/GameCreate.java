@@ -11,6 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentTransaction;
 
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
@@ -24,14 +25,40 @@ import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 
+import java.io.ByteArrayOutputStream;
+import java.io.DataOutputStream;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
 import me.hwproj.mafiagame.networking.messaging.Callbacks;
 import me.hwproj.mafiagame.networking.NetworkData;
+import me.hwproj.mafiagame.networking.messaging.ClientByteSender;
+import me.hwproj.mafiagame.networking.messaging.ClientCallback;
 import me.hwproj.mafiagame.networking.messaging.Senders;
+import java.util.HashSet;
+import java.util.List;
+
+import me.hwproj.mafiagame.content.phases.doctor.DoctorPhase;
+import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
+import me.hwproj.mafiagame.content.phases.vote.VotePhase;
+import me.hwproj.mafiagame.gameflow.PlayerSettings;
+import me.hwproj.mafiagame.gameflow.Settings;
+import me.hwproj.mafiagame.gameplay.Role;
+import me.hwproj.mafiagame.impltest.TestPhase;
+import me.hwproj.mafiagame.impltest.network.NetworkSimulator;
+import me.hwproj.mafiagame.networking.messaging.ServerByteSender;
+import me.hwproj.mafiagame.networking.messaging.ServerCallback;
+import me.hwproj.mafiagame.networking.serialization.DeserializationException;
+import me.hwproj.mafiagame.networking.serialization.SerializationException;
+import me.hwproj.mafiagame.phases.GamePhase;
+import me.hwproj.mafiagame.startup.ClientGame;
+import me.hwproj.mafiagame.startup.InitGamePackage;
+import me.hwproj.mafiagame.startup.ServerGame;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
 
@@ -41,6 +68,110 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
  * Basically select minimum and maximum amounts of people in the game
  */
 public class GameCreate extends AppCompatActivity {
+
+    public static byte[] addToBegin(byte[] message, byte firstByte) {
+        byte[] newMessage = new byte[message.length + 1];
+        newMessage[0] = firstByte;
+        for (int i = 0; i < message.length; i++) {
+            newMessage[i + 1] = message[i];
+        }
+        return newMessage;
+    }
+
+    public static byte[] removeFromBegin(byte[] message) {
+        byte[] newMessage = new byte[message.length - 1];
+        for (int i = 0; i < message.length - 1; i++) {
+            newMessage[i] = message[i + 1];
+        }
+        return newMessage;
+    }
+
+    public static ServerByteSender serverSender = new ServerByteSender() {
+        @Override
+        public void broadcastMessage(byte[] message) {
+            message = addToBegin(message, (byte) 0);
+            for (String participantId : getmRoom().getParticipantIds()) {
+                Task<Integer> task = getRealTimeMultiplayerClient()
+                        .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Integer> task) {
+                                // Keep track of which messages are sent, if desired.
+                                recordMessageToken(task.getResult());
+                            }
+                        });
+            }
+        }
+
+        @Override
+        public void sendMessage(String participantId, byte[] message) {
+            message = addToBegin(message, (byte) 0);
+            Task<Integer> task = getRealTimeMultiplayerClient()
+                    .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+                            handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Integer> task) {
+                            // Keep track of which messages are sent, if desired.
+                            recordMessageToken(task.getResult());
+                        }
+                    });
+        }
+
+        private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
+                new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
+                    @Override
+                    public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
+                        // handle the message being sent.
+                        synchronized (this) {
+                            pendingMessageSet.remove(tokenId);
+                        }
+                    }
+                };
+
+        HashSet<Integer> pendingMessageSet = new HashSet<>();
+
+        synchronized void recordMessageToken(int tokenId) {
+            pendingMessageSet.add(tokenId);
+        }
+    };
+
+
+    public static ClientByteSender clientSender = new ClientByteSender() {
+        @Override
+        public void sendBytesToServer(byte[] message) {
+            message = addToBegin(message, (byte) 1);
+            for (String participantId : getmRoom().getParticipantIds()) {
+                Task<Integer> task = getRealTimeMultiplayerClient()
+                        .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Integer> task) {
+                                // Keep track of which messages are sent, if desired.
+                                recordMessageToken(task.getResult());
+                            }
+                        });
+            }
+        }
+
+        private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
+                new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
+                    @Override
+                    public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
+                        // handle the message being sent.
+                        synchronized (this) {
+                            pendingMessageSet.remove(tokenId);
+                        }
+                    }
+                };
+
+        HashSet<Integer> pendingMessageSet = new HashSet<>();
+
+        synchronized void recordMessageToken(int tokenId) {
+            pendingMessageSet.add(tokenId);
+        }
+    };
+    public ServerCallback serverCallback;
+    public ClientCallback clientCallback;
 
     public boolean mWaitingRoomFinishedFromCode = false;
 
@@ -84,6 +215,14 @@ public class GameCreate extends AppCompatActivity {
         invitationInbox.setOnClickListener(v -> {
             showInvitationInbox();
         });
+
+        Button start = findViewById(R.id.test_run);
+        start.setOnClickListener(v -> {
+            startMultiplayerGame();
+        });
+
+        initServer();
+        initClient();
     }
 
     private RealTimeMultiplayerClient makeRealTimeMultiplayerClient() {
@@ -275,5 +414,102 @@ public class GameCreate extends AppCompatActivity {
                         startActivityForResult(intent, RC_INVITATION_INBOX);
                     }
                 });
+    }
+
+    // ------------- end of trash pile -------------
+
+    private void startMultiplayerGame() {
+        setContentView(R.layout.activity_phase); // !!
+    }
+
+    public boolean isServer;
+
+    // starting a game
+
+    private void startTestClient() {
+        setContentView(R.layout.activity_phase); // !!
+
+        NetworkSimulator net = new NetworkSimulator();
+
+        List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
+        List<PlayerSettings> playerSettings = Arrays.asList(
+                new PlayerSettings(Role.CITIZEN, "Pathfinder"),
+                new PlayerSettings(Role.DOCTOR, "Lifeline"),
+                new PlayerSettings(Role.MAFIA, "Caustic")
+        );
+        Settings settings = new Settings(phases, playerSettings);
+
+        ServerGame serverGame = new ServerGame(settings, net);
+
+//        client = new Client(net, settings, 1, this::dealWithGameState);
+        clientGame = new ClientGame(net, this, this::transactionProvider);
+
+        ByteArrayOutputStream outs = new ByteArrayOutputStream();
+        DataOutputStream dataStream = new DataOutputStream(outs);
+        try {
+            dataStream.write(ClientGame.INIT_PACKAGE_HEADER);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
+        try {
+            int thisPlayer = 1;
+            if (isServer) {
+                thisPlayer = 2;
+            }
+            new InitGamePackage(settings, thisPlayer).serialize(dataStream);
+        } catch (SerializationException e) {
+//            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+        byte[] message = outs.toByteArray();
+        Log.d("ser", "startTestClient: serialized to " + Arrays.toString(message));
+        try {
+            clientGame.receiveServerMessage(message);
+        } catch (DeserializationException e) {
+            Log.d("Bug", "startTestClient: deserialize exception");
+//            e.printStackTrace();
+            throw new RuntimeException(e);
+        }
+
+        net.start(clientGame, serverGame);
+    }
+    public FragmentTransaction transactionProvider() {
+        return getSupportFragmentManager().beginTransaction();
+    }
+
+    private ServerGame serverGame;
+
+    private void initServer() {
+        List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
+        List<PlayerSettings> playerSettings = Arrays.asList(
+                new PlayerSettings(Role.CITIZEN, "Pathfinder"),
+                new PlayerSettings(Role.DOCTOR, "Lifeline"),
+                new PlayerSettings(Role.MAFIA, "Caustic")
+        );
+        Settings settings = new Settings(phases, playerSettings);
+
+        serverGame = new ServerGame(settings, serverSender);
+
+        serverCallback = (participantId, message) -> {
+            try {
+                serverGame.receiveClientMessage(message, participantId);
+            } catch (DeserializationException e) {
+                e.printStackTrace();
+            }
+        };
+    }
+
+    private ClientGame clientGame;
+
+    private void initClient() {
+        clientGame = new ClientGame(clientSender, this, this::transactionProvider);
+        clientCallback = message -> {
+            try {
+                clientGame.receiveServerMessage(message);
+            } catch (DeserializationException e) {
+                Log.d("Bug", "startMultiplayerGame: ...");
+                e.printStackTrace();
+            }
+        };
     }
 }

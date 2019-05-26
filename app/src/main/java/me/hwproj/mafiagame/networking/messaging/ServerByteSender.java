@@ -1,9 +1,9 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.networking.messaging;
 
 // просто интерфейс для сервера
-public interface ServerSender {
+public interface ServerByteSender {
     // послать всем
-    void broadcastMesage(byte[] message);
+    void broadcastMessage(byte[] message);
 
     // послать выбранному клиенту
     void sendMessage(String participantId, byte[] message);

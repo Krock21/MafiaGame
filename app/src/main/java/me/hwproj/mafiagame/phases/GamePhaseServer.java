@@ -1,6 +1,8 @@
 package me.hwproj.mafiagame.phases;
 
-import me.hwproj.mafiagame.gameflow.Server;
+import java.io.DataOutputStream;
+
+import me.hwproj.mafiagame.networking.serialization.SerializationException;
 
 public interface GamePhaseServer {
     void processPlayerAction(PlayerAction action);
@@ -8,4 +10,9 @@ public interface GamePhaseServer {
     void initPhase();
 
     void onEnd();
+
+    /**
+     * @param state guaranteed to be sent by this phase's client
+     */
+    void serializeGameState(DataOutputStream dataOut, GameState state) throws SerializationException;
 }

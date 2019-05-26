@@ -61,6 +61,9 @@ public class MainActivity extends AppCompatActivity {
         signOut.setOnClickListener(v -> {
             signOut();
         });
+
+        Button startTest = findViewById(R.id.start_test);
+        startTest.setOnClickListener(v -> startActivity(new Intent(this, PhaseActivity.class)));
     }
 
     @Override

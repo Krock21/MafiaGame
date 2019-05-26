@@ -1,14 +1,10 @@
 package me.hwproj.mafiagame.networking;
 
-import com.google.android.gms.games.Game;
-
-import me.hwproj.mafiagame.phases.GameState;
-
 public class ServerNetworkPackage {
     private final boolean isMeta;
     private final Object either;
 
-    public ServerNetworkPackage(MetaCrouch meta) {
+    public ServerNetworkPackage(MetaInformation meta) {
         either = meta;
         isMeta = true;
     }
@@ -18,11 +14,11 @@ public class ServerNetworkPackage {
         isMeta = false;
     }
 
-    public MetaCrouch getMeta() {
+    public MetaInformation getMeta() {
         if (!isMeta) {
             return null;
         }
-        return (MetaCrouch) either;
+        return (MetaInformation) either;
     }
 
     public FullGameState getGameState() {

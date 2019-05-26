@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame.impltest;
+package me.hwproj.mafiagame.impltest.network;
 
 import android.util.Log;
 
@@ -9,14 +9,13 @@ import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.networking.ClientSender;
 import me.hwproj.mafiagame.networking.FullGameState;
-import me.hwproj.mafiagame.networking.MetaCrouch;
+import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerNetworkPackage;
 import me.hwproj.mafiagame.networking.ServerSender;
-import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PlayerAction;
 import me.hwproj.mafiagame.util.MyConsumer;
 
-public class NetworkSimulator implements ClientSender, ServerSender {
+public class NaiveNetworkSimulator implements ClientSender, ServerSender {
 
     private final BlockingQueue<PlayerAction> actionQueue = new LinkedBlockingQueue<>();
     private final BlockingQueue<ServerNetworkPackage> packQueue = new LinkedBlockingQueue<>();
@@ -45,7 +44,7 @@ public class NetworkSimulator implements ClientSender, ServerSender {
     }
 
     @Override
-    public void sendMetaInformation(MetaCrouch info) {
+    public void sendMetaInformation(MetaInformation info) {
         try {
             packQueue.put(new ServerNetworkPackage(info));
         } catch (InterruptedException e) {
@@ -83,5 +82,5 @@ public class NetworkSimulator implements ClientSender, ServerSender {
         consumeState.start();
     }
 
-    public NetworkSimulator() { }
+    public NaiveNetworkSimulator() { }
 }

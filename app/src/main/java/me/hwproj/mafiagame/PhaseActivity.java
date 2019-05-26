@@ -19,13 +19,15 @@ import me.hwproj.mafiagame.gameflow.PlayerSettings;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.gameplay.Role;
-import me.hwproj.mafiagame.impltest.NetworkSimulator;
+import me.hwproj.mafiagame.impltest.network.NaiveNetworkSimulator;
 import me.hwproj.mafiagame.impltest.TestPhase;
+import me.hwproj.mafiagame.impltest.network.NetworkSimulator;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phases.GamePhase;
 import me.hwproj.mafiagame.startup.ClientGame;
 import me.hwproj.mafiagame.startup.InitGamePackage;
+import me.hwproj.mafiagame.startup.ServerGame;
 
 public class PhaseActivity extends AppCompatActivity {
 
@@ -42,7 +44,7 @@ public class PhaseActivity extends AppCompatActivity {
         );
         Settings settings = new Settings(phases, playerSettings);
 
-        Server server = new Server(settings, net);
+        ServerGame serverGame = new ServerGame(settings, net);
 
 //        client = new Client(net, settings, 1, this::dealWithGameState);
         game = new ClientGame(net, this, this::transactionProvider);
@@ -70,7 +72,7 @@ public class PhaseActivity extends AppCompatActivity {
             throw new RuntimeException(e);
         }
 
-        net.start(game.getClient(), server);
+        net.start(game, serverGame);
     }
 
     @Override

@@ -1,7 +1,12 @@
 package me.hwproj.mafiagame.impltest;
 
+import java.io.DataOutputStream;
+import java.io.IOException;
+
 import me.hwproj.mafiagame.gameflow.Server;
+import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phases.GamePhaseServer;
+import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PlayerAction;
 
 public class TestPhaseServer implements GamePhaseServer {
@@ -37,5 +42,19 @@ public class TestPhaseServer implements GamePhaseServer {
     public void onEnd() {
         sum = sum % 1000000;
         sum *= 1000;
+    }
+
+    @Override
+    public void serializeGameState(DataOutputStream dataOut, GameState state) throws SerializationException {
+        if (!(state instanceof TestPhaseGameState)) {
+            throw new SerializationException("Wrong state");
+        }
+
+        TestPhaseGameState s = (TestPhaseGameState) state;
+        try {
+            dataOut.writeInt(s.getSum());
+        } catch (IOException e) {
+            throw new SerializationException(e);
+        }
     }
 }

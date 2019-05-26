@@ -11,7 +11,7 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaState;
 import me.hwproj.mafiagame.networking.ClientSender;
 import me.hwproj.mafiagame.networking.FullGameState;
-import me.hwproj.mafiagame.networking.MetaCrouch;
+import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerNetworkPackage;
 import me.hwproj.mafiagame.phases.GamePhase;
 import me.hwproj.mafiagame.phases.GameState;
@@ -69,10 +69,10 @@ public class Client {
     }
 
     // from UI thread
-    private void receiveMeta(MetaCrouch metaCrouch) {
+    private void receiveMeta(MetaInformation metaInformation) {
         Log.d("Ok", "receiveMeta: accepting meta");
-        if (metaCrouch.what() == MetaCrouch.NEXT_PHASE) {
-            startNextPhase(metaCrouch.getNumber());
+        if (metaInformation.what() == MetaInformation.NEXT_PHASE) {
+            startNextPhase(metaInformation.getNumber());
         }
     }
 

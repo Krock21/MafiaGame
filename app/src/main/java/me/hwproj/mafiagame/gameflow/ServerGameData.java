@@ -24,7 +24,7 @@ public class ServerGameData {
         } else {
             phaseNumber++;
             currentPhase = phases.get(phaseNumber % phases.size());
-            if (phaseNumber % phases.size() == 1) {
+            if (phaseNumber % phases.size() == 0) { // TODO add night results here
                 applyEffects();
             }
         }

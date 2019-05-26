@@ -1,3 +1,5 @@
+package me.hwproj.mafiagame.networking.messaging;
+
 // просто интерфейс для сервера
 interface ServerSender {
     // послать всем

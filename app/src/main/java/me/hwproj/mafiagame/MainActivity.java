@@ -45,7 +45,7 @@ public class MainActivity extends AppCompatActivity {
                 Intent intent = new Intent(this, GameCreate.class);
                 startActivity(intent);
             } else {
-                new AlertDialog.Builder(this).setMessage("Shold be signed in at first")
+                new AlertDialog.Builder(this).setMessage("Should be signed in at first")
                         .setNeutralButton(android.R.string.ok, null).show();
             }
         });

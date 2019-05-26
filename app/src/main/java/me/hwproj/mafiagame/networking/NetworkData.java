@@ -23,22 +23,22 @@ public class NetworkData {
     public static final int RC_SELECT_PLAYERS = 9006;
     public static final int RC_WAITING_ROOM = 9007;
     public static final int RC_INVITATION_INBOX = 9008;
-    private static Lock mJoinedRoomConfigLock = new ReentrantLock();
+    private static final Lock mJoinedRoomConfigLock = new ReentrantLock();
     private static RoomConfig mJoinedRoomConfig;
-    private static Lock mMyParticipantIdLock = new ReentrantLock();
+    private static final Lock mMyParticipantIdLock = new ReentrantLock();
     private static String mMyParticipantId;
-    private static Lock mRoomLock = new ReentrantLock();
+    private static final Lock mRoomLock = new ReentrantLock();
     private static Room mRoom;
-    private static Lock googleSignInAccountLock = new ReentrantLock();
+    private static final Lock googleSignInAccountLock = new ReentrantLock();
     private static GoogleSignInAccount googleSignInAccount;
-    private static Lock realTimeMultiplayerClientLock = new ReentrantLock();
+    private static final Lock realTimeMultiplayerClientLock = new ReentrantLock();
     private static RealTimeMultiplayerClient realTimeMultiplayerClient;
 
     // at least 2 players required for our game
     public final static int MIN_PLAYERS = 2;
 
     // are we already playing?
-    private static Lock mPlayingLock = new ReentrantLock();
+    private static final Lock mPlayingLock = new ReentrantLock();
     private static boolean mPlaying = false;
 
     public static void setGoogleSignInAccount(GoogleSignInAccount googleSignInAccount) {

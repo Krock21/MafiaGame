@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.networking.messaging;
 
 // теперь к клиенту
 public interface ClientSender {

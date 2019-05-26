@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.networking.messaging;
 
 // принимается в какой-нибудь функции перед созданием комнаты
 public interface ServerCallback {

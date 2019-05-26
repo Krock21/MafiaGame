@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.networking.messaging;
 
 // принимается в функцию перед подключением.
 // ну или сам реши где принимается

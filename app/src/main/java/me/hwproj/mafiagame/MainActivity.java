@@ -27,10 +27,7 @@ import com.google.android.gms.tasks.Task;
 
 import me.hwproj.mafiagame.networking.NetworkData;
 
-import static me.hwproj.mafiagame.networking.NetworkData.RC_GAMES_SIGN_IN;
-import static me.hwproj.mafiagame.networking.NetworkData.getGoogleSignInAccount;
-import static me.hwproj.mafiagame.networking.NetworkData.mJoinedRoomConfig;
-import static me.hwproj.mafiagame.networking.NetworkData.setGoogleSignInAccount;
+import static me.hwproj.mafiagame.networking.NetworkData.*;
 
 public class MainActivity extends AppCompatActivity {
     public static String TAG = "MafiaGame";

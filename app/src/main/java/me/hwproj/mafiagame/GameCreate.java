@@ -240,7 +240,8 @@ public class GameCreate extends AppCompatActivity {
                         message = Senders.removeFromBegin(message);
                         callbacks.clientCallback.receiveServerMessage(message);
                     } else if (message[0] == (byte) 1) { // to server
-                        callbacks.serverCallback.receiveClientMessage(realTimeMessage.getSenderParticipantId(), message);
+                        callbacks.serverCallback.receiveClientMessage(realTimeMessage.getSenderParticipantId(),
+                                Senders.removeFromBegin(message));
                     } else {
                         Log.e(MainActivity.TAG, "message's first byte isn't 0 or 1");
                     }

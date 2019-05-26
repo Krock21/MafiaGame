@@ -1,10 +1,5 @@
 package me.hwproj.mafiagame;
 
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
-
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
@@ -12,10 +7,13 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import com.google.android.gms.auth.api.signin.GoogleSignIn;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AlertDialog;
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.google.android.gms.games.Games;
 import com.google.android.gms.games.GamesActivityResultCodes;
-import com.google.android.gms.games.GamesCallbackStatusCodes;
 import com.google.android.gms.games.RealTimeMultiplayerClient;
 import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
@@ -26,25 +24,18 @@ import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
-import com.google.android.gms.tasks.OnCanceledListener;
 import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashSet;
-import java.util.List;
 
-import me.hwproj.mafiagame.networking.Network;
 import me.hwproj.mafiagame.networking.NetworkData;
 
-import static me.hwproj.mafiagame.networking.NetworkData.RC_INVITATION_INBOX;
-import static me.hwproj.mafiagame.networking.NetworkData.RC_SELECT_PLAYERS;
-import static me.hwproj.mafiagame.networking.NetworkData.RC_WAITING_ROOM;
-import static me.hwproj.mafiagame.networking.NetworkData.mJoinedRoomConfig;
-import static me.hwproj.mafiagame.networking.NetworkData.mRoom;
 import static me.hwproj.mafiagame.networking.NetworkData.*;
+
 
 /**
  * A room to configure a game instance, BEFORE connecting to clients.
@@ -52,13 +43,117 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
  */
 public class GameCreate extends AppCompatActivity {
 
+    public static byte[] addToBegin(byte[] message, byte firstByte) {
+        byte[] newMessage = new byte[message.length + 1];
+        newMessage[0] = firstByte;
+        for (int i = 0; i < message.length; i++) {
+            newMessage[i + 1] = message[i];
+        }
+        return newMessage;
+    }
+
+    public static byte[] removeFromBegin(byte[] message) {
+        byte[] newMessage = new byte[message.length - 1];
+        for (int i = 0; i < message.length - 1; i++) {
+            newMessage[i] = message[i + 1];
+        }
+        return newMessage;
+    }
+
+    public static ServerSender serverSender = new ServerSender() {
+        @Override
+        public void broadcastMesage(byte[] message) {
+            message = addToBegin(message, (byte) 0);
+            for (String participantId : getmRoom().getParticipantIds()) {
+                Task<Integer> task = getRealTimeMultiplayerClient()
+                        .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Integer> task) {
+                                // Keep track of which messages are sent, if desired.
+                                recordMessageToken(task.getResult());
+                            }
+                        });
+            }
+        }
+
+        @Override
+        public void sendMessage(String participantId, byte[] message) {
+            message = addToBegin(message, (byte) 0);
+            Task<Integer> task = getRealTimeMultiplayerClient()
+                    .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+                            handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                        @Override
+                        public void onComplete(@NonNull Task<Integer> task) {
+                            // Keep track of which messages are sent, if desired.
+                            recordMessageToken(task.getResult());
+                        }
+                    });
+        }
+
+        private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
+                new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
+                    @Override
+                    public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
+                        // handle the message being sent.
+                        synchronized (this) {
+                            pendingMessageSet.remove(tokenId);
+                        }
+                    }
+                };
+
+        HashSet<Integer> pendingMessageSet = new HashSet<>();
+
+        synchronized void recordMessageToken(int tokenId) {
+            pendingMessageSet.add(tokenId);
+        }
+    };
+
+
+    public static ClientSender clientSender = new ClientSender() {
+        @Override
+        public void sendToServer(byte[] message) {
+            message = addToBegin(message, (byte) 1);
+            for (String participantId : getmRoom().getParticipantIds()) {
+                Task<Integer> task = getRealTimeMultiplayerClient()
+                        .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Integer> task) {
+                                // Keep track of which messages are sent, if desired.
+                                recordMessageToken(task.getResult());
+                            }
+                        });
+            }
+        }
+
+        private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
+                new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
+                    @Override
+                    public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
+                        // handle the message being sent.
+                        synchronized (this) {
+                            pendingMessageSet.remove(tokenId);
+                        }
+                    }
+                };
+
+        HashSet<Integer> pendingMessageSet = new HashSet<>();
+
+        synchronized void recordMessageToken(int tokenId) {
+            pendingMessageSet.add(tokenId);
+        }
+    };
+    public ServerCallback serverCallback;
+    public ClientCallback clientCallback;
+
     public boolean mWaitingRoomFinishedFromCode = false;
 
     public int minPlayerCount = 1; // minimum Player count other players
     public int maxPlayerCount = 7; // maximum Player count other players
 
-    public RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
-    public RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
+    public final RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
+    public final RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -144,9 +239,9 @@ public class GameCreate extends AppCompatActivity {
             }
 
             // Save the roomConfig so we can use it if we call leave().
-            mJoinedRoomConfig = roomBuilder.build();
+            setmJoinedRoomConfig(roomBuilder.build());
             getRealTimeMultiplayerClient()
-                    .create(mJoinedRoomConfig);
+                    .create(getmJoinedRoomConfig());
         }
         if (requestCode == RC_WAITING_ROOM) {
 
@@ -158,7 +253,6 @@ public class GameCreate extends AppCompatActivity {
 
             if (resultCode == Activity.RESULT_OK) {
                 // Start the game! TODO start the game in client
-                sendToAllReliably("TEST_MESSAGE".getBytes());
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // Waiting room was dismissed with the back button. The meaning of this
                 // action is up to the game. You may choose to leave the room and cancel the
@@ -167,12 +261,12 @@ public class GameCreate extends AppCompatActivity {
 
                 // in this example, we take the simple approach and just leave the room:
                 getRealTimeMultiplayerClient()
-                        .leave(mJoinedRoomConfig, mRoom.getRoomId());
+                        .leave(getmJoinedRoomConfig(), getmRoom().getRoomId());
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                 // player wants to leave the room.
                 getRealTimeMultiplayerClient()
-                        .leave(mJoinedRoomConfig, mRoom.getRoomId());
+                        .leave(getmJoinedRoomConfig(), getmRoom().getRoomId());
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }
@@ -189,47 +283,14 @@ public class GameCreate extends AppCompatActivity {
                         .setInvitationIdToAccept(invitation.getInvitationId())
                         .setOnMessageReceivedListener(mMessageReceivedHandler)
                         .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler);
-                mJoinedRoomConfig = builder.build();
+                setmJoinedRoomConfig(builder.build());
                 getRealTimeMultiplayerClient()
-                        .join(mJoinedRoomConfig);
+                        .join(getmJoinedRoomConfig());
                 // prevent screen from sleeping during handshake
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }
     }
-
-    void sendToAllReliably(byte[] message) {
-        for (String participantId : mRoom.getParticipantIds()) {
-            if (!participantId.equals(mMyParticipantId)) {
-                Task<Integer> task = getRealTimeMultiplayerClient()
-                        .sendReliableMessage(message, mRoom.getRoomId(), participantId,
-                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Integer> task) {
-                                // Keep track of which messages are sent, if desired.
-                                recordMessageToken(task.getResult());
-                            }
-                        });
-            }
-        }
-    }
-
-    HashSet<Integer> pendingMessageSet = new HashSet<>();
-
-    synchronized void recordMessageToken(int tokenId) {
-        pendingMessageSet.add(tokenId);
-    }
-
-    private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
-            new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
-                @Override
-                public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
-                    // handle the message being sent.
-                    synchronized (this) {
-                        pendingMessageSet.remove(tokenId);
-                    }
-                }
-            };
 
     private OnRealTimeMessageReceivedListener mMessageReceivedHandler =
             new OnRealTimeMessageReceivedListener() {
@@ -238,8 +299,15 @@ public class GameCreate extends AppCompatActivity {
                     // Handle messages received here.
                     byte[] message = realTimeMessage.getMessageData();
                     // process message contents...
-                    // VLAD TODO
-                    Log.d(MainActivity.TAG, message.toString());
+                    Log.d(MainActivity.TAG, "MESSAGE RECIEVED: " + Arrays.toString(message));
+                    if(message[0] == (byte)0) { // to client
+                        message = removeFromBegin(message);
+                        clientCallback.receiveServerMessage(message);
+                    } else if(message[0] == (byte)1) { // to server
+                        serverCallback.receiveClientMessage(realTimeMessage.getSenderParticipantId(), message);
+                    } else {
+                        Log.e(MainActivity.TAG, "message's first byte isn't 0 or 1");
+                    }
                 }
             };
 
@@ -286,10 +354,12 @@ public class GameCreate extends AppCompatActivity {
                                 Invitation invitation = bundle.getParcelable(Multiplayer.EXTRA_INVITATION);
                                 if (invitation != null) {
                                     RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)
-                                            .setInvitationIdToAccept(invitation.getInvitationId());
-                                    mJoinedRoomConfig = builder.build();
+                                            .setInvitationIdToAccept(invitation.getInvitationId())
+                                            .setOnMessageReceivedListener(mMessageReceivedHandler)
+                                            .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler);
+                                    setmJoinedRoomConfig(builder.build());
                                     getRealTimeMultiplayerClient()
-                                            .join(mJoinedRoomConfig);
+                                            .join(getmJoinedRoomConfig());
                                     // prevent screen from sleeping during handshake
                                     getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
                                 }

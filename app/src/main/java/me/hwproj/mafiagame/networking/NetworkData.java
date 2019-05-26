@@ -23,9 +23,12 @@ public class NetworkData {
     public static final int RC_SELECT_PLAYERS = 9006;
     public static final int RC_WAITING_ROOM = 9007;
     public static final int RC_INVITATION_INBOX = 9008;
-    public static RoomConfig mJoinedRoomConfig;
-    public static String mMyParticipantId;
-    public static Room mRoom;
+    private static Lock mJoinedRoomConfigLock = new ReentrantLock();
+    private static RoomConfig mJoinedRoomConfig;
+    private static Lock mMyParticipantIdLock = new ReentrantLock();
+    private static String mMyParticipantId;
+    private static Lock mRoomLock = new ReentrantLock();
+    private static Room mRoom;
     private static Lock googleSignInAccountLock = new ReentrantLock();
     private static GoogleSignInAccount googleSignInAccount;
     private static Lock realTimeMultiplayerClientLock = new ReentrantLock();
@@ -35,7 +38,8 @@ public class NetworkData {
     public final static int MIN_PLAYERS = 2;
 
     // are we already playing?
-    public static boolean mPlaying = false;
+    private static Lock mPlayingLock = new ReentrantLock();
+    private static boolean mPlaying = false;
 
     public static void setGoogleSignInAccount(GoogleSignInAccount googleSignInAccount) {
         googleSignInAccountLock.lock();
@@ -61,5 +65,57 @@ public class NetworkData {
         realTimeMultiplayerClientLock.lock();
         NetworkData.realTimeMultiplayerClient = realTimeMultiplayerClient;
         realTimeMultiplayerClientLock.unlock();
+    }
+
+    public static RoomConfig getmJoinedRoomConfig() {
+        mJoinedRoomConfigLock.lock();
+        RoomConfig answer = mJoinedRoomConfig;
+        mJoinedRoomConfigLock.unlock();
+        return answer;
+    }
+
+    public static void setmJoinedRoomConfig(RoomConfig mJoinedRoomConfig) {
+        mJoinedRoomConfigLock.lock();
+        NetworkData.mJoinedRoomConfig = mJoinedRoomConfig;
+        mJoinedRoomConfigLock.lock();
+    }
+
+    public static String getmMyParticipantId() {
+        mMyParticipantIdLock.lock();
+        String answer = mMyParticipantId;
+        mMyParticipantIdLock.unlock();
+        return answer;
+    }
+
+    public static void setmMyParticipantId(String mMyParticipantId) {
+        mMyParticipantIdLock.lock();
+        NetworkData.mMyParticipantId = mMyParticipantId;
+        mMyParticipantIdLock.unlock();
+    }
+
+    public static Room getmRoom() {
+        mRoomLock.lock();
+        Room answer = mRoom;
+        mRoomLock.unlock();
+        return answer;
+    }
+
+    public static void setmRoom(Room mRoom) {
+        mRoomLock.lock();
+        NetworkData.mRoom = mRoom;
+        mRoomLock.unlock();
+    }
+
+    public static boolean ismPlaying() {
+        mPlayingLock.lock();
+        boolean answer = mPlaying;
+        mPlayingLock.unlock();
+        return answer;
+    }
+
+    public static void setmPlaying(boolean mPlaying) {
+        mPlayingLock.lock();
+        NetworkData.mPlaying = mPlaying;
+        mPlayingLock.unlock();
     }
 }

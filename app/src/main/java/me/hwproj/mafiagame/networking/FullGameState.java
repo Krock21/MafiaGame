@@ -1,5 +1,7 @@
 package me.hwproj.mafiagame.networking;
 
+import android.util.Log;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -63,7 +65,12 @@ public class FullGameState {
                 data.writeByte(dead);
             }
 
-            phases.get(phaseNumber % phases.size()).serializeGameState(data, phaseState);
+            try {
+                phases.get(phaseNumber % phases.size()).serializeGameState(data, phaseState);
+            } catch (SerializationException e) {
+                Log.d("Bug", "serialize state: phaseNumber = " + phaseNumber + ", phase state " + phaseState.getClass());
+                throw new SerializationException(e);
+            }
         } catch (IOException e) {
             throw new SerializationException(e);
         }

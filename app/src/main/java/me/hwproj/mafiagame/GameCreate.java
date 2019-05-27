@@ -425,5 +425,6 @@ public class GameCreate extends AppCompatActivity {
                 e.printStackTrace();
             }
         };
+        clientGame.sendInitRequest();
     }
 }

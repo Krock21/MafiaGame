@@ -14,6 +14,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import me.hwproj.mafiagame.MainActivity;
 import me.hwproj.mafiagame.networking.messaging.ClientByteSender;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Client;
@@ -50,7 +51,8 @@ public class ClientGame {
         this.activityReference = activityReference;
         this.transactionSupplier = transactionSupplier;
 
-        sendInitRequest();
+//        sendInitRequest();
+        // because on server device need to initialize callbacks before requesting initialization
     }
 
     public void receiveServerMessage(byte[] message) throws DeserializationException {
@@ -58,6 +60,7 @@ public class ClientGame {
             Log.d("Bug", "receiveServerMessage: empty message received");
             return;
         }
+        Log.d(MainActivity.TAG, "Client received message from server");
         InputStream stream = new ByteArrayInputStream(message);
 
         try (DataInputStream dataStream = new DataInputStream(stream)) {
@@ -82,7 +85,7 @@ public class ClientGame {
     }
 
 
-    private void sendInitRequest() {
+    public void sendInitRequest() {
         byte[] m = { ServerGame.INIT_REQUEST_HEADER };
         sender.sendBytesToServer(m);
     }

@@ -10,7 +10,16 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.ListIterator;
+import java.util.Map;
 
+import me.hwproj.mafiagame.MainActivity;
+import me.hwproj.mafiagame.gameflow.Player;
+import me.hwproj.mafiagame.gameflow.PlayerSettings;
 import me.hwproj.mafiagame.networking.messaging.ServerByteSender;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameflow.Settings;
@@ -27,13 +36,50 @@ public class ServerGame {
     @NotNull
     private final Settings settings;
     private final ServerByteSender sender;
-    private final Server server;
+    private final HashMap<String,String> idToName;
+    private Server server;
+    private boolean initialized;
+    private boolean readyToInitialize = false;
 
     public ServerGame(@NotNull Settings settings, ServerByteSender sender) {
         this.settings = settings;
         this.sender = sender;
+        initialized = false;
+        idToName = new HashMap<>();
+    }
+
+    /**
+     * Tries to initialize server. If it is not ready yet, does nothing and returns false.
+     * @return if initialization succeeded
+     */
+    public boolean initialize() {
+        if (!readyToInitialize) {
+            return false;
+        }
+
+        Collections.shuffle(settings.playerSettings);
+        if (settings.playerSettings.size() != idToName.size()) {
+            Log.d(MainActivity.TAG, "initialize: " + settings.playerSettings.size() + "players, but " + idToName.size() + "clients");
+        }
+        ListIterator<PlayerSettings> iter = settings.playerSettings.listIterator();
+        for (Map.Entry<String, String> idName : idToName.entrySet()) {
+            if (!iter.hasNext()) {
+                break;
+            }
+            PlayerSettings s = iter.next();
+            s.name = idName.getValue();
+        }
 
         server = new Server(settings, new Sender());
+        initialized = true;
+
+        int playerNumber = 0;
+        for (Map.Entry<String, String> idName : idToName.entrySet()) {
+            initClient(idName.getKey(), playerNumber);
+            Log.d(MainActivity.TAG, "initialize: " + idName.getKey());
+            playerNumber++;
+        }
+        return true;
     }
 
     public void receiveClientMessage(byte[] message, String id) throws DeserializationException {
@@ -44,14 +90,14 @@ public class ServerGame {
         InputStream stream = new ByteArrayInputStream(message);
 
         try (DataInputStream dataStream = new DataInputStream(stream)) {
-            int b = dataStream.read();
+            int b = dataStream.readByte();
 
             switch (b) {
                 case ACTION_HEADER:
                     receiveActionMessage(dataStream);
                     break;
                 case INIT_REQUEST_HEADER:
-                    initClient(id);
+                    rememberClient(id, dataStream);
                     break;
                 default: throw new DeserializationException("Unexpected package, code " + b);
             }
@@ -61,12 +107,30 @@ public class ServerGame {
         }
     }
 
-    private void initClient(String id) {
+    private void rememberClient(String id, DataInputStream dataStream) throws DeserializationException {
+        try {
+            String name = dataStream.readUTF();
+            Log.d(MainActivity.TAG, "rememberClient: " + name);
+            idToName.put(id, name);
+        } catch (IOException e) {
+            throw new DeserializationException(e);
+        }
+
+        Log.d(MainActivity.TAG, "rememberClient: got " + idToName.size() + " out of " + settings.playerSettings.size());
+
+        if (idToName.size() == settings.playerSettings.size()) {
+            readyToInitialize = true;
+            Log.d(MainActivity.TAG, "Initializing");
+            initialize();
+        }
+    }
+
+    private void initClient(String id, int playerNumber) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
         try (DataOutputStream dataStream = new DataOutputStream(stream)) {
             dataStream.writeByte(ClientGame.INIT_PACKAGE_HEADER);
-            new InitGamePackage(settings, 0).serialize(dataStream);
+            new InitGamePackage(settings, playerNumber).serialize(dataStream);
             sender.sendMessage(id, stream.toByteArray());
         } catch (IOException | SerializationException e) {
             Log.d("Bug", "initClient: ...");
@@ -75,6 +139,9 @@ public class ServerGame {
     }
 
     private void receiveActionMessage(DataInputStream dataStream) throws DeserializationException {
+        if (!initialized) {
+            Log.d("Bug", "receiveActionMessage before initializing server");
+        }
         try {
             int phaseNum = dataStream.readInt();
             PlayerAction action = server.currentGameData.phases.get(phaseNum).deserialize(dataStream);

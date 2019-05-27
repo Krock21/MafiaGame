@@ -115,7 +115,9 @@ public class GameCreate extends AppCompatActivity {
 
         Button start = findViewById(R.id.test_run);
         start.setOnClickListener(v -> {
-            startMultiplayerGame();
+            if (isServer) {
+                serverGame.initialize();
+            }
         });
     }
 
@@ -187,13 +189,6 @@ public class GameCreate extends AppCompatActivity {
                 // Start the game! TODO start the game in client
                 Log.d("START", "calling startMultiplayerGame from lower if");
                 startMultiplayerGame();
-
-                if (isServer) {
-                    initServer();
-                    Log.d(MainActivity.TAG, "Server initialized");
-                }
-                initClient();
-                Log.d(MainActivity.TAG, "Client initialized");
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // Waiting room was dismissed with the back button. The meaning of this
                 // action is up to the game. You may choose to leave the room and cancel the
@@ -333,59 +328,68 @@ public class GameCreate extends AppCompatActivity {
 
     private void startMultiplayerGame() {
         setContentView(R.layout.activity_phase); // !!
+
+//        if (isServer) {
+//            initServer();
+//            Log.d(MainActivity.TAG, "Server initialized");
+//        }
+
+        initClient();
+        Log.d(MainActivity.TAG, "Client initialized");
+
     }
 
     public boolean isServer;
 
     // starting a game
 
-    private void startTestClient() {
-        setContentView(R.layout.activity_phase); // !!
-
-        NetworkSimulator net = new NetworkSimulator();
-
-        List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
-        List<PlayerSettings> playerSettings = Arrays.asList(
-                new PlayerSettings(Role.CITIZEN, "Pathfinder"),
-                new PlayerSettings(Role.DOCTOR, "Lifeline"),
-                new PlayerSettings(Role.MAFIA, "Caustic")
-        );
-        Settings settings = new Settings(phases, playerSettings);
-
-        ServerGame serverGame = new ServerGame(settings, net);
-
-//        client = new Client(net, settings, 1, this::dealWithGameState);
-        clientGame = new ClientGame(net, this, this::transactionProvider);
-
-        ByteArrayOutputStream outs = new ByteArrayOutputStream();
-        DataOutputStream dataStream = new DataOutputStream(outs);
-        try {
-            dataStream.write(ClientGame.INIT_PACKAGE_HEADER);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-        try {
-            int thisPlayer = 1;
-            if (isServer) {
-                thisPlayer = 2;
-            }
-            new InitGamePackage(settings, thisPlayer).serialize(dataStream);
-        } catch (SerializationException e) {
-//            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-        byte[] message = outs.toByteArray();
-        Log.d("ser", "startTestClient: serialized to " + Arrays.toString(message));
-        try {
-            clientGame.receiveServerMessage(message);
-        } catch (DeserializationException e) {
-            Log.d("Bug", "startTestClient: deserialize exception");
-//            e.printStackTrace();
-            throw new RuntimeException(e);
-        }
-
-        net.start(clientGame, serverGame);
-    }
+//    private void startTestClient() {
+//        setContentView(R.layout.activity_phase); // !!
+//
+//        NetworkSimulator net = new NetworkSimulator();
+//
+//        List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
+//        List<PlayerSettings> playerSettings = Arrays.asList(
+//                new PlayerSettings(Role.CITIZEN, "Pathfinder"),
+//                new PlayerSettings(Role.DOCTOR, "Lifeline"),
+//                new PlayerSettings(Role.MAFIA, "Caustic")
+//        );
+//        Settings settings = new Settings(phases, playerSettings);
+//
+//        ServerGame serverGame = new ServerGame(settings, net);
+//
+////        client = new Client(net, settings, 1, this::dealWithGameState);
+//        clientGame = new ClientGame(net, this, this::transactionProvider);
+//
+//        ByteArrayOutputStream outs = new ByteArrayOutputStream();
+//        DataOutputStream dataStream = new DataOutputStream(outs);
+//        try {
+//            dataStream.write(ClientGame.INIT_PACKAGE_HEADER);
+//        } catch (IOException e) {
+//            throw new RuntimeException(e);
+//        }
+//        try {
+//            int thisPlayer = 1;
+//            if (isServer) {
+//                thisPlayer = 2;
+//            }
+//            new InitGamePackage(settings, thisPlayer).serialize(dataStream);
+//        } catch (SerializationException e) {
+////            e.printStackTrace();
+//            throw new RuntimeException(e);
+//        }
+//        byte[] message = outs.toByteArray();
+//        Log.d("ser", "startTestClient: serialized to " + Arrays.toString(message));
+//        try {
+//            clientGame.receiveServerMessage(message);
+//        } catch (DeserializationException e) {
+//            Log.d("Bug", "startTestClient: deserialize exception");
+////            e.printStackTrace();
+//            throw new RuntimeException(e);
+//        }
+//
+//        net.start(clientGame, serverGame);
+//    }
 
     public FragmentTransaction transactionProvider() {
         return getSupportFragmentManager().beginTransaction();
@@ -396,7 +400,7 @@ public class GameCreate extends AppCompatActivity {
     public void initServer() {
         List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
         List<PlayerSettings> playerSettings = Arrays.asList(
-                new PlayerSettings(Role.CITIZEN, "Pathfinder"),
+//                new PlayerSettings(Role.CITIZEN, "Pathfinder"),
                 new PlayerSettings(Role.DOCTOR, "Lifeline"),
                 new PlayerSettings(Role.MAFIA, "Caustic")
         );
@@ -416,7 +420,12 @@ public class GameCreate extends AppCompatActivity {
     private ClientGame clientGame;
 
     public void initClient() {
-        clientGame = new ClientGame(senders.clientSender, this, this::transactionProvider);
+        String name = "client";
+        if (isServer) {
+            name = "server";
+        }
+
+        clientGame = new ClientGame(senders.clientSender, this, this::transactionProvider, name);
         callbacks.clientCallback = message -> {
             try {
                 clientGame.receiveServerMessage(message);

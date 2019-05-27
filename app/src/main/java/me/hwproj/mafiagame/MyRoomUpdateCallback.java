@@ -27,6 +27,10 @@ class MyRoomUpdateCallback extends RoomUpdateCallback {
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " created.");
 
             activity.isServer = true;
+            if (activity.isServer) {
+                activity.initServer();
+                Log.d(MainActivity.TAG, "Server initialized");
+            }
 
             activity.showWaitingRoom(room, activity.maxPlayerCount + 1);
         } else {

@@ -45,7 +45,7 @@ public class PhaseActivity extends AppCompatActivity {
         ServerGame serverGame = new ServerGame(settings, net);
 
 //        client = new Client(net, settings, 1, this::dealWithGameState);
-        game = new ClientGame(net, this, this::transactionProvider);
+        game = new ClientGame(net, this, this::transactionProvider, "You");
 
         ByteArrayOutputStream outs = new ByteArrayOutputStream();
         DataOutputStream dataStream = new DataOutputStream(outs);

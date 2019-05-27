@@ -12,8 +12,8 @@ import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 
 public class PlayerSettings {
-    public final Role role;
-    public final String name;
+    public Role role;
+    public String name; // TODO make private
 
     public PlayerSettings(Role role, String name) {
         this.role = role;

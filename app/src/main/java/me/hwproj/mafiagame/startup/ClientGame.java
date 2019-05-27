@@ -36,23 +36,21 @@ public class ClientGame {
     private final ClientByteSender sender;
     private final AppCompatActivity activityReference;
     private Supplier<FragmentTransaction> transactionSupplier;
+    private String desiredName;
     private Client client;
     private boolean initialised;
-
-    public Client getClient() { // TODO delete
-        return client;
-    } // TODO delete
 
     private PhaseFragment currentPhaseFragment;
     private int thisPhaseNumber = -1;
 
-    public ClientGame(ClientByteSender sender, AppCompatActivity activityReference, Supplier<FragmentTransaction> transactionSupplier) {
+    public ClientGame(ClientByteSender sender, AppCompatActivity activityReference, Supplier<FragmentTransaction> transactionSupplier, String desiredName) {
         this.sender = sender;
         this.activityReference = activityReference;
         this.transactionSupplier = transactionSupplier;
 
 //        sendInitRequest();
         // because on server device need to initialize callbacks before requesting initialization
+        this.desiredName = desiredName;
     }
 
     public void receiveServerMessage(byte[] message) throws DeserializationException {
@@ -86,8 +84,17 @@ public class ClientGame {
 
 
     public void sendInitRequest() {
-        byte[] m = { ServerGame.INIT_REQUEST_HEADER };
-        sender.sendBytesToServer(m);
+        ByteArrayOutputStream bs = new ByteArrayOutputStream();
+        DataOutputStream ds = new DataOutputStream(bs);
+        try {
+            ds.writeByte(ServerGame.INIT_REQUEST_HEADER);
+            ds.writeUTF(desiredName);
+
+            sender.sendBytesToServer(bs.toByteArray());
+        } catch (IOException e) {
+            Log.d("Bug", "sendInitRequest: io error");
+            e.printStackTrace();
+        }
     }
 
     private void receiveMeta(DataInputStream data) {

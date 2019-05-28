@@ -1,20 +1,22 @@
 package me.hwproj.mafiagame.phases;
 
-import android.app.Activity;
+import java.io.DataInputStream;
+import java.io.DataOutputStream;
 
-import me.hwproj.mafiagame.networking.ClientServerInteractor;
-import me.hwproj.mafiagame.gameflow.GameData;
+import me.hwproj.mafiagame.gameflow.Client;
+import me.hwproj.mafiagame.networking.serialization.DeserializationException;
+import me.hwproj.mafiagame.networking.serialization.SerializationException;
 
 public interface GamePhaseClient {
     /**
-     * Creates activity corresponding to this phase.
-     * Actually it should probably create smth else, like View or smth, because all activities for
-     * phases have similar things in them
+     * Returns a fragment corresponding to this phase.
      */
-    Activity createActivity(GameData data, ClientServerInteractor sender);
+    PhaseFragment createFragment(Client client);
 
     /**
-     * This method should be called by when new GameState arrives.
+     * Guaranteed to be sent by this phase's client
      */
-    void processGameState(GameState state);
+    GameState deserializeGameState(DataInputStream dataStream) throws DeserializationException;
+
+    void serializeAction(DataOutputStream dataOutput, PlayerAction action) throws SerializationException;
 }

@@ -16,7 +16,7 @@ android:
   - tools
   - platform-tools
   - extra
-  - android-27
+  - android-28
   - android-21
 
   # Additional components

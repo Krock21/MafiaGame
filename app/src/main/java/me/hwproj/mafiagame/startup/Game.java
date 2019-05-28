@@ -1,0 +1,86 @@
+package me.hwproj.mafiagame.startup;
+
+import android.util.Log;
+
+import me.hwproj.mafiagame.GameConfigureFragment;
+import me.hwproj.mafiagame.GameCreate;
+import me.hwproj.mafiagame.MainActivity;
+import me.hwproj.mafiagame.R;
+import me.hwproj.mafiagame.gameflow.Settings;
+import me.hwproj.mafiagame.networking.serialization.DeserializationException;
+
+public class Game {
+
+    private final GameCreate activity;
+
+    private boolean isServer;
+    private ServerGame serverGame; // present if isServer
+
+    private GameConfigureFragment gameConfigureFragment; // present after roomFinished if isServer
+    private ClientGame clientGame; // after roomFinished
+
+    // TODO take only callbacks
+    public Game(GameCreate activity) {
+        this.activity = activity;
+    }
+
+
+    /**
+     * Call this if this user created a room, becoming a server player
+     */
+    public void onStartRoom() {
+        isServer = true;
+        serverGame = new ServerGame(activity.senders.serverSender);
+
+        activity.setServerCallback((participantId, message) -> {
+            try {
+                serverGame.receiveClientMessage(message, participantId);
+            } catch (DeserializationException e) {
+                e.printStackTrace();
+            }
+        });
+    }
+
+    public void onRoomFinished(int playerCount) {
+        activity.setContentView(R.layout.activity_phase); // !!
+
+//        if (isServer) {
+//            initServer();
+//            Log.d(MainActivity.TAG, "Server initialized");
+//        }
+        if (isServer) {
+            gameConfigureFragment = GameConfigureFragment.newInstance(playerCount);
+            activity.transactionProvider().add(R.id.fragmentLayout, gameConfigureFragment).commit();
+        }
+
+        initClient();
+        Log.d(MainActivity.TAG, "Client initialized");
+
+    }
+
+    private void initClient() {
+        String name = "client";
+        if (isServer) {
+            name = "server";
+        }
+
+        clientGame = new ClientGame(activity.senders.clientSender, activity, activity::transactionProvider, name);
+        activity.setClientCallback(message -> {
+            try {
+                clientGame.receiveServerMessage(message);
+            } catch (DeserializationException e) {
+                Log.d("Bug", "startMultiplayerGame: ...");
+                e.printStackTrace();
+            }
+        });
+        clientGame.sendInitRequest();
+    }
+
+    // called only if isServer
+    public void onConfigureFinished(Settings settings) {
+        if (isServer) {
+            serverGame.initialize(settings);
+            activity.transactionProvider().remove(gameConfigureFragment).commit();
+        }
+    }
+}

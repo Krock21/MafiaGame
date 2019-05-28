@@ -57,7 +57,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Button startTest = findViewById(R.id.start_test);
-        startTest.setOnClickListener(v -> startActivity(new Intent(this, PhaseActivity.class)));
+//        startTest.setOnClickListener(v -> startActivity(new Intent(this, PhaseActivity.class)));
     }
 
     @Override

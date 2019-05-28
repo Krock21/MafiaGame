@@ -19,8 +19,4 @@ public class GameConfigure extends AppCompatActivity {
         //Button start = findViewById(R.id.startTest);
         //start.setOnClickListener(this::startTestPhase);
     }
-
-    private void startTestPhase(View v) {
-        startActivity(new Intent(this, PhaseActivity.class));
-    }
 }

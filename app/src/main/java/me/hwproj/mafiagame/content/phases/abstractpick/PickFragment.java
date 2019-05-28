@@ -21,17 +21,22 @@ import me.hwproj.mafiagame.util.table.TablePick;
 
 // TODO make a factory
 abstract public class PickFragment extends PhaseFragment {
-    private final Role pickersRole;
     private final boolean pickSelfRole;
     private final int[] thisRolePlayers;
     private int thisPlayerNumber = -1;
     private TablePick table;
     private int currentPick = -1;
+    private boolean notYourTurn;
 
     public PickFragment(Client client, Role pickersRole, boolean pickSelfRole) {
         super(client);
-        this.pickersRole = pickersRole;
         this.pickSelfRole = pickSelfRole;
+
+        if (client.getGameData().players.get(client.thisPlayerId()).role != pickersRole) {
+            notYourTurn = true;
+            thisRolePlayers = null;
+            return;
+        }
 
         List<Integer> thisRoleIds = new ArrayList<>();
         for (int i = 0; i < client.playerCount(); i++) {
@@ -56,7 +61,7 @@ abstract public class PickFragment extends PhaseFragment {
 
         View view = inflater.inflate(R.layout.generic_pick, container, false);
 
-        if (client.getGameData().players.get(client.thisPlayerId()).role != pickersRole) {
+        if (notYourTurn) {
             TextView text = view.findViewById(R.id.pickNotYourTurn);
             text.setText("Not your turn");
             return view;

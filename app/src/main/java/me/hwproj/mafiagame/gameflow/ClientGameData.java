@@ -13,7 +13,7 @@ public class ClientGameData {
     public List<Player> players = new ArrayList<>();
     public List<GamePhaseClient> phases = new ArrayList<>();
     public GamePhaseClient currentPhase;
-    public int phaseNumber = 0;
+    public int phaseNumber = -1;
 
 
 
@@ -21,12 +21,8 @@ public class ClientGameData {
     }
 
     public void nextPhase() {
-        if (currentPhase == null) {
-            currentPhase = phases.get(0);
-        } else {
-            phaseNumber++;
-            currentPhase = phases.get(phaseNumber % phases.size());
-        }
+        phaseNumber++;
+        currentPhase = phases.get(phaseNumber % phases.size());
     }
 
     public void update(FullGameState state) {

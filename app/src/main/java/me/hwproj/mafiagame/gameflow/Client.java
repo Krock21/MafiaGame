@@ -17,6 +17,7 @@ import me.hwproj.mafiagame.phases.GamePhase;
 import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PhaseFragment;
 import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.util.Alerter;
 
 // TODO separate phases' interface from interractor's and other code
 public class Client {
@@ -44,6 +45,7 @@ public class Client {
     }
 
     private void receiveState(FullGameState state) {
+        Log.d("qwe", "receiveState: received");
         getGameData().update(state);
         gameStateHandler.accept(state.getPhaseState());
     }
@@ -54,12 +56,6 @@ public class Client {
             Log.d("qwe", "handlePackage: META PACKAGE");
             receiveMeta(pack.getMeta());
         } else {
-            if (pack.getGameState().getPhaseState() instanceof MafiaState) {
-                MafiaState s = (MafiaState) pack.getGameState().getPhaseState();
-                if (s.picks.end) {
-                    Log.d("qwe", "MAFIA END");
-                }
-            }
             receiveState(pack.getGameState());
         }
     }
@@ -129,5 +125,9 @@ public class Client {
 
     public Player thisPlayer() {
         return getGameData().players.get(thisPlayerId());
+    }
+
+    public void onThisPlayerKilled() {
+        // currently does nothing
     }
 }

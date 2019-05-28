@@ -13,7 +13,7 @@ public class ServerGameData {
     public GamePhaseServer currentPhase;
     public int phaseNumber = 0;
 
-
+    public final List<String> infoToDisplay = new ArrayList<>();
 
     public ServerGameData() {
     }

@@ -42,7 +42,7 @@ public class PhaseActivity extends AppCompatActivity {
         );
         Settings settings = new Settings(phases, playerSettings);
 
-        ServerGame serverGame = new ServerGame(settings, net);
+        ServerGame serverGame = new ServerGame(net);
 
 //        client = new Client(net, settings, 1, this::dealWithGameState);
         game = new ClientGame(net, this, this::transactionProvider, "You");

@@ -59,18 +59,21 @@ class MyRoomStatusCallback extends RoomStatusUpdateCallback {
         @Override
         public void onPeerJoined(@Nullable Room room, @NonNull List<String> list) {
             NetworkData.setmRoom(room);
-            // Update UI status indicating new players have joined! VLAD TODO
+
+            activity.peersJoined(list); // Vlad
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onPeerJoined.");
         }
 
         @Override
         public void onPeerLeft(@Nullable Room room, @NonNull List<String> list) {
+            activity.peersLeft(list); // Vlad
             NetworkData.setmRoom(room);
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onPeerLeft.");
             // Peer left, see if game should be canceled.
             if (!ismPlaying() && activity.shouldCancelGame(room)) {
                 NetworkData.getRealTimeMultiplayerClient()
                         .leave(getmJoinedRoomConfig(), room.getRoomId());
+                activity.roomCancelled(); // Vlad
                 activity.getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }

@@ -33,16 +33,14 @@ import me.hwproj.mafiagame.phases.PlayerAction;
 public class ServerGame {
     public static final byte ACTION_HEADER = 101;
     public static final byte INIT_REQUEST_HEADER = 102;
-    @NotNull
-    private final Settings settings;
+
+    private Settings settings;
     private final ServerByteSender sender;
     private final HashMap<String,String> idToName;
     private Server server;
     private boolean initialized;
-    private boolean readyToInitialize = false;
 
-    public ServerGame(@NotNull Settings settings, ServerByteSender sender) {
-        this.settings = settings;
+    public ServerGame(ServerByteSender sender) {
         this.sender = sender;
         initialized = false;
         idToName = new HashMap<>();
@@ -52,10 +50,8 @@ public class ServerGame {
      * Tries to initialize server. If it is not ready yet, does nothing and returns false.
      * @return if initialization succeeded
      */
-    public boolean initialize() {
-        if (!readyToInitialize) {
-            return false;
-        }
+    public boolean initialize(@NotNull Settings settings) {
+        this.settings = settings;
 
         Collections.shuffle(settings.playerSettings);
         if (settings.playerSettings.size() != idToName.size()) {
@@ -116,13 +112,7 @@ public class ServerGame {
             throw new DeserializationException(e);
         }
 
-        Log.d(MainActivity.TAG, "rememberClient: got " + idToName.size() + " out of " + settings.playerSettings.size());
-
-        if (idToName.size() == settings.playerSettings.size()) {
-            readyToInitialize = true;
-            Log.d(MainActivity.TAG, "Initializing");
-            initialize();
-        }
+        Log.d(MainActivity.TAG, "rememberClient: got " + idToName.size() + " players");
     }
 
     private void initClient(String id, int playerNumber) {

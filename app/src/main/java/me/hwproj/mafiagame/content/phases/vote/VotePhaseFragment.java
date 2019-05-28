@@ -72,7 +72,7 @@ public class VotePhaseFragment extends PhaseFragment {
                 pick.setEnablePickingRow(playerId, false);
             }
         }
-
+        
         pick.setColumnListener(0, picked -> {
             currentPick = picked;
             VotePhasePlayerAction action = new VotePhasePlayerAction(picked, false, client.thisPlayerId());

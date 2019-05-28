@@ -4,4 +4,7 @@
     <string name="title_activity_test_phase">TestPhaseActivity</string>
     <string name="signin_other_error">Sign In Error</string>
     <string name="title_activity_main2">Main2Activity</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

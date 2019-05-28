@@ -34,7 +34,7 @@ public class ClientGame {
     public static final byte META_HEADER = 5;
 
     private final ClientByteSender sender;
-    private final AppCompatActivity activityReference;
+    private final AppCompatActivity activityReference; // TODO replace with callbacks
     private Supplier<FragmentTransaction> transactionSupplier;
     private String desiredName;
     private Client client;

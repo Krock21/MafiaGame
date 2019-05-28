@@ -67,3 +67,7 @@ dependencies {
     // alternately - if using Java8, use the following instead of lifecycle-compiler
     implementation "androidx.lifecycle:lifecycle-common-java8:$lifecycle_version"
 }
+
+dependencies {
+    implementation 'androidx.legacy:legacy-support-v4:+'
+}

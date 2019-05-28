@@ -25,40 +25,26 @@ import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
 import com.google.android.gms.games.multiplayer.realtime.RoomUpdateCallback;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 
+import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.networking.messaging.Callbacks;
 import me.hwproj.mafiagame.networking.NetworkData;
-import me.hwproj.mafiagame.networking.messaging.ClientByteSender;
 import me.hwproj.mafiagame.networking.messaging.ClientCallback;
 import me.hwproj.mafiagame.networking.messaging.Senders;
 
-import java.util.HashSet;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
-import me.hwproj.mafiagame.content.phases.doctor.DoctorPhase;
-import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
-import me.hwproj.mafiagame.content.phases.vote.VotePhase;
-import me.hwproj.mafiagame.gameflow.PlayerSettings;
 import me.hwproj.mafiagame.gameflow.Settings;
-import me.hwproj.mafiagame.gameplay.Role;
-import me.hwproj.mafiagame.impltest.TestPhase;
-import me.hwproj.mafiagame.impltest.network.NetworkSimulator;
-import me.hwproj.mafiagame.networking.messaging.ServerByteSender;
 import me.hwproj.mafiagame.networking.messaging.ServerCallback;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
-import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GamePhase;
 import me.hwproj.mafiagame.startup.ClientGame;
-import me.hwproj.mafiagame.startup.InitGamePackage;
+import me.hwproj.mafiagame.startup.Game;
 import me.hwproj.mafiagame.startup.ServerGame;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
@@ -68,7 +54,7 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
  * A room to configure a game instance, BEFORE connecting to clients.
  * Basically select minimum and maximum amounts of people in the game
  */
-public class GameCreate extends AppCompatActivity {
+public class GameCreate extends AppCompatActivity implements GameConfigureFragment.ConfigurationCompleteListener {
 
     public boolean mWaitingRoomFinishedFromCode = false;
 
@@ -114,11 +100,12 @@ public class GameCreate extends AppCompatActivity {
         });
 
         Button start = findViewById(R.id.test_run);
-        start.setOnClickListener(v -> {
-            if (isServer) {
-                serverGame.initialize();
-            }
-        });
+//        start.setOnClickListener(v -> {
+//            if (isServer) {
+//                serverGame.initialize();
+//            }
+//        });
+        game = new Game(this);
     }
 
     private RealTimeMultiplayerClient makeRealTimeMultiplayerClient() {
@@ -180,15 +167,16 @@ public class GameCreate extends AppCompatActivity {
             // Look for finishing the waiting room from code, for example if a
             // "start game" message is received.  In this case, ignore the result. TODO Start Game received
             if (mWaitingRoomFinishedFromCode) {
-                Log.d("START", "calling startMultiplayerGame from higher if");
-                startMultiplayerGame();// TODO idk if it really needs to be here
+                Log.d("START", "calling onRoomFinished from higher if");
+                onRoomFinished(); // Vlad
+                // TODO idk if it really needs to be here
                 return;
             }
 
             if (resultCode == Activity.RESULT_OK) {
-                // Start the game! TODO start the game in client
-                Log.d("START", "calling startMultiplayerGame from lower if");
-                startMultiplayerGame();
+                // Start the game!
+                Log.d("START", "calling onRoomFinished from lower if");
+                onRoomFinished(); // Vlad
             } else if (resultCode == Activity.RESULT_CANCELED) {
                 // Waiting room was dismissed with the back button. The meaning of this
                 // action is up to the game. You may choose to leave the room and cancel the
@@ -324,116 +312,58 @@ public class GameCreate extends AppCompatActivity {
                 });
     }
 
-    // ------------- end of trash pile -------------
-
-    private void startMultiplayerGame() {
-        setContentView(R.layout.activity_phase); // !!
-
-//        if (isServer) {
-//            initServer();
-//            Log.d(MainActivity.TAG, "Server initialized");
-//        }
-
-        initClient();
-        Log.d(MainActivity.TAG, "Client initialized");
-
-    }
-
-    public boolean isServer;
-
-    // starting a game
-
-//    private void startTestClient() {
-//        setContentView(R.layout.activity_phase); // !!
-//
-//        NetworkSimulator net = new NetworkSimulator();
-//
-//        List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
-//        List<PlayerSettings> playerSettings = Arrays.asList(
-//                new PlayerSettings(Role.CITIZEN, "Pathfinder"),
-//                new PlayerSettings(Role.DOCTOR, "Lifeline"),
-//                new PlayerSettings(Role.MAFIA, "Caustic")
-//        );
-//        Settings settings = new Settings(phases, playerSettings);
-//
-//        ServerGame serverGame = new ServerGame(settings, net);
-//
-////        client = new Client(net, settings, 1, this::dealWithGameState);
-//        clientGame = new ClientGame(net, this, this::transactionProvider);
-//
-//        ByteArrayOutputStream outs = new ByteArrayOutputStream();
-//        DataOutputStream dataStream = new DataOutputStream(outs);
-//        try {
-//            dataStream.write(ClientGame.INIT_PACKAGE_HEADER);
-//        } catch (IOException e) {
-//            throw new RuntimeException(e);
-//        }
-//        try {
-//            int thisPlayer = 1;
-//            if (isServer) {
-//                thisPlayer = 2;
-//            }
-//            new InitGamePackage(settings, thisPlayer).serialize(dataStream);
-//        } catch (SerializationException e) {
-////            e.printStackTrace();
-//            throw new RuntimeException(e);
-//        }
-//        byte[] message = outs.toByteArray();
-//        Log.d("ser", "startTestClient: serialized to " + Arrays.toString(message));
-//        try {
-//            clientGame.receiveServerMessage(message);
-//        } catch (DeserializationException e) {
-//            Log.d("Bug", "startTestClient: deserialize exception");
-////            e.printStackTrace();
-//            throw new RuntimeException(e);
-//        }
-//
-//        net.start(clientGame, serverGame);
-//    }
+    // --------------------- for client -----------------------
 
     public FragmentTransaction transactionProvider() {
         return getSupportFragmentManager().beginTransaction();
     }
 
-    private ServerGame serverGame;
+    // ------------- interface for room callbacks -------------
 
-    public void initServer() {
-        List<GamePhase> phases = Arrays.asList(new TestPhase(), new VotePhase(), new DoctorPhase(), new MafiaPhase());
-        List<PlayerSettings> playerSettings = Arrays.asList(
-//                new PlayerSettings(Role.CITIZEN, "Pathfinder"),
-                new PlayerSettings(Role.DOCTOR, "Lifeline"),
-                new PlayerSettings(Role.MAFIA, "Caustic")
-        );
-        Settings settings = new Settings(phases, playerSettings);
+    Game game;
 
-        serverGame = new ServerGame(settings, senders.serverSender);
+    private int peerCount = 0;
 
-        callbacks.serverCallback = (participantId, message) -> {
-            try {
-                serverGame.receiveClientMessage(message, participantId);
-            } catch (DeserializationException e) {
-                e.printStackTrace();
-            }
-        };
+    public void peersJoined(List<String> list) {
+        Log.d(MainActivity.TAG, "peersJoined: " + list);
+        peerCount += list.size();
     }
 
-    private ClientGame clientGame;
+    public void peersLeft(List<String> list) {
+        Log.d(MainActivity.TAG, "peersLeft: " + list);
+        peerCount -= list.size();
+    }
 
-    public void initClient() {
-        String name = "client";
-        if (isServer) {
-            name = "server";
-        }
+    public void roomCancelled() {
+        Log.d(MainActivity.TAG, "Room cancelled called");
+        peerCount = 0;
+        game = new Game(this);
+    }
 
-        clientGame = new ClientGame(senders.clientSender, this, this::transactionProvider, name);
-        callbacks.clientCallback = message -> {
-            try {
-                clientGame.receiveServerMessage(message);
-            } catch (DeserializationException e) {
-                Log.d("Bug", "startMultiplayerGame: ...");
-                e.printStackTrace();
-            }
-        };
-        clientGame.sendInitRequest();
+    public void onStartRoom() {
+        Log.d(MainActivity.TAG, "Room started called");
+        game.onStartRoom();
+    }
+
+    public void onRoomFinished() {
+        Log.d(MainActivity.TAG, "Room finished called");
+        game.onRoomFinished(1 + peerCount); // peer count does not include server device
+    }
+
+    // ------------- for ConfigurationFragment --------------
+
+    @Override
+    public void onConfigurationFinished(Settings settings) {
+        game.onConfigureFinished(settings);
+    }
+
+    // ----------------- interface for Game -----------------
+
+    public void setServerCallback(ServerCallback callback) {
+        callbacks.serverCallback = callback;
+    }
+
+    public void setClientCallback(ClientCallback callback) {
+        callbacks.clientCallback = callback;
     }
 }

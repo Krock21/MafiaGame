@@ -1,9 +1,11 @@
 package me.hwproj.mafiagame;
 
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
@@ -19,7 +21,10 @@ import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import java.util.Arrays;
+
 import me.hwproj.mafiagame.networking.NetworkData;
+import me.hwproj.mafiagame.persistence.PersistantValues;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
 
@@ -56,8 +61,8 @@ public class MainActivity extends AppCompatActivity {
             signOut();
         });
 
-        Button startTest = findViewById(R.id.start_test);
-//        startTest.setOnClickListener(v -> startActivity(new Intent(this, PhaseActivity.class)));
+        Button openSettings = findViewById(R.id.open_settings);
+        openSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
     }
 
     @Override
@@ -66,6 +71,8 @@ public class MainActivity extends AppCompatActivity {
         signInSilently(new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
                         .requestEmail().build(),
                 RC_GAMES_SIGN_IN);
+
+
     }
 
     private void signInSilently(GoogleSignInOptions signInOptions, int requestCode) {
@@ -105,6 +112,8 @@ public class MainActivity extends AppCompatActivity {
                 signInOptions);
         Intent intent = signInClient.getSignInIntent();
         startActivityForResult(intent, requestCode);
+
+        new asyncSetName().execute();
     }
 
     @Override
@@ -141,5 +150,31 @@ public class MainActivity extends AppCompatActivity {
                                 .setNeutralButton(android.R.string.ok, null).show();
                     }
                 });
+    }
+
+
+
+    private class asyncSetName extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... strings) {
+            Log.d(TAG, "background " + Arrays.toString(strings));
+            if (strings.length != 0) {
+                String toSet = strings[strings.length - 1];
+                PersistantValues.setName(MainActivity.this, toSet);
+            }
+            return PersistantValues.name(MainActivity.this); // TODO return what was set
+        }
+
+        @Override
+        protected void onPostExecute(String nameSet) {
+            Log.d(TAG, "onPostExecute: " + nameSet);
+            TextView hello = findViewById(R.id.hello_text);
+            if (hello != null) {
+                hello.setText(nameSet);
+            } else {
+                Log.d(TAG, "onPostExecute: hello is null");
+            }
+        }
     }
 }

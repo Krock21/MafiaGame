@@ -18,6 +18,7 @@ import java.util.ListIterator;
 import java.util.Map;
 
 import me.hwproj.mafiagame.MainActivity;
+import me.hwproj.mafiagame.content.phases.infoPhase.InfoPhase;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameflow.PlayerSettings;
 import me.hwproj.mafiagame.networking.messaging.ServerByteSender;
@@ -51,6 +52,7 @@ public class ServerGame {
      * @return if initialization succeeded
      */
     public boolean initialize(@NotNull Settings settings) {
+        settings.phases.add(0, new InfoPhase());
         this.settings = settings;
 
         Collections.shuffle(settings.playerSettings);
@@ -72,9 +74,12 @@ public class ServerGame {
         int playerNumber = 0;
         for (Map.Entry<String, String> idName : idToName.entrySet()) {
             initClient(idName.getKey(), playerNumber);
-            Log.d(MainActivity.TAG, "initialize: " + idName.getKey());
+            Log.d(MainActivity.TAG, "initialize: " + idName.getKey() + " " + idName.getValue());
             playerNumber++;
         }
+
+        server.initialize();
+
         return true;
     }
 

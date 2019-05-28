@@ -58,13 +58,23 @@ public class Game {
 
     }
 
+    // called only if isServer
+    public void onConfigureFinished(Settings settings) {
+        if (isServer) {
+            serverGame.initialize(settings);
+            activity.transactionProvider().remove(gameConfigureFragment).commit();
+        } else {
+            Log.d("Bug", "onConfigureFinished: called then not isServer");
+        }
+    }
+
     private void initClient() {
         String name = "client";
         if (isServer) {
             name = "server";
         }
 
-        clientGame = new ClientGame(activity.senders.clientSender, activity, activity::transactionProvider, name);
+        clientGame = new ClientGame(activity.senders.clientSender, activity, activity::transactionProvider, name, this::onClientEnd);
         activity.setClientCallback(message -> {
             try {
                 clientGame.receiveServerMessage(message);
@@ -76,11 +86,9 @@ public class Game {
         clientGame.sendInitRequest();
     }
 
-    // called only if isServer
-    public void onConfigureFinished(Settings settings) {
-        if (isServer) {
-            serverGame.initialize(settings);
-            activity.transactionProvider().remove(gameConfigureFragment).commit();
-        }
+    // callback for ClientGame
+    private void onClientEnd() {
+        // stop receiving client packages
+        activity.setClientCallback(null);
     }
 }

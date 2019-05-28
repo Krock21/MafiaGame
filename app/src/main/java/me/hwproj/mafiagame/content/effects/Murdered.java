@@ -19,7 +19,8 @@ public class Murdered extends Effect {
     @Override
     public boolean affect(Player p, ServerGameData data) {
         p.dead = true;
-        Log.d("Effect", "murdered: ");
+        Log.d("Effect", "murdered: " + p.name);
+        data.infoToDisplay.add(p.name + " was murdered by mafia");
         return true;
     }
 

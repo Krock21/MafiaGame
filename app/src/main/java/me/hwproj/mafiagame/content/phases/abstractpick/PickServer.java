@@ -12,10 +12,6 @@ import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.phases.GamePhaseServer;
 
 public abstract class PickServer implements GamePhaseServer {
-//    @Override
-//    public void processPlayerAction(PlayerAction action) {
-//
-//    }
 
     private int[] playersChoices;
     private boolean[] choiceFixed;

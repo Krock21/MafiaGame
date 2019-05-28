@@ -27,6 +27,7 @@ import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PhaseFragment;
 import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.util.Alerter;
 
 public class ClientGame {
     public static final byte INIT_PACKAGE_HEADER = 3;
@@ -37,13 +38,14 @@ public class ClientGame {
     private final AppCompatActivity activityReference; // TODO replace with callbacks
     private Supplier<FragmentTransaction> transactionSupplier;
     private String desiredName;
+    private final Runnable onClientEndCallback;
     private Client client;
     private boolean initialised;
 
     private PhaseFragment currentPhaseFragment;
     private int thisPhaseNumber = -1;
 
-    public ClientGame(ClientByteSender sender, AppCompatActivity activityReference, Supplier<FragmentTransaction> transactionSupplier, String desiredName) {
+    public ClientGame(ClientByteSender sender, AppCompatActivity activityReference, Supplier<FragmentTransaction> transactionSupplier, String desiredName, Runnable onClientEnd) {
         this.sender = sender;
         this.activityReference = activityReference;
         this.transactionSupplier = transactionSupplier;
@@ -51,6 +53,7 @@ public class ClientGame {
 //        sendInitRequest();
         // because on server device need to initialize callbacks before requesting initialization
         this.desiredName = desiredName;
+        onClientEndCallback = onClientEnd;
     }
 
     public void receiveServerMessage(byte[] message) throws DeserializationException {
@@ -132,11 +135,12 @@ public class ClientGame {
         }
         client = new Client(new SenderConverter(), init.getGameSettings(), init.getPlayerNumber(), this::dealWithGameState);
         initialised = true;
+
         client.getPhaseNumberData().observe(activityReference, this::dealWithPhaseNumber);
     }
 
     private void receivePackage(ServerNetworkPackage pack) {
-        Log.d("Net", "receivePackage: received, init = " + initialised);
+        Log.d("Net", "receivePackage: received, client.init = " + initialised);
         if (initialised) {
             client.receivePackage(pack);
         }
@@ -161,10 +165,15 @@ public class ClientGame {
 
     // handler
     private void dealWithGameState(GameState state) {
+        Log.d("qwe", "dealWithGameState: receied state " + state);
         if (currentPhaseFragment != null) {
+            Log.d("qwe", "dealWithGameState: fragment is not null " + state);
             if (currentPhaseFragment.isSubscribedToGameState()) {
+                Log.d("qwe", "dealWithGameState: handing to fragment " + state);
                 currentPhaseFragment.processGameState(state);
             }
+        } else {
+            Log.d("Bug", "dealWithGameState: received game state, but phase has not started yet");
         }
     }
 
@@ -174,14 +183,24 @@ public class ClientGame {
             Log.d("Bad", "Wrong phase number:" + thisPhaseNumber + " -> " + number);
         }
 
-        if (number > thisPhaseNumber) {
+        while (number > thisPhaseNumber) {
             Log.d("Ok", "transition to next phase:" + thisPhaseNumber + " -> " + number);
             if (currentPhaseFragment != null) {
                 currentPhaseFragment.onPhaseEnd();
             }
+            if (client.thisPlayer().dead) {
+                onClientKilled();
+                return;
+            }
             startPhaseFragment(client.nextPhaseFragment());
-            thisPhaseNumber = number;
+            thisPhaseNumber++;
         }
+    }
+
+    private void onClientKilled() {
+        client.onThisPlayerKilled();
+        Alerter.alert(activityReference, "You died", "Any last words?");
+        onClientEndCallback.run();
     }
 
     private class SenderConverter implements ClientSender {
@@ -192,8 +211,9 @@ public class ClientGame {
             DataOutputStream dout = new DataOutputStream(bout);
             try {
                 dout.writeByte(ServerGame.ACTION_HEADER);
-                dout.writeInt(thisPhaseNumber % client.getGameData().phases.size());
-                client.getGameData().phases.get(thisPhaseNumber).serializeAction(dout, action);
+                int phaseIndex = thisPhaseNumber % client.getGameData().phases.size();
+                dout.writeInt(phaseIndex);
+                client.getGameData().phases.get(phaseIndex).serializeAction(dout, action);
             } catch (SerializationException | IOException e) {
                 Log.d("Bug", "sendPlayerAction: error while serializing");
                 e.printStackTrace();

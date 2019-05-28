@@ -76,7 +76,7 @@ public class VotePhaseServer implements GamePhaseServer {
                 }
             }
 
-            if (maxChosen.size() == 1) {
+            if (maxChosen.size() == serv.playerAliveCount()) {
                 VotePhaseGameState s = new VotePhaseGameState();
                 s.end = true;
                 s.killedPlayer = maxChosen.get(0);

@@ -4,6 +4,9 @@ import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import me.hwproj.mafiagame.networking.FullGameState;
 import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerSender;
@@ -16,8 +19,9 @@ public class Server {
     public ServerGameData currentGameData;
     public Settings settings;
 
-    public ServerSender sender; // TODO make not public
+    private ServerSender sender; // TODO make not public
 
+    // ------------ interface for ServerGame ------------
 
     public Server(@NotNull Settings settings, ServerSender sender) {
         this.settings = settings;
@@ -30,6 +34,12 @@ public class Server {
         for (GamePhase p : settings.phases) {
             currentGameData.phases.add(p.getServerPhase(this));
         }
+    }
+
+    /**
+     * Calling this to starts a server.
+     */
+    public void initialize() {
         currentGameData.nextPhase();
     }
 
@@ -39,17 +49,34 @@ public class Server {
         currentGameData.currentPhase.processPlayerAction(action);
     }
 
-    // interface for phases
+    // ------------ interface for phases ------------
+
     public void sendGameState(GameState gameState) {
         Log.d("Ok", "sendGameState: server sends a GameState " + gameState.getClass());
         sender.sendGameState(new FullGameState(currentGameData, gameState));
     }
-    // interface for phases
     public void startNextPhase() {
         currentGameData.currentPhase.onEnd();
         currentGameData.nextPhase();
         sender.sendMetaInformation(MetaInformation.nextPhase(currentGameData.phaseNumber));
     }
+
+    // not only for phases, but for effects too
+    public void addInfo(String s) {
+        currentGameData.infoToDisplay.add(s);
+    }
+
+    // -------- specifically for Info phase --------
+
+    public List<String> getInfo() {
+        return currentGameData.infoToDisplay;
+    }
+
+    public void clearInfo() {
+        currentGameData.infoToDisplay.clear();
+    }
+
+    // -------------- various getters --------------
 
     public int playerAliveCount() {
         int count = 0;

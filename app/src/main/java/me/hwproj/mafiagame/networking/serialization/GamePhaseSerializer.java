@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import me.hwproj.mafiagame.content.phases.doctor.DoctorPhase;
+import me.hwproj.mafiagame.content.phases.infoPhase.InfoPhase;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.impltest.TestPhase;
@@ -20,7 +21,8 @@ public class GamePhaseSerializer {
             new PhaseIdentifier(1, TestPhase::new, TestPhase.class),
             new PhaseIdentifier(2, VotePhase::new, VotePhase.class),
             new PhaseIdentifier(3, DoctorPhase::new, DoctorPhase.class),
-            new PhaseIdentifier(4, MafiaPhase::new, MafiaPhase.class)
+            new PhaseIdentifier(4, MafiaPhase::new, MafiaPhase.class),
+            new PhaseIdentifier(5, InfoPhase::new, InfoPhase.class)
     };
 
     public static GamePhase deserialize(InputStream stream) throws DeserializationException {

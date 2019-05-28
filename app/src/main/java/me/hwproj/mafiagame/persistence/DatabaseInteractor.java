@@ -10,6 +10,7 @@ public class DatabaseInteractor {
     public DatabaseInteractor(Context context) {
         database = Room
                 .databaseBuilder(context, AppDatabase.class, "MafiaGameDatabase")
+                .allowMainThreadQueries()
                 .build();
     }
 

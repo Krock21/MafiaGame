@@ -12,7 +12,14 @@ public class PersistentInteger {
     @NonNull
     private String tag;
     @ColumnInfo(name = "value")
+    @NonNull
     private Integer value;
+
+
+    public PersistentInteger(String tag, Integer value) {
+        this.tag = tag;
+        this.value = value;
+    }
 
     public Integer getValue() {
         return value;

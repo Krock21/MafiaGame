@@ -9,8 +9,8 @@ import java.util.List;
 
 @Dao
 public interface PersistentStringDao {
-    @Query("SELECT * FROM persistent_strings WHERE tag = :tag")
-    List<PersistentString> getByTag(String tag);
+    @Query("SELECT * FROM persistent_strings WHERE tag = :tag LIMIT 1")
+    PersistentString getByTag(String tag);
     @Insert
     void insertAll(PersistentString... strings);
     @Delete

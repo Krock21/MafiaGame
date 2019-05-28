@@ -24,7 +24,7 @@ import com.google.android.gms.tasks.Task;
 import java.util.Arrays;
 
 import me.hwproj.mafiagame.networking.NetworkData;
-import me.hwproj.mafiagame.persistence.PersistantValues;
+import me.hwproj.mafiagame.persistence.DatabaseInteractor;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
 
@@ -32,11 +32,14 @@ public class MainActivity extends AppCompatActivity {
     public static String TAG = "MafiaGame";
     private RoomConfig mJoinedRoomConfig;
     private String mMyParticipantId;
+    private static DatabaseInteractor databaseInteractor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        databaseInteractor = new DatabaseInteractor(getApplicationContext());
 
         Button createGame = findViewById(R.id.createGame);
         createGame.setOnClickListener(v -> {
@@ -62,7 +65,10 @@ public class MainActivity extends AppCompatActivity {
         });
 
         Button openSettings = findViewById(R.id.open_settings);
-        openSettings.setOnClickListener(v -> startActivity(new Intent(this, SettingsActivity.class)));
+        openSettings.setOnClickListener(v ->  {
+            Intent intent = new Intent(this, SettingsActivity.class);
+            startActivity(intent);
+        });
     }
 
     @Override
@@ -112,8 +118,6 @@ public class MainActivity extends AppCompatActivity {
                 signInOptions);
         Intent intent = signInClient.getSignInIntent();
         startActivityForResult(intent, requestCode);
-
-        new asyncSetName().execute();
     }
 
     @Override
@@ -152,29 +156,11 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
+    public static DatabaseInteractor getDatabaseInteractor() {
+        return databaseInteractor;
+    }
 
-
-    private class asyncSetName extends AsyncTask<String, Void, String> {
-
-        @Override
-        protected String doInBackground(String... strings) {
-            Log.d(TAG, "background " + Arrays.toString(strings));
-            if (strings.length != 0) {
-                String toSet = strings[strings.length - 1];
-                PersistantValues.setName(MainActivity.this, toSet);
-            }
-            return PersistantValues.name(MainActivity.this); // TODO return what was set
-        }
-
-        @Override
-        protected void onPostExecute(String nameSet) {
-            Log.d(TAG, "onPostExecute: " + nameSet);
-            TextView hello = findViewById(R.id.hello_text);
-            if (hello != null) {
-                hello.setText(nameSet);
-            } else {
-                Log.d(TAG, "onPostExecute: hello is null");
-            }
-        }
+    public static void setDatabaseInteractor(DatabaseInteractor databaseInteractor) {
+        MainActivity.databaseInteractor = databaseInteractor;
     }
 }

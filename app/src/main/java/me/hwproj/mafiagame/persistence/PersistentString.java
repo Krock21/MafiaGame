@@ -12,7 +12,13 @@ public class PersistentString {
     @NonNull
     private String tag;
     @ColumnInfo(name = "value")
+    @NonNull
     private String value;
+
+    public PersistentString(String tag, String value) {
+        this.tag = tag;
+        this.value = value;
+    }
 
     public String getValue() {
         return value;

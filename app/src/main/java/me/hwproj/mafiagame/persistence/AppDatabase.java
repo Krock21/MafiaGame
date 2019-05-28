@@ -12,7 +12,7 @@ import me.hwproj.mafiagame.persistence.PersistentString;
 
 import java.util.List;
 
-@Database(entities = {PersistentString.class}, version = 1, exportSchema = false)
+@Database(entities = {PersistentString.class, PersistentInteger.class}, version = 1, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
     public abstract PersistentStringDao persistentStringDao();
     public abstract PersistentIntegerDao persistentIntegerDao();

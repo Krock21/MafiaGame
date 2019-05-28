@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
 import me.hwproj.mafiagame.persistence.PersistentString;
 import me.hwproj.mafiagame.persistence.PersistentStringDao;
 
@@ -21,18 +22,13 @@ public class SettingsActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_settings);
 
+        AppDatabaseInteractor di = new AppDatabaseInteractor(getApplicationContext());
+
         EditText name = findViewById(R.id.myName);
-        PersistentStringDao stringDao = MainActivity.getDatabaseInteractor().getDatabase().persistentStringDao();
-        if(stringDao.getByTag("name") != null) {
-            name.setText(stringDao.getByTag("name").getValue());
-        }
+        name.setText(di.loadName());
         Button setName = findViewById(R.id.setName);
         setName.setOnClickListener(v -> {
-            PersistentStringDao dao = MainActivity.getDatabaseInteractor().getDatabase().persistentStringDao();
-            if(dao.getByTag("name") != null) {
-                dao.delete(dao.getByTag("name"));
-            }
-            dao.insertAll(new PersistentString("name", name.getText().toString()));
+            di.saveName(name.getText().toString());
         });
     }
 }

@@ -24,22 +24,21 @@ import com.google.android.gms.tasks.Task;
 import java.util.Arrays;
 
 import me.hwproj.mafiagame.networking.NetworkData;
+import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
 import me.hwproj.mafiagame.persistence.DatabaseInteractor;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
 
 public class MainActivity extends AppCompatActivity {
     public static String TAG = "MafiaGame";
-    private RoomConfig mJoinedRoomConfig;
-    private String mMyParticipantId;
-    private static DatabaseInteractor databaseInteractor;
+    private static AppDatabaseInteractor databaseInteractor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        databaseInteractor = new DatabaseInteractor(getApplicationContext());
+        databaseInteractor = new AppDatabaseInteractor(getApplicationContext());
 
         Button createGame = findViewById(R.id.createGame);
         createGame.setOnClickListener(v -> {
@@ -74,6 +73,10 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+
+        TextView hello = findViewById(R.id.hello_text);
+        hello.setText("Hi " + getDatabaseInteractor().loadName());
+
         signInSilently(new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
                         .requestEmail().build(),
                 RC_GAMES_SIGN_IN);
@@ -156,11 +159,8 @@ public class MainActivity extends AppCompatActivity {
                 });
     }
 
-    public static DatabaseInteractor getDatabaseInteractor() {
+    public static AppDatabaseInteractor getDatabaseInteractor() {
         return databaseInteractor;
     }
 
-    public static void setDatabaseInteractor(DatabaseInteractor databaseInteractor) {
-        MainActivity.databaseInteractor = databaseInteractor;
-    }
 }

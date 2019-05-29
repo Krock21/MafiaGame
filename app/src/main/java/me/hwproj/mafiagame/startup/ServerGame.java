@@ -11,17 +11,15 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
 import me.hwproj.mafiagame.MainActivity;
 import me.hwproj.mafiagame.content.phases.infoPhase.InfoPhase;
-import me.hwproj.mafiagame.gameflow.Player;
+import me.hwproj.mafiagame.content.phases.wait.WaitPhase;
 import me.hwproj.mafiagame.gameflow.PlayerSettings;
 import me.hwproj.mafiagame.networking.messaging.ServerByteSender;
 import me.hwproj.mafiagame.gameflow.Server;
@@ -51,18 +49,16 @@ public class ServerGame {
     }
 
     /**
-     * Tries to initialize server. If it is not ready yet, does nothing and returns false.
-     * @return if initialization succeeded
+     * Tries to initialize server.
      */
-    public boolean initialize(@NotNull Settings settings) {
-//        List<GamePhase> actualPhases = new ArrayList<>();
-//        actualPhases.add(new InfoPhase());
-//        for (GamePhase phase : settings.phases) {
-//            actualPhases.add(new InfoPhase());
-//            actualPhases.add(phase);
-//        }
-//        settings.phases = actualPhases;
-        settings.phases.add(0, new InfoPhase());
+    public void initialize(@NotNull Settings settings) {
+        List<GamePhase> actualPhases = new ArrayList<>();
+        actualPhases.add(new InfoPhase());
+        for (GamePhase phase : settings.phases) {
+            actualPhases.add(phase);
+            actualPhases.add(new WaitPhase());
+        }
+        settings.phases = actualPhases;
         this.settings = settings;
 
         Collections.shuffle(settings.playerSettings);
@@ -90,7 +86,6 @@ public class ServerGame {
 
         server.initialize();
 
-        return true;
     }
 
     public void receiveClientMessage(byte[] message, String id) throws DeserializationException {

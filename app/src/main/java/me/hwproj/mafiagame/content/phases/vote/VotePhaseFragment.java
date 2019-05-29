@@ -45,7 +45,7 @@ public class VotePhaseFragment extends PhaseFragment {
 
         } else {
             for (int i = 0; i < s.cantChoose.length; i++) {
-                pick.setEnablePickingRow(i, s.cantChoose[i] && (i != client.thisPlayerId()));
+                pick.setEnablePickingRow(i, !s.cantChoose[i]);
             }
         }
     }
@@ -69,8 +69,6 @@ public class VotePhaseFragment extends PhaseFragment {
 
         TableLayout table = view.findViewById(R.id.voteTable);
         pick = new TablePick(getActivity(), client.getGameData(), table, 1, 0, true);
-
-        pick.setEnablePickingRow(client.thisPlayerId(), false);
 
         for (int playerId = 0; playerId < client.playerCount(); playerId++) {
             if (client.getGameData().players.get(playerId).dead) {

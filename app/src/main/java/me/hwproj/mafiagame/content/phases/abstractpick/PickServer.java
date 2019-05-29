@@ -60,6 +60,8 @@ public abstract class PickServer implements GamePhaseServer {
 
     @Override
     public void initPhase() {
+        fixedCount = 0;
+
         List<Integer> thisRoleIds = new ArrayList<>();
         for (int i = 0; i < serv.playerCount(); i++) {
             Player p = serv.currentGameData.players.get(i);

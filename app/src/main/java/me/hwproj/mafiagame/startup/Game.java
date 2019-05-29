@@ -8,6 +8,8 @@ import me.hwproj.mafiagame.MainActivity;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
+import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
+import me.hwproj.mafiagame.persistence.DatabaseInteractor;
 
 public class Game {
 
@@ -69,10 +71,7 @@ public class Game {
     }
 
     private void initClient() {
-        String name = "client";
-        if (isServer) {
-            name = "server";
-        }
+        String name = new AppDatabaseInteractor(activity).loadName();
 
         clientGame = new ClientGame(activity.senders.clientSender, activity, activity::transactionProvider, name, this::onClientEnd);
         activity.setClientCallback(message -> {

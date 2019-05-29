@@ -11,7 +11,7 @@ import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PhaseFragment;
 import me.hwproj.mafiagame.phases.PlayerAction;
 
-class WaitClient implements GamePhaseClient {
+public class WaitClient implements GamePhaseClient {
     @Override
     public PhaseFragment createFragment(Client client) {
         return new WaitFragment(client);

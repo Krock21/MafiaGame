@@ -68,7 +68,7 @@ public class FullGameState {
             try {
                 phases.get(phaseNumber % phases.size()).serializeGameState(data, phaseState);
             } catch (SerializationException e) {
-                Log.d("Bug", "serialize state: phaseNumber = " + phaseNumber + ", phase state " + phaseState.getClass());
+                Log.d("Bug", "serialize state: phaseNumber = " + phaseNumber + ", phase state " + phaseState.getClass() + ", phase " + phases.get(phaseNumber % phases.size()).getClass());
                 throw new SerializationException(e);
             }
         } catch (IOException e) {

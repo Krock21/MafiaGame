@@ -1,7 +1,6 @@
 package me.hwproj.mafiagame;
 
 import android.content.Intent;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.widget.Button;
@@ -17,15 +16,12 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInClient;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
-import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
-import java.util.Arrays;
-
 import me.hwproj.mafiagame.networking.NetworkData;
 import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
-import me.hwproj.mafiagame.persistence.DatabaseInteractor;
+import me.hwproj.mafiagame.util.NotifierInterractor;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
 

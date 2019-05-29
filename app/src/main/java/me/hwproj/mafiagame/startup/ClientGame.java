@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import me.hwproj.mafiagame.MainActivity;
+import me.hwproj.mafiagame.content.phases.wait.WaitClient;
 import me.hwproj.mafiagame.networking.messaging.ClientByteSender;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Client;
@@ -28,6 +29,7 @@ import me.hwproj.mafiagame.phases.GameState;
 import me.hwproj.mafiagame.phases.PhaseFragment;
 import me.hwproj.mafiagame.phases.PlayerAction;
 import me.hwproj.mafiagame.util.Alerter;
+import me.hwproj.mafiagame.util.NotifierInterractor;
 
 public class ClientGame {
     public static final byte INIT_PACKAGE_HEADER = 3;
@@ -192,7 +194,14 @@ public class ClientGame {
                 onClientKilled();
                 return;
             }
+
             startPhaseFragment(client.nextPhaseFragment());
+
+            // TODO make vibration a callback for Client and remove this nonsense
+            if (client.getGameData().currentPhase.getClass() != WaitClient.class) {
+                NotifierInterractor.vibrate(activityReference.getApplicationContext(), 200);
+                NotifierInterractor.playClick(activityReference.findViewById(R.id.testid)); // TODO FIX THIS
+            }
             thisPhaseNumber++;
         }
     }

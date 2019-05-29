@@ -11,25 +11,38 @@ public class ServerGameData {
     public List<Player> players = new ArrayList<>();
     public List<GamePhaseServer> phases = new ArrayList<>();
     public GamePhaseServer currentPhase;
-    public int phaseNumber = 0;
+    public int phaseNumber = -1;
 
     public final List<String> infoToDisplay = new ArrayList<>();
 
     public ServerGameData() {
     }
 
-    public void nextPhase() {
-        if (currentPhase == null) {
-            currentPhase = phases.get(0);
-        } else {
-            phaseNumber++;
-            currentPhase = phases.get(phaseNumber % phases.size());
-            if (phaseNumber % phases.size() == 0) { // TODO add night results here
-                applyEffects();
-            }
+    public void endThisPhase() {
+        currentPhase = null;
+    }
+
+    public void startNextPhase() {
+        phaseNumber++;
+        if (phaseNumber % phases.size() == 0) { // TODO add night results here
+            applyEffects();
         }
+        currentPhase = phases.get(phaseNumber % phases.size());
         currentPhase.initPhase();
     }
+//
+//    public void nextPhase() {
+//        phaseNumber++;
+//        if (currentPhase == null) {
+//            currentPhase = phases.get(0);
+//        } else {
+//            currentPhase = phases.get(phaseNumber % phases.size());
+//            if (phaseNumber % phases.size() == 0) { // TODO add night results here
+//                applyEffects();
+//            }
+//        }
+//        currentPhase.initPhase();
+//    }
 
     private void applyEffects() {
         for (Player p : players) {

@@ -24,6 +24,9 @@ public class MafiaFragment extends PickFragment {
 
     @Override
     protected void onPickComplete(int pickedPlayer) {
+        if (isNotYourTurn()) {
+            return;
+        }
         Player victim = client.getGameData().players.get(pickedPlayer);
         alert(getContext(), "Murder log", victim.name + " was murdered by you");
     }

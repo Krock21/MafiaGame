@@ -35,7 +35,13 @@ public class VotePhaseFragment extends PhaseFragment {
         VotePhaseGameState s = (VotePhaseGameState) state;
 
         if (s.end) {
-            alert(getContext(), "Evening news", client.getGameData().players.get(s.killedPlayer).name + " was killed today");
+            String alersString;
+            if (s.killedPlayer < client.playerCount()) {
+                alersString = client.getGameData().players.get(s.killedPlayer).name + " was killed today";
+            } else {
+                alersString = "Nothing interesting happened this day";
+            }
+            alert(getContext(), "Evening news", alersString);
 
         } else {
             for (int i = 0; i < s.cantChoose.length; i++) {
@@ -62,7 +68,7 @@ public class VotePhaseFragment extends PhaseFragment {
         View view = inflater.inflate(R.layout.vote_phase, container, false);
 
         TableLayout table = view.findViewById(R.id.voteTable);
-        pick = new TablePick(getActivity(), client.getGameData(), table, 1);
+        pick = new TablePick(getActivity(), client.getGameData(), table, 1, 0, true);
 
         pick.setEnablePickingRow(client.thisPlayerId(), false);
 

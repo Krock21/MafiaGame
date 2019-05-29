@@ -27,6 +27,9 @@ public class DoctorFragment extends PickFragment {
 
     @Override
     protected void onPickComplete(int pickedPlayer) {
+        if (isNotYourTurn()) {
+            return;
+        }
         Player patient = client.getGameData().players.get(pickedPlayer);
         pickedSelf.set(pickedPlayer == client.thisPlayerId());
         alert(getContext(), "Healing log", "You healed " + patient.name);

@@ -32,7 +32,7 @@ public class VotePhaseServer implements GamePhaseServer {
         playersChoices = new int[playerCount];
         Arrays.fill(playersChoices, -1);
         choiceFixed = new boolean[playerCount];
-        cantChoose = new boolean[playerCount];
+        cantChoose = new boolean[playerCount + 1];
         fixedCount = 0;
     }
 
@@ -45,19 +45,24 @@ public class VotePhaseServer implements GamePhaseServer {
         VotePhasePlayerAction castedAction = (VotePhasePlayerAction) action;
         int p = castedAction.thisPlayer;
 
-        if (cantChoose[castedAction.chosenPlayerNumber]) {
+        if (castedAction.chosenPlayerNumber > 0 && cantChoose[castedAction.chosenPlayerNumber]) {
             return; // probably old
         }
 
         playersChoices[p] = castedAction.chosenPlayerNumber;
 
+        if (castedAction.chosenPlayerNumber < 0) {
+            castedAction.fixed = false; // cant fix on not choosing
+        }
+
         // update choiceFixed[p] and fixedCount
         updateFixed(p, castedAction.fixed);
 
-        if (fixedCount == 1) {
-//        if (fixedCount == serv.playerAliveCount()) { TODO DEBUG replace if condition
+//        if (fixedCount == 1) {
+        if (fixedCount == serv.playerAliveCount()) { //
             Log.d("qwe", Arrays.toString(playersChoices));
-            int[] chosenBy = new int[serv.playerCount()];
+
+            int[] chosenBy = new int[serv.playerCount() + 1]; // +1 for peace
             for (int i = 0; i < serv.playerCount(); i++) {
                 if (playersChoices[i] != -1) {
                     chosenBy[playersChoices[i]]++;
@@ -66,7 +71,7 @@ public class VotePhaseServer implements GamePhaseServer {
 
             int maxVotes = -1;
             List<Integer> maxChosen = new ArrayList<>();
-            for (int i = 0; i < serv.playerCount(); i++) {
+            for (int i = 0; i < chosenBy.length; i++) {
                 if (chosenBy[i] > maxVotes) {
                     maxVotes = chosenBy[i];
                     maxChosen.clear();
@@ -76,12 +81,14 @@ public class VotePhaseServer implements GamePhaseServer {
                 }
             }
 
-            if (maxChosen.size() == serv.playerAliveCount()) {
+            if (maxChosen.size() == 1) {
                 VotePhaseGameState s = new VotePhaseGameState();
                 s.end = true;
                 s.killedPlayer = maxChosen.get(0);
-                serv.currentGameData.players.get(s.killedPlayer).dead = true;
-                Log.d("qwe", "processPlayerAction: killed " + s.killedPlayer);
+                if (s.killedPlayer != serv.playerCount()) {
+                    serv.currentGameData.players.get(s.killedPlayer).dead = true;
+                    Log.d("qwe", "processPlayerAction: killed " + s.killedPlayer);
+                }
                 serv.sendGameState(s);
                 serv.startNextPhase();
             } else {

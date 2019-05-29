@@ -40,7 +40,7 @@ public class Server {
      * Calling this to starts a server.
      */
     public void initialize() {
-        currentGameData.nextPhase();
+        currentGameData.startNextPhase();
     }
 
     public void acceptPlayerAction(PlayerAction action) {
@@ -57,7 +57,8 @@ public class Server {
     }
     public void startNextPhase() {
         currentGameData.currentPhase.onEnd();
-        currentGameData.nextPhase();
+        currentGameData.endThisPhase();
+        currentGameData.startNextPhase();
         sender.sendMetaInformation(MetaInformation.nextPhase(currentGameData.phaseNumber));
     }
 

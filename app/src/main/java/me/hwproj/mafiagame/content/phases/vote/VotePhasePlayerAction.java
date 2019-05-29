@@ -11,7 +11,7 @@ import me.hwproj.mafiagame.phases.PlayerAction;
 
 public class VotePhasePlayerAction extends PlayerAction {
     public final int chosenPlayerNumber;
-    public final boolean fixed;
+    public boolean fixed;
     public final int thisPlayer;
     public VotePhasePlayerAction(int chosenPlayerNumber, boolean fixed, int thisPlayer) {
         this.chosenPlayerNumber = chosenPlayerNumber;

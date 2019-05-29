@@ -28,6 +28,10 @@ abstract public class PickFragment extends PhaseFragment {
     private int currentPick = -1;
     private boolean notYourTurn;
 
+    protected boolean isNotYourTurn() {
+        return notYourTurn;
+    }
+
     public PickFragment(Client client, Role pickersRole, boolean pickSelfRole) {
         super(client);
         this.pickSelfRole = pickSelfRole;
@@ -61,7 +65,7 @@ abstract public class PickFragment extends PhaseFragment {
 
         View view = inflater.inflate(R.layout.generic_pick, container, false);
 
-        if (notYourTurn) {
+        if (isNotYourTurn()) {
             TextView text = view.findViewById(R.id.pickNotYourTurn);
             text.setText("Not your turn");
             return view;
@@ -109,6 +113,10 @@ abstract public class PickFragment extends PhaseFragment {
         if (data.end) {
             Log.d("pick", "processPickedState: end");
             onPickComplete(data.pickedPlayer);
+            return;
+        }
+
+        if (isNotYourTurn()) {
             return;
         }
 

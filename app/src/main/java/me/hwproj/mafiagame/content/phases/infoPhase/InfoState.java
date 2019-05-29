@@ -11,6 +11,7 @@ import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phases.GameState;
 
 public class InfoState extends GameState {
+//    private final boolean
     private final List<String> phasesInformation;
 
     public InfoState(List<String> phasesInformation) {

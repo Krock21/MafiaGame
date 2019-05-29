@@ -10,10 +10,12 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
@@ -29,6 +31,7 @@ import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerSender;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
+import me.hwproj.mafiagame.phases.GamePhase;
 import me.hwproj.mafiagame.phases.PlayerAction;
 
 public class ServerGame {
@@ -52,6 +55,13 @@ public class ServerGame {
      * @return if initialization succeeded
      */
     public boolean initialize(@NotNull Settings settings) {
+//        List<GamePhase> actualPhases = new ArrayList<>();
+//        actualPhases.add(new InfoPhase());
+//        for (GamePhase phase : settings.phases) {
+//            actualPhases.add(new InfoPhase());
+//            actualPhases.add(phase);
+//        }
+//        settings.phases = actualPhases;
         settings.phases.add(0, new InfoPhase());
         this.settings = settings;
 

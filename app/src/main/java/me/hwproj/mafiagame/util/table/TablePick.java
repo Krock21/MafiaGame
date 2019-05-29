@@ -25,18 +25,23 @@ public class TablePick {
     private final RadiobuttonList[] columnsButtons;
 
     public TablePick(Context context, ClientGameData data, TableLayout table, int enabledCount) {
-        this(context, data, table, enabledCount, 0);
+        this(context, data, table, enabledCount, 0, false);
     }
 
-    public TablePick(Context context, ClientGameData data, TableLayout table, int enabledCount, int disabledCount) {
+    public TablePick(Context context, ClientGameData data, TableLayout table, int enabledCount, int disabledCount, boolean addNobodyRow) {
+        int rowCount = data.players.size();
+        if (addNobodyRow) {
+            rowCount++;
+        }
+
         this.data = data;
         this.columns = enabledCount + disabledCount;
-        disabledRows = new boolean[data.players.size()];
+        disabledRows = new boolean[rowCount];
         this.disabledColumns = new boolean[columns];
         this.columnsButtons = new RadiobuttonList[columns];
 
         for (int columnId = 0; columnId < columns; columnId++) {
-            columnsButtons[columnId] = new RadiobuttonList(context, data.players.size());
+            columnsButtons[columnId] = new RadiobuttonList(context, rowCount);
         }
         for (int disabledColumnId = enabledCount; disabledColumnId < columns; disabledColumnId++) {
             setEnablePickingColumn(disabledColumnId, false);
@@ -55,6 +60,22 @@ public class TablePick {
 
             for (int columnId = 0; columnId < columns; columnId++) {
                 row.addView(columnsButtons[columnId].getButton(playerId));
+            }
+
+            table.addView(row);
+        }
+
+        if (addNobodyRow) {
+            TableRow row = new TableRow(context);
+            row.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.WRAP_CONTENT));
+
+            TextView name = new TextView(context);
+            name.setText("Nobody");
+            row.addView(name);
+
+            for (int columnId = 0; columnId < columns; columnId++) {
+                row.addView(columnsButtons[columnId].getButton(rowCount - 1));
             }
 
             table.addView(row);

@@ -1,5 +1,6 @@
 package me.hwproj.mafiagame.startup;
 
+import android.content.Intent;
 import android.util.Log;
 
 import me.hwproj.mafiagame.GameConfigureFragment;
@@ -89,5 +90,11 @@ public class Game {
     private void onClientEnd() {
         // stop receiving client packages
         activity.setClientCallback(null);
+        // and stop sending packages
+        activity.senders.clientSender = null;
+
+        // don't ruin server
+        // TODO end this somehow
+//        activity.startActivity(new Intent(activity, MainActivity.class));
     }
 }

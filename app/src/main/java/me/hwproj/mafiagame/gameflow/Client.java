@@ -23,7 +23,7 @@ import me.hwproj.mafiagame.util.Alerter;
 public class Client {
 
     private final int thisPlayer;
-    private final Consumer<GameState> gameStateHandler;
+    private final ClientCallbacks callbacks;
 
     // from activity
     public void sendPlayerAction(PlayerAction action) {
@@ -47,7 +47,7 @@ public class Client {
     private void receiveState(FullGameState state) {
         Log.d("qwe", "receiveState: received");
         getGameData().update(state);
-        gameStateHandler.accept(state.getPhaseState());
+        callbacks.handleGameState(state.getPhaseState());
     }
 
     private void handlePackage(ServerNetworkPackage pack) {
@@ -69,7 +69,19 @@ public class Client {
         Log.d("Ok", "receiveMeta: accepting meta");
         if (metaInformation.what() == MetaInformation.NEXT_PHASE) {
             startNextPhase(metaInformation.getNumber());
+        } else if (metaInformation.what() == MetaInformation.END_GAME) {
+            String finishMessage;
+            if (metaInformation.getGoodWon()) {
+                finishMessage = "Good won";
+            } else {
+                finishMessage = "Bad won";
+            }
+            finishGame(finishMessage);
         }
+    }
+
+    private void finishGame(String finishMessage) {
+        callbacks.finishGame(finishMessage);
     }
 
     private ClientGameData currentGameState;
@@ -80,8 +92,8 @@ public class Client {
     private MutableLiveData<ServerNetworkPackage> packageData = new MutableLiveData<>();
     private final ConcurrentLinkedQueue<ServerNetworkPackage> packageQueue = new ConcurrentLinkedQueue<>();
 
-    public Client(ClientSender sender, Settings settings, int thisPlayer, Consumer<GameState> gameStateHandler) {
-        this.gameStateHandler = gameStateHandler;
+    public Client(ClientSender sender, Settings settings, int thisPlayer, ClientCallbacks callbacks) {
+        this.callbacks = callbacks;
         currentGameState = new ClientGameData();
         for (GamePhase p : settings.phases) {
             currentGameState.phases.add(p.getClientPhase());

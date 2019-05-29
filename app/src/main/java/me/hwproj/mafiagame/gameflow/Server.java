@@ -56,10 +56,32 @@ public class Server {
         sender.sendGameState(new FullGameState(currentGameData, gameState));
     }
     public void startNextPhase() {
-        currentGameData.currentPhase.onEnd();
+        if (currentGameData.currentPhase != null) {
+            currentGameData.currentPhase.onEnd();
+        }
+
         currentGameData.endThisPhase();
+
+        boolean anyGoodAlive = false;
+        boolean anyBadAlive = false;
+        for (Player p : currentGameData.players) {
+            if (!p.dead) {
+                anyBadAlive |= !p.role.isGood();
+                anyGoodAlive |= p.role.isGood();
+            }
+        }
+
+        if (!anyBadAlive || !anyGoodAlive) {
+            finishGame(anyGoodAlive);
+            return;
+        }
+
         currentGameData.startNextPhase();
         sender.sendMetaInformation(MetaInformation.nextPhase(currentGameData.phaseNumber));
+    }
+
+    private void finishGame(boolean goodWon) {
+        sender.sendMetaInformation(MetaInformation.endGame(goodWon));
     }
 
     // not only for phases, but for effects too

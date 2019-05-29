@@ -16,6 +16,7 @@ import java.io.InputStream;
 
 import me.hwproj.mafiagame.MainActivity;
 import me.hwproj.mafiagame.content.phases.wait.WaitClient;
+import me.hwproj.mafiagame.gameflow.ClientCallbacks;
 import me.hwproj.mafiagame.networking.messaging.ClientByteSender;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Client;
@@ -135,7 +136,18 @@ public class ClientGame {
             Log.d("Bug", "initialise: double initialization");
             return;
         }
-        client = new Client(new SenderConverter(), init.getGameSettings(), init.getPlayerNumber(), this::dealWithGameState);
+        client = new Client(new SenderConverter(), init.getGameSettings(), init.getPlayerNumber(), new ClientCallbacks() {
+            @Override
+            public void handleGameState(GameState state) {
+                dealWithGameState(state);
+            }
+
+            @Override
+            public void finishGame(String message) {
+                Alerter.alert(activityReference, "Game finished", message);
+                onClientEndCallback.run();
+            }
+        });
         initialised = true;
 
         client.getPhaseNumberData().observe(activityReference, this::dealWithPhaseNumber);

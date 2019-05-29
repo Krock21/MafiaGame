@@ -4,9 +4,19 @@ import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 
 public enum Role {
-    CITIZEN,
-    MAFIA,
-    DOCTOR;
+    CITIZEN(true),
+    MAFIA(false),
+    DOCTOR(true);
+
+    private final boolean good;
+
+    Role(boolean good) {
+        this.good = good;
+    }
+
+    public boolean isGood() {
+        return good;
+    }
 
     public static Role deserialize(byte num) throws DeserializationException {
         switch (num) {

@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import me.hwproj.mafiagame.content.phases.doctor.DoctorPhase;
+import me.hwproj.mafiagame.content.phases.investigator.InvPhase;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.gameflow.PlayerSettings;
@@ -47,6 +48,7 @@ public class GameConfigureFragment extends Fragment {
 
     private int mafiaCount;
     private int doctorCount;
+    private int investigatorCount;
 
     public GameConfigureFragment() {
         // Required empty public constructor
@@ -95,6 +97,15 @@ public class GameConfigureFragment extends Fragment {
                 doctorCount = 0;
             }
         });
+        CheckBox investigatorCheckBox = v.findViewById(R.id.investigatorCheckbox);
+        investigatorCheckBox.setOnCheckedChangeListener((ignored, isChecked) -> {
+            if (isChecked) {
+                investigatorCount = 1;
+            } else {
+                investigatorCount = 0;
+            }
+        });
+
 
         Button tryToStartGame = v.findViewById(R.id.completeSettings);
         tryToStartGame.setOnClickListener(ignored -> startGame());
@@ -110,7 +121,7 @@ public class GameConfigureFragment extends Fragment {
             return;
         }
 
-        int configuredPlayers = mafiaCount + doctorCount;
+        int configuredPlayers = mafiaCount + doctorCount + investigatorCount;
         if (configuredPlayers > playerCount) {
             Alerter.alert(getContext(), "Error", "Too many roles selected");
             return;
@@ -123,6 +134,9 @@ public class GameConfigureFragment extends Fragment {
         for (int i = 0; i < doctorCount; i++) {
             roles.add(new PlayerSettings(Role.DOCTOR, "configure later"));
         }
+        for (int i = 0; i < investigatorCount; i++) {
+            roles.add(new PlayerSettings(Role.INVESTIGATOR, "configure later"));
+        }
         for (int i = 0; i < playerCount - configuredPlayers; i++) {
             roles.add(new PlayerSettings(Role.CITIZEN, "configure later"));
         }
@@ -133,6 +147,9 @@ public class GameConfigureFragment extends Fragment {
         phases.add(new MafiaPhase());
         if (doctorCount > 0) {
             phases.add(new DoctorPhase());
+        }
+        if (investigatorCount > 0) {
+            phases.add(new InvPhase());
         }
 
         Settings settings = new Settings(phases, roles);

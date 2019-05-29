@@ -6,7 +6,8 @@ import me.hwproj.mafiagame.networking.serialization.SerializationException;
 public enum Role {
     CITIZEN(true),
     MAFIA(false),
-    DOCTOR(true);
+    DOCTOR(true),
+    INVESTIGATOR(true);
 
     private final boolean good;
 
@@ -23,6 +24,7 @@ public enum Role {
             case 1: return CITIZEN;
             case 2: return MAFIA;
             case 3: return DOCTOR;
+            case 4: return INVESTIGATOR;
             default: throw new DeserializationException("Unrecognized role");
         }
     }
@@ -32,6 +34,7 @@ public enum Role {
             case CITIZEN: return 1;
             case MAFIA: return 2;
             case DOCTOR: return 3;
+            case INVESTIGATOR: return 4;
             default: throw new SerializationException("Unrecognized role");
         }
     }

@@ -11,6 +11,7 @@ import java.io.InputStream;
 
 import me.hwproj.mafiagame.content.phases.doctor.DoctorPhase;
 import me.hwproj.mafiagame.content.phases.infoPhase.InfoPhase;
+import me.hwproj.mafiagame.content.phases.investigator.InvPhase;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.content.phases.wait.WaitPhase;
@@ -24,7 +25,8 @@ public class GamePhaseSerializer {
             new PhaseIdentifier(3, DoctorPhase::new, DoctorPhase.class),
             new PhaseIdentifier(4, MafiaPhase::new, MafiaPhase.class),
             new PhaseIdentifier(5, InfoPhase::new, InfoPhase.class),
-            new PhaseIdentifier(6, WaitPhase::new, WaitPhase.class)
+            new PhaseIdentifier(6, WaitPhase::new, WaitPhase.class),
+            new PhaseIdentifier(7, InvPhase::new, InvPhase.class)
     };
 
     public static GamePhase deserialize(InputStream stream) throws DeserializationException {

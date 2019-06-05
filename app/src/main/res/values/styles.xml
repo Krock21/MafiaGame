@@ -17,4 +17,8 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
+    <style name="ColoredElement" parent="ThemeOverlay.AppCompat">
+        <item name='android:colorAccent'>@color/colorButton</item>
+    </style>
+
 </resources>

@@ -55,7 +55,7 @@ public class TablePick {
                     ViewGroup.LayoutParams.WRAP_CONTENT));
 
             TextView name = new TextView(context);
-            name.setText(currentPlayer.name);
+            name.setText(String.format("%s%s", currentPlayer.name, currentPlayer.dead ? " X_X" : ""));
             row.addView(name);
 
             for (int columnId = 0; columnId < columns; columnId++) {

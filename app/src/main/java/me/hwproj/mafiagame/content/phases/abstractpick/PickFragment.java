@@ -67,7 +67,7 @@ abstract public class PickFragment extends PhaseFragment {
 
         if (isNotYourTurn()) {
             TextView text = view.findViewById(R.id.pickNotYourTurn);
-            text.setText("Not your turn");
+            text.setText(getString(R.string.not_your_turn));
             return view;
         }
 

@@ -45,4 +45,5 @@
     <string name="final_button">final</string>
     <string name="next_button">next</string>
     <string name="go_to_sleep">go to sleep now</string>
+    <string name="not_your_turn">Not your turn</string>
 </resources>

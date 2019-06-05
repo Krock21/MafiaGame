@@ -35,4 +35,9 @@ public class InfoClient implements GamePhaseClient {
             throw new SerializationException(e);
         }
     }
+
+    @Override
+    public String toolbarText() {
+        return "Information";
+    }
 }

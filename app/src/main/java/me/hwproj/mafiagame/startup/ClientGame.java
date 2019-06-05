@@ -2,8 +2,10 @@ package me.hwproj.mafiagame.startup;
 
 import android.util.Log;
 import android.widget.Button;
+import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.core.util.Supplier;
 import androidx.fragment.app.FragmentTransaction;
 
@@ -48,6 +50,7 @@ public class ClientGame {
     private PhaseFragment currentPhaseFragment;
     private int thisPhaseNumber = -1;
 
+    // TODO give it callbacks
     public ClientGame(ClientByteSender sender, AppCompatActivity activityReference, Supplier<FragmentTransaction> transactionSupplier, String desiredName, Runnable onClientEnd) {
         this.sender = sender;
         this.activityReference = activityReference;
@@ -147,6 +150,11 @@ public class ClientGame {
                 Alerter.alert(activityReference, "Game finished", message);
                 onClientEndCallback.run();
             }
+
+            @Override
+            public void setToolbarText(String text) {
+                ClientGame.this.setToolbarText(text);
+            }
         });
         initialised = true;
 
@@ -172,9 +180,6 @@ public class ClientGame {
 //        }
 
         transactionSupplier.get().add(R.id.fragmentLayout, fg).commit();
-
-        Button b = activityReference.findViewById(R.id.testid); // TODO delete
-        b.setText(fg.getClass().getName());
     }
 
     // handler
@@ -212,7 +217,7 @@ public class ClientGame {
             // TODO make vibration a callback for Client and remove this nonsense
             if (client.getGameData().currentPhase.getClass() != WaitClient.class) {
                 NotifierInterractor.vibrate(activityReference.getApplicationContext(), 200);
-                NotifierInterractor.playClick(activityReference.findViewById(R.id.testid)); // TODO FIX THIS
+                NotifierInterractor.playClick(activityReference.findViewById(R.id.fragmentLayout));
             }
             thisPhaseNumber++;
         }
@@ -222,6 +227,12 @@ public class ClientGame {
         client.onThisPlayerKilled();
         Alerter.alert(activityReference, "You died", "Any last words?");
         onClientEndCallback.run();
+    }
+
+    private void setToolbarText(String text) {
+        Toolbar toolbar = activityReference.findViewById(R.id.toolbar);
+        TextView toolbarText = toolbar.findViewById(R.id.toolbarTextView);
+        toolbarText.setText(text);
     }
 
     private class SenderConverter implements ClientSender {

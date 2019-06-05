@@ -34,6 +34,7 @@ public class Client {
     // from activity.
     public PhaseFragment nextPhaseFragment() {
         currentGameState.nextPhase();
+        callbacks.setToolbarText(currentGameState.currentPhase.toolbarText());
         return currentGameState.currentPhase.createFragment(this);
     }
 

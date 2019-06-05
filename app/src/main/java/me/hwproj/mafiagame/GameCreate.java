@@ -72,39 +72,14 @@ public class GameCreate extends AppCompatActivity implements GameConfigureFragme
         setContentView(R.layout.activity_game_create);
         NetworkData.setRealTimeMultiplayerClient(makeRealTimeMultiplayerClient());
 
-        Button config = findViewById(R.id.configure);
-        config.setOnClickListener(v -> {
-            minPlayerCount = 1;
-            maxPlayerCount = 7;
-        });
-
-        Button getRealTimeMultiplayerClient = findViewById(R.id.getRealTimeMultiplayerClient);
-        getRealTimeMultiplayerClient.setOnClickListener(v -> {
-            NetworkData.setRealTimeMultiplayerClient(makeRealTimeMultiplayerClient());
-        });
-
-        Button makeRoom = findViewById(R.id.makeRoom); // a button for you
+        Button makeRoom = findViewById(R.id.makeRoom);
         makeRoom.setOnClickListener(v -> {
-            //startActivity(new Intent(this, PhaseActivity.class));
             invitePlayers(minPlayerCount, maxPlayerCount);
         });
 
-        Button checkForInvitation = findViewById(R.id.checkForInvitation);
-        checkForInvitation.setOnClickListener(v -> {
-            checkForInvitation();
-        });
-
         Button invitationInbox = findViewById(R.id.invitationInbox);
-        invitationInbox.setOnClickListener(v -> {
-            showInvitationInbox();
-        });
+        invitationInbox.setOnClickListener(v -> showInvitationInbox());
 
-        Button start = findViewById(R.id.test_run);
-//        start.setOnClickListener(v -> {
-//            if (isServer) {
-//                serverGame.initialize();
-//            }
-//        });
         game = new Game(this);
     }
 

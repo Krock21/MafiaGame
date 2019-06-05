@@ -31,4 +31,9 @@ public class MafiaClient implements GamePhaseClient {
         }
         ((MafiaAction) action).getPickAction().serialize(dataOutput);
     }
+
+    @Override
+    public String toolbarText() {
+        return "Mafia's turn";
+    }
 }

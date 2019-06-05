@@ -2,6 +2,9 @@ package me.hwproj.mafiagame.startup;
 
 import android.content.Intent;
 import android.util.Log;
+import android.widget.TextView;
+
+import androidx.appcompat.widget.Toolbar;
 
 import me.hwproj.mafiagame.GameConfigureFragment;
 import me.hwproj.mafiagame.GameCreate;
@@ -46,14 +49,16 @@ public class Game {
 
     public void onRoomFinished(int playerCount) {
         activity.setContentView(R.layout.activity_phase); // !!
+        Toolbar toolbar = activity.findViewById(R.id.toolbar);
+        activity.setSupportActionBar(toolbar);
+        TextView toolbarText = toolbar.findViewById(R.id.toolbarTextView);
 
-//        if (isServer) {
-//            initServer();
-//            Log.d(MainActivity.TAG, "Server initialized");
-//        }
         if (isServer) {
             gameConfigureFragment = GameConfigureFragment.newInstance(playerCount);
             activity.transactionProvider().add(R.id.fragmentLayout, gameConfigureFragment).commit();
+            toolbarText.setText(activity.getString(R.string.toolbar_configure_game));
+        } else {
+            toolbarText.setText(activity.getString(R.string.toolbar_wait_for_configure));
         }
 
         initClient();

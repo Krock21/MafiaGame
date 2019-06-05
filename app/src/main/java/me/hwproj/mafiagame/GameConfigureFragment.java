@@ -85,9 +85,10 @@ public class GameConfigureFragment extends Fragment {
         View v = inflater.inflate(R.layout.fragment_game_configure, container, false);
 
         SeekBar selectMafia = v.findViewById(R.id.mafiaSeekBar);
-//        selectMafia.setMin(1); // requires API level 26. Anyway why not play a game without mafias?
+//        selectMafia.setMin(1); // requires API level 26. Anyway why forbid playing without mafia?
         selectMafia.setMax(playerCount - 1);
         selectMafia.setOnSeekBarChangeListener(mafiaSeekBarListener);
+        selectMafia.setProgress(1);
 
         CheckBox doctorCheckBox = v.findViewById(R.id.doctorCheckBox);
         doctorCheckBox.setOnCheckedChangeListener((ignored, isChecked) -> {
@@ -143,8 +144,9 @@ public class GameConfigureFragment extends Fragment {
 
         List<GamePhase> phases = new ArrayList<>();
         phases.add(new VotePhase());
-        phases.add(new TestPhase());
-        phases.add(new MafiaPhase());
+        if (mafiaCount > 0) {
+            phases.add(new MafiaPhase());
+        }
         if (doctorCount > 0) {
             phases.add(new DoctorPhase());
         }

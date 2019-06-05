@@ -29,4 +29,9 @@ public class VotePhaseClient implements GamePhaseClient {
         }
         ((VotePhasePlayerAction) action).serialize(dataOutput);
     }
+
+    @Override
+    public String toolbarText() {
+        return "Vote";
+    }
 }

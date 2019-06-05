@@ -19,4 +19,6 @@ public interface GamePhaseClient {
     GameState deserializeGameState(DataInputStream dataStream) throws DeserializationException;
 
     void serializeAction(DataOutputStream dataOutput, PlayerAction action) throws SerializationException;
+
+    String toolbarText();
 }

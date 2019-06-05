@@ -34,4 +34,9 @@ class InvClient implements GamePhaseClient {
         }
         ((InvAction) action).getPick().serialize(dataOutput);
     }
+
+    @Override
+    public String toolbarText() {
+        return "Investigator's turn";
+    }
 }

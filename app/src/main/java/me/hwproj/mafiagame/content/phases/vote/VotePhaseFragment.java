@@ -65,9 +65,9 @@ public class VotePhaseFragment extends PhaseFragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         Log.d("qwe", "onCreateView: !");
-        View view = inflater.inflate(R.layout.vote_phase, container, false);
+        View view = inflater.inflate(R.layout.generic_pick, container, false);
 
-        TableLayout table = view.findViewById(R.id.voteTable);
+        TableLayout table = view.findViewById(R.id.pickTable);
         pick = new TablePick(getActivity(), client.getGameData(), table, 1, 0, true);
 
         for (int playerId = 0; playerId < client.playerCount(); playerId++) {
@@ -85,8 +85,7 @@ public class VotePhaseFragment extends PhaseFragment {
 
         subscribeToGameState();
 
-        view.findViewById(R.id.votenext).setOnClickListener(v -> client.sendPlayerAction(TestPhasePlayerAction.nextPhase()));
-        view.findViewById(R.id.voteFinal).setOnClickListener(v -> {
+        view.findViewById(R.id.pickFinal).setOnClickListener(v -> {
             Log.d("qwe", "onCreateView: final " + currentPick);
             if (currentPick != -1) {
                 client.sendPlayerAction(

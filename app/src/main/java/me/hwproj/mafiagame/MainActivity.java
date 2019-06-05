@@ -21,7 +21,6 @@ import com.google.android.gms.tasks.Task;
 
 import me.hwproj.mafiagame.networking.NetworkData;
 import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
-import me.hwproj.mafiagame.util.NotifierInterractor;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
 
@@ -71,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
         super.onResume();
 
         TextView hello = findViewById(R.id.hello_text);
-        hello.setText("Hi " + getDatabaseInteractor().loadName());
+        hello.setText(String.format(getString(R.string.hello_with_name), getDatabaseInteractor().loadName()));
 
         signInSilently(new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN)
                         .requestEmail().build(),

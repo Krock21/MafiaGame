@@ -34,7 +34,6 @@ class WaitFragment extends PhaseFragment {
     @Override
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Log.d("qwe", "onCreateView: !");
         View view = inflater.inflate(R.layout.wait_phase, container, false);
 
         // don't need to, but why not?

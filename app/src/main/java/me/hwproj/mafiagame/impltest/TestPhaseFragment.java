@@ -43,7 +43,7 @@ public class TestPhaseFragment extends PhaseFragment {
     public View onCreateView(@NotNull LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.activity_test_phase, container, false);
+        View view = inflater.inflate(R.layout.test_phase, container, false);
 
         TextView text = view.findViewById(R.id.sumView);
         TestStringHolder h = ViewModelProviders.of(this).get(TestStringHolder.class);

@@ -3,14 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
 
-    android:background="@color/colorBackground"
-
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    android:gravity="center_horizontal"
+    android:gravity="center"
     tools:context=".MainActivity">
-
 
     <TextView
         android:id="@+id/hello_text"
@@ -35,7 +32,7 @@
         android:layout_marginBottom="8dp"
         android:text="@string/create_join_game"
         style="@style/Widget.AppCompat.Button.Colored"
-        android:theme="@style/ColoredElement"/>
+        android:theme="@style/ColoredElement" />
 
     <Button
         android:id="@+id/signIn"
@@ -76,5 +73,9 @@
         android:text="@string/open_settings"
         style="@style/Widget.AppCompat.Button.Colored"
         android:theme="@style/ColoredElement" />
+
+    <Space
+        android:layout_width="match_parent"
+        android:layout_height="100dp"/>
 
 </LinearLayout>

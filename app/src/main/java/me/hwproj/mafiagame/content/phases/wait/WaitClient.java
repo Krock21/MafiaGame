@@ -26,4 +26,9 @@ public class WaitClient implements GamePhaseClient {
     public void serializeAction(DataOutputStream dataOutput, PlayerAction action) throws SerializationException {
         throw new SerializationException("Doesn't send any actions");
     }
+
+    @Override
+    public String toolbarText() {
+        return "Sleep";
+    }
 }

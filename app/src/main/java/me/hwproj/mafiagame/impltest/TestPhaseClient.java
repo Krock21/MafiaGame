@@ -48,4 +48,9 @@ public class TestPhaseClient implements GamePhaseClient {
             throw new SerializationException(e);
         }
     }
+
+    @Override
+    public String toolbarText() {
+        return "Test phase";
+    }
 }

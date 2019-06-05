@@ -32,5 +32,10 @@ class DoctorPhaseClient implements GamePhaseClient {
         ((DoctorAction) action).getPickAction().serialize(dataOutput);
     }
 
+    @Override
+    public String toolbarText() {
+        return "Doctor's turn";
+    }
+
     private ModifiableBoolean pickedSelfLastTime = new ModifiableBoolean(false);
 }

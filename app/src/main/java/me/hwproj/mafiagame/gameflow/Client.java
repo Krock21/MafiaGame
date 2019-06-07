@@ -5,6 +5,8 @@ import android.util.Log;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
+import java.util.LinkedList;
+import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 
 import me.hwproj.mafiagame.networking.ClientSender;
@@ -22,20 +24,20 @@ public class Client {
     private final int thisPlayer;
     private final ClientCallbacks callbacks;
 
-    // from activity
+    // from ClientGame
     public void sendPlayerAction(PlayerAction action) {
         if (sender != null) { // TODO
             sender.sendPlayerAction(action);
         }
     }
-    // from activity.
+    // from ClientGame
     public PhaseFragment nextPhaseFragment() {
         currentGameState.nextPhase();
         callbacks.setToolbarText(currentGameState.currentPhase.toolbarText());
         return currentGameState.currentPhase.createFragment(this);
     }
 
-    // from interractor's thread
+    // from ClientGame
     public void receivePackage(ServerNetworkPackage pack) {
         Log.d("qwe", "receivePackage: meta: " + pack.isMeta());
         packageQueue.add(pack);
@@ -62,7 +64,6 @@ public class Client {
         currentPhaseNumber.setValue(number);
     }
 
-    // from UI thread
     private void receiveMeta(MetaInformation metaInformation) {
         Log.d("Ok", "receiveMeta: accepting meta");
         if (metaInformation.what() == MetaInformation.NEXT_PHASE) {
@@ -83,12 +84,12 @@ public class Client {
     }
 
     private ClientGameData currentGameState;
-    private ClientSender sender; // TODO make smth out of it
+    private ClientSender sender;
 
     private MutableLiveData<GameState> latestGameState = new MutableLiveData<>();
     private MutableLiveData<Integer> currentPhaseNumber = new MutableLiveData<>();
     private MutableLiveData<ServerNetworkPackage> packageData = new MutableLiveData<>();
-    private final ConcurrentLinkedQueue<ServerNetworkPackage> packageQueue = new ConcurrentLinkedQueue<>();
+    private final Queue<ServerNetworkPackage> packageQueue = new LinkedList<>();
 
     public Client(ClientSender sender, Settings settings, int thisPlayer, ClientCallbacks callbacks) {
         this.callbacks = callbacks;

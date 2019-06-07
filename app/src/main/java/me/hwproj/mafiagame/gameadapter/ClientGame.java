@@ -217,7 +217,7 @@ public class ClientGame {
     /**
      * A GameState handler to pass to Client.
      * It sends provided state to a current phase fragment
-     * @param state
+     * @param state received by client state
      */
     private void dealWithGameState(GameState state) {
         Log.d("qwe", "dealWithGameState: received state " + state);

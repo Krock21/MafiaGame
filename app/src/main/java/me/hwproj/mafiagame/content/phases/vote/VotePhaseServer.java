@@ -58,7 +58,6 @@ public class VotePhaseServer implements GamePhaseServer {
         // update choiceFixed[p] and fixedCount
         updateFixed(p, castedAction.fixed);
 
-//        if (fixedCount == 1) {
         if (fixedCount == serv.playerAliveCount()) { //
             Log.d("qwe", Arrays.toString(playersChoices));
 

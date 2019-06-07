@@ -36,8 +36,12 @@ public class Player {
     private int currentEffectNumber;
     void resolveEffects(ServerGameData data) {
         Collections.sort(effects);
-        for (currentEffectNumber = 0; currentEffectNumber < effects.size(); currentEffectNumber++) {
-            effects.get(currentEffectNumber).affect(this, data);
+        for (currentEffectNumber = 0; currentEffectNumber < effects.size(); ) {
+            if (effects.get(currentEffectNumber).affect(this, data)) {
+                effects.remove(currentEffectNumber);
+            } else {
+                currentEffectNumber++;
+            }
         }
         currentEffectNumber = 0;
     }

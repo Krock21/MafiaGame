@@ -29,19 +29,6 @@ public class ServerGameData {
         currentPhase = phases.get(phaseNumber % phases.size());
         currentPhase.initPhase();
     }
-//
-//    public void nextPhase() {
-//        phaseNumber++;
-//        if (currentPhase == null) {
-//            currentPhase = phases.get(0);
-//        } else {
-//            currentPhase = phases.get(phaseNumber % phases.size());
-//            if (phaseNumber % phases.size() == 0) { // TODO add night results here
-//                applyEffects();
-//            }
-//        }
-//        currentPhase.initPhase();
-//    }
 
     private void applyEffects() {
         for (Player p : players) {

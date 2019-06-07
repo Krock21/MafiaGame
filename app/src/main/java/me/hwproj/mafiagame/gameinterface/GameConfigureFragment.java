@@ -31,7 +31,8 @@ import me.hwproj.mafiagame.util.Alerter;
 
 
 /**
- * A simple {@link Fragment} subclass.
+ * A fragment that allows user to configure the game.
+ *
  * Activities that contain this fragment must implement the
  * {@link ConfigurationCompleteListener} interface
  * to handle interaction events.
@@ -199,6 +200,10 @@ public class GameConfigureFragment extends Fragment {
      * activity.
      */
     public interface ConfigurationCompleteListener {
+        /**
+         * What to do when configuration is finished
+         * @param settings configuration created in this fragment
+         */
         void onConfigurationFinished(Settings settings);
     }
 }

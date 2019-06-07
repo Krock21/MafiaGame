@@ -29,14 +29,17 @@ public class Game {
     private GameConfigureFragment gameConfigureFragment; // present after roomFinished if isServer
     private ClientGame clientGame; // after roomFinished
 
-    // TODO take only callbacks
+    /**
+     * Constructs a new Game instance linked to a provided GameActivity
+     * @param activity activity to display game in
+     */
     public Game(GameActivity activity) {
         this.activity = activity;
     }
 
 
     /**
-     * Call this if this user created a room, becoming a server player
+     * Called if this user created a room, becoming a server player
      */
     public void onStartRoom() {
         isServer = true;
@@ -51,6 +54,10 @@ public class Game {
         });
     }
 
+    /**
+     * Called when a room is completed and no new players will connect.
+     * @param playerCount number of players in the game
+     */
     public void onRoomFinished(int playerCount) {
         activity.setContentView(R.layout.activity_phase); // !!
         Toolbar toolbar = activity.findViewById(R.id.toolbar);
@@ -70,7 +77,12 @@ public class Game {
 
     }
 
-    // called only if isServer
+    /**
+     * Called when game settings are determined and a game
+     * should be started with them.
+     * Called only on server device
+     * @param settings setting to initialize a server with
+     */
     public void onConfigureFinished(Settings settings) {
         if (isServer) {
             serverGame.initialize(settings);
@@ -80,10 +92,17 @@ public class Game {
         }
     }
 
+    /**
+     * Returns whether this game in somewhat initialized and should not be lost
+     * @return if game in started in some way
+     */
     public boolean isStarted() {
         return isServer || (clientGame != null);
     }
 
+    /**
+     * Constructs a {@link ClientGame} and sends initialization request for it
+     */
     private void initClient() {
         String name = new AppDatabaseInteractor(activity).loadName();
 
@@ -99,7 +118,10 @@ public class Game {
         clientGame.sendInitRequest();
     }
 
-    // callback for ClientGame
+    /**
+     * What to do when client is no longer participates in the game.
+     * This method is a callback for ClientGame
+     */
     private void onClientEnd() {
         // stop receiving client packages
         activity.setClientCallback(null);

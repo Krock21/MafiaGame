@@ -14,7 +14,8 @@ import org.jetbrains.annotations.NotNull;
 import me.hwproj.mafiagame.R;
 
 /**
- * A simple {@link Fragment} subclass.
+ * A fragment to show, when server player died in the game.
+ * He is advised not to close the game because it will stop server
  */
 public class ServerWaitFragment extends Fragment {
 

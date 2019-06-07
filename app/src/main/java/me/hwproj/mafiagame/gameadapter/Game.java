@@ -8,7 +8,7 @@ import androidx.appcompat.widget.Toolbar;
 
 import me.hwproj.mafiagame.gameinterface.GameConfigureFragment;
 import me.hwproj.mafiagame.gameinterface.GameActivity;
-import me.hwproj.mafiagame.gameinterface.ServerWaitFragment;
+import me.hwproj.mafiagame.gameinterface.DeadWaitFragment;
 import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Settings;
@@ -128,16 +128,24 @@ public class Game {
         // and stop sending packages
         activity.senders.clientSender = null;
 
+        String showText;
+        String toolbarText;
+
         // don't ruin server
-        if (!isServer) {
-            activity.startActivity(new Intent(activity, MainActivity.class));
+        if (isServer) {
+            showText = activity.getString(R.string.your_device_runs_server);
+            toolbarText = activity.getString(R.string.server_wait_toolbar);
         } else {
-            activity.transactionProvider().add(R.id.fragmentLayout, new ServerWaitFragment()).commit();
-            
-            Toolbar toolbar = activity.findViewById(R.id.toolbar);
-            TextView toolbarText = toolbar.findViewById(R.id.toolbarTextView);
-            toolbarText.setText(activity.getString(R.string.server_wait_toolbar));
+            showText = activity.getString(R.string.gg);
+            toolbarText = activity.getString(R.string.client_wait_toolbar);
         }
 
+
+        activity.transactionProvider()
+                .add(R.id.fragmentLayout, new DeadWaitFragment(showText, !isServer))
+                .commit();
+        Toolbar toolbar = activity.findViewById(R.id.toolbar);
+        TextView toolbarTextView = toolbar.findViewById(R.id.toolbarTextView);
+        toolbarTextView.setText(toolbarText);
     }
 }

@@ -48,4 +48,7 @@
     <string name="not_your_turn">Not your turn</string>
     <string name="your_device_runs_server">Your device runs server for this game. Please don\'t close the app until the game ends</string>
     <string name="server_wait_toolbar">Wait for the game to end</string>
+    <string name="exit">exit</string>
+    <string name="gg">GG</string>
+    <string name="client_wait_toolbar">Game ended</string>
 </resources>

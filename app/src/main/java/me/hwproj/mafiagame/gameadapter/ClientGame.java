@@ -39,7 +39,7 @@ public class ClientGame {
     public static final byte META_HEADER = 5;
 
     private final ClientByteSender sender;
-    private final AppCompatActivity activityReference; // TODO replace with callbacks
+    private final AppCompatActivity activityReference;
     private Supplier<FragmentTransaction> transactionSupplier;
     private String desiredName;
     private final Runnable onClientEndCallback;
@@ -49,7 +49,14 @@ public class ClientGame {
     private PhaseFragment currentPhaseFragment;
     private int thisPhaseNumber = -1;
 
-    // TODO give it callbacks
+    /**
+     * Constructs a new ClientGame bound to a provided activity
+     * @param sender              sender to send information to server
+     * @param activityReference   activity in which this ClientGame is running
+     * @param transactionSupplier supplier of transactions to change fragments
+     * @param desiredName         name of this player to use in game
+     * @param onClientEnd         method to run when a game is ending
+     */
     public ClientGame(ClientByteSender sender, AppCompatActivity activityReference, Supplier<FragmentTransaction> transactionSupplier, String desiredName, Runnable onClientEnd) {
         this.sender = sender;
         this.activityReference = activityReference;
@@ -61,6 +68,11 @@ public class ClientGame {
         onClientEndCallback = onClientEnd;
     }
 
+    /**
+     * Method to call when a client receives a message from server
+     * @param message message from server
+     * @throws DeserializationException if could not recognize the message
+     */
     public void receiveServerMessage(byte[] message) throws DeserializationException {
         if (message.length == 0) {
             Log.d("Bug", "receiveServerMessage: empty message received");
@@ -90,7 +102,9 @@ public class ClientGame {
         }
     }
 
-
+    /**
+     * Sends an intializeation request to server, asking to tell this client game settings
+     */
     public void sendInitRequest() {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
         DataOutputStream ds = new DataOutputStream(bs);

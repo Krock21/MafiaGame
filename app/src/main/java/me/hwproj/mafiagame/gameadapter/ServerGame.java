@@ -32,6 +32,9 @@ import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phase.GamePhase;
 import me.hwproj.mafiagame.phase.PlayerAction;
 
+/**
+ * Represents server side of a game
+ */
 public class ServerGame {
     public static final byte ACTION_HEADER = 101;
     public static final byte INIT_REQUEST_HEADER = 102;
@@ -88,6 +91,12 @@ public class ServerGame {
 
     }
 
+    /**
+     * Handles client's message
+     * @param message message to handle
+     * @param id      id of sender
+     * @throws DeserializationException if could not parse message
+     */
     public void receiveClientMessage(byte[] message, String id) throws DeserializationException {
         if (message.length == 0) {
             Log.d("Bug", "receiveServerMessage: empty message received");
@@ -113,6 +122,12 @@ public class ServerGame {
         }
     }
 
+    /**
+     * Parses client's initialization request and remembers that client
+     * @param id         id of client
+     * @param dataStream stream with client's initialization request
+     * @throws DeserializationException if could not parse initialization request from stream
+     */
     private void rememberClient(String id, DataInputStream dataStream) throws DeserializationException {
         try {
             String name = dataStream.readUTF();
@@ -125,6 +140,11 @@ public class ServerGame {
         Log.d(MainActivity.TAG, "rememberClient: got " + idToName.size() + " players");
     }
 
+    /**
+     * Sends initialization package to a client
+     * @param id           multiplayer id of client
+     * @param playerNumber client's player number in game
+     */
     private void initClient(String id, int playerNumber) {
         ByteArrayOutputStream stream = new ByteArrayOutputStream();
 
@@ -138,6 +158,11 @@ public class ServerGame {
         }
     }
 
+    /**
+     * Deserializes PlayerAction and gives it to server
+     * @param dataStream stream with serialized PlayerAction
+     * @throws DeserializationException if deserialization fails
+     */
     private void receiveActionMessage(DataInputStream dataStream) throws DeserializationException {
         if (!initialized) {
             Log.d("Bug", "receiveActionMessage before initializing server");
@@ -152,6 +177,9 @@ public class ServerGame {
     }
 
 
+    /**
+     * A callback class to pass to a server
+     */
     private class Sender implements ServerSender {
 
         @Override

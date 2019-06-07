@@ -33,6 +33,9 @@ import me.hwproj.mafiagame.phase.PlayerAction;
 import me.hwproj.mafiagame.util.Alerter;
 import me.hwproj.mafiagame.util.NotifierInterractor;
 
+/**
+ * Represents client side of the game.
+ */
 public class ClientGame {
     public static final byte INIT_PACKAGE_HEADER = 3;
     public static final byte GAME_STATE_HEADER = 4;
@@ -103,7 +106,7 @@ public class ClientGame {
     }
 
     /**
-     * Sends an intializeation request to server, asking to tell this client game settings
+     * Sends an initialization request to server, asking to tell this client game settings
      */
     public void sendInitRequest() {
         ByteArrayOutputStream bs = new ByteArrayOutputStream();
@@ -119,10 +122,14 @@ public class ClientGame {
         }
     }
 
-    private void receiveMeta(DataInputStream data) {
+    /**
+     * Handles metainformation about the game
+     * @param dataStream stream of bytes that represent a serialized metainformation
+     */
+    private void receiveMeta(DataInputStream dataStream) {
         MetaInformation meta;
         try {
-            meta = MetaInformation.deserialize(data);
+            meta = MetaInformation.deserialize(dataStream);
         } catch (DeserializationException e) {
             Log.d("Bug", "receiveMeta: deserialize error");
             e.printStackTrace();
@@ -131,6 +138,10 @@ public class ClientGame {
         receivePackage(new ServerNetworkPackage(meta));
     }
 
+    /**
+     * Handles GameState
+     * @param dataStream stream of bytes that represent a serialized GameState
+     */
     private void receiveGameState(DataInputStream dataStream) {
         if (!initialised) {
             Log.d("Bug", "receiveGameState: uninitialized client");
@@ -147,6 +158,10 @@ public class ClientGame {
         receivePackage(new ServerNetworkPackage(state));
     }
 
+    /**
+     * Initializes a client with provided InitPackage
+     * @param init package to initialize client with
+     */
     private void initialise(InitGamePackage init) {
         if (initialised) {
             Log.d("Bug", "initialise: double initialization");
@@ -174,6 +189,10 @@ public class ClientGame {
         client.getPhaseNumberData().observe(activityReference, this::dealWithPhaseNumber);
     }
 
+    /**
+     * Handles a package
+     * @param pack package to handle
+     */
     private void receivePackage(ServerNetworkPackage pack) {
         Log.d("Net", "receivePackage: received, client.init = " + initialised);
         if (initialised) {
@@ -181,23 +200,27 @@ public class ClientGame {
         }
     }
 
-    private void startPhaseFragment(PhaseFragment fg) {
+    /**
+     * Replaces current fragment with a new one
+     * @param fragment fragment to set
+     */
+    private void startPhaseFragment(PhaseFragment fragment) {
         if (currentPhaseFragment != null) {
             transactionSupplier.get().remove(currentPhaseFragment).commit();
         }
-        currentPhaseFragment = fg;
+        currentPhaseFragment = fragment;
 
-//        GameState state = client.getLatestGameState().getValue();
-//        if (state != null) {
-//            dealWithGameState(state);
-//        }
-
-        transactionSupplier.get().add(R.id.fragmentLayout, fg).commit();
+        transactionSupplier.get().add(R.id.fragmentLayout, fragment).commit();
     }
 
     // handler
+    /**
+     * A GameState handler to pass to Client.
+     * It sends provided state to a current phase fragment
+     * @param state
+     */
     private void dealWithGameState(GameState state) {
-        Log.d("qwe", "dealWithGameState: receied state " + state);
+        Log.d("qwe", "dealWithGameState: received state " + state);
         if (currentPhaseFragment != null) {
             Log.d("qwe", "dealWithGameState: fragment is not null " + state);
             if (currentPhaseFragment.isSubscribedToGameState()) {
@@ -210,6 +233,11 @@ public class ClientGame {
     }
 
     // handler
+    /**
+     * A phase number handler to pass to Client.
+     * It changes current phase to
+     * @param number number of phase that should start
+     */
     private void dealWithPhaseNumber(Integer number) {
         if (number < thisPhaseNumber) {
             Log.d("Bad", "Wrong phase number:" + thisPhaseNumber + " -> " + number);
@@ -236,6 +264,9 @@ public class ClientGame {
         }
     }
 
+    /**
+     * This function runs when a player dies in game
+     */
     private void onClientKilled() {
         client.onThisPlayerKilled();
         Alerter.alert(activityReference, "You died", "Any last words?");
@@ -248,6 +279,10 @@ public class ClientGame {
         toolbarText.setText(text);
     }
 
+    /**
+     * A callback class for client that translates it's messages to bytes
+     * and sends them with sender
+     */
     private class SenderConverter implements ClientSender {
 
         @Override

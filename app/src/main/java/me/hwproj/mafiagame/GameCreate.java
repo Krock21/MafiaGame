@@ -51,15 +51,17 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
 
 
 /**
- * A room to configure a game instance, BEFORE connecting to clients.
- * Basically select minimum and maximum amounts of people in the game
+ * An activity to create/join game and to play it.
+ *
+ * All of this must be in the same activity because connection
+ * to the multiplayer room cannot be passed between activities.
  */
 public class GameCreate extends AppCompatActivity implements GameConfigureFragment.ConfigurationCompleteListener {
 
-    public boolean mWaitingRoomFinishedFromCode = false;
+    private boolean mWaitingRoomFinishedFromCode = false;
 
-    public int minPlayerCount = 1; // minimum Player count other players
-    public int maxPlayerCount = 7; // maximum Player count other players
+    public int minPlayerCount = 1; // minimum allowed number of other players in the room
+    public int maxPlayerCount = 7; // maximum allowed number of other players in the room
 
     public final Senders senders = new Senders(this);
     public final Callbacks callbacks = new Callbacks();
@@ -81,6 +83,15 @@ public class GameCreate extends AppCompatActivity implements GameConfigureFragme
         invitationInbox.setOnClickListener(v -> showInvitationInbox());
 
         game = new Game(this);
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (game.isStarted()) {
+            // forbid going back once the game is started
+            return;
+        }
+        super.onBackPressed();
     }
 
     private RealTimeMultiplayerClient makeRealTimeMultiplayerClient() {

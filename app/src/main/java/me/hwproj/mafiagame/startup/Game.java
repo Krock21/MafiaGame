@@ -76,6 +76,10 @@ public class Game {
         }
     }
 
+    public boolean isStarted() {
+        return isServer || (clientGame != null);
+    }
+
     private void initClient() {
         String name = new AppDatabaseInteractor(activity).loadName();
 

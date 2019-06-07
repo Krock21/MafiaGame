@@ -1,7 +1,7 @@
 package me.hwproj.mafiagame.content.phases.investigator;
 
 import me.hwproj.mafiagame.content.phases.abstractpick.PickAction;
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class InvAction extends PlayerAction {
     private PickAction pick;

@@ -12,7 +12,7 @@ import me.hwproj.mafiagame.networking.FullGameState;
 import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerNetworkPackage;
 import me.hwproj.mafiagame.networking.ServerSender;
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.PlayerAction;
 import me.hwproj.mafiagame.util.MyConsumer;
 
 public class NaiveNetworkSimulator implements ClientSender, ServerSender {

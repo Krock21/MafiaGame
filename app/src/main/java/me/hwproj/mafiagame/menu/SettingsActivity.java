@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.menu;
 
 import android.os.Bundle;
 import android.os.PersistableBundle;
@@ -11,6 +11,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.android.material.textfield.TextInputEditText;
 
+import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
 import me.hwproj.mafiagame.persistence.PersistentString;
 import me.hwproj.mafiagame.persistence.PersistentStringDao;

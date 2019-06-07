@@ -1,12 +1,9 @@
 package me.hwproj.mafiagame.impltest;
 
-import android.os.Handler;
-
-import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.Server;
-import me.hwproj.mafiagame.phases.GamePhase;
-import me.hwproj.mafiagame.phases.GamePhaseClient;
-import me.hwproj.mafiagame.phases.GamePhaseServer;
+import me.hwproj.mafiagame.phase.GamePhase;
+import me.hwproj.mafiagame.phase.GamePhaseClient;
+import me.hwproj.mafiagame.phase.GamePhaseServer;
 
 public class TestPhase extends GamePhase {
 

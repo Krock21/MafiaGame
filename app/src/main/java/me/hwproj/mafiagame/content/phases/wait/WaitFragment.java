@@ -1,7 +1,6 @@
 package me.hwproj.mafiagame.content.phases.wait;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +9,8 @@ import org.jetbrains.annotations.NotNull;
 
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Client;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PhaseFragment;
+import me.hwproj.mafiagame.phase.GameState;
+import me.hwproj.mafiagame.phase.PhaseFragment;
 
 class WaitFragment extends PhaseFragment {
     public WaitFragment(Client client) {

@@ -2,22 +2,19 @@ package me.hwproj.mafiagame.gameflow;
 
 import android.util.Log;
 
-import androidx.core.util.Consumer;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 
 import java.util.concurrent.ConcurrentLinkedQueue;
 
-import me.hwproj.mafiagame.content.phases.mafia.MafiaState;
 import me.hwproj.mafiagame.networking.ClientSender;
 import me.hwproj.mafiagame.networking.FullGameState;
 import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerNetworkPackage;
-import me.hwproj.mafiagame.phases.GamePhase;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PhaseFragment;
-import me.hwproj.mafiagame.phases.PlayerAction;
-import me.hwproj.mafiagame.util.Alerter;
+import me.hwproj.mafiagame.phase.GamePhase;
+import me.hwproj.mafiagame.phase.GameState;
+import me.hwproj.mafiagame.phase.PhaseFragment;
+import me.hwproj.mafiagame.phase.PlayerAction;
 
 // TODO separate phases' interface from interractor's and other code
 public class Client {

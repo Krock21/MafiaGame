@@ -4,8 +4,6 @@ import android.content.Context;
 
 import java.util.Random;
 
-import me.hwproj.mafiagame.MainActivity;
-
 public class AppDatabaseInteractor {
     private static final String NAME_TAG = "name";
     private final AppDatabase database;

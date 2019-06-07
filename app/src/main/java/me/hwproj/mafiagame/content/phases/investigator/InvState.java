@@ -7,7 +7,7 @@ import java.io.IOException;
 import me.hwproj.mafiagame.content.phases.abstractpick.PickState;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phase.GameState;
 
 public class InvState extends GameState {
     private boolean isInvestigationResult;

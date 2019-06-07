@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.gameinterface;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -18,6 +18,7 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
+import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.content.phases.doctor.DoctorPhase;
 import me.hwproj.mafiagame.content.phases.investigator.InvPhase;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
@@ -25,8 +26,7 @@ import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.gameflow.PlayerSettings;
 import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.gameplay.Role;
-import me.hwproj.mafiagame.impltest.TestPhase;
-import me.hwproj.mafiagame.phases.GamePhase;
+import me.hwproj.mafiagame.phase.GamePhase;
 import me.hwproj.mafiagame.util.Alerter;
 
 

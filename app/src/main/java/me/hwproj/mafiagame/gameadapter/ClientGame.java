@@ -1,7 +1,6 @@
-package me.hwproj.mafiagame.startup;
+package me.hwproj.mafiagame.gameadapter;
 
 import android.util.Log;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -16,7 +15,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import me.hwproj.mafiagame.MainActivity;
+import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.content.phases.wait.WaitClient;
 import me.hwproj.mafiagame.gameflow.ClientCallbacks;
 import me.hwproj.mafiagame.networking.messaging.ClientByteSender;
@@ -28,9 +27,9 @@ import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerNetworkPackage;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PhaseFragment;
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.GameState;
+import me.hwproj.mafiagame.phase.PhaseFragment;
+import me.hwproj.mafiagame.phase.PlayerAction;
 import me.hwproj.mafiagame.util.Alerter;
 import me.hwproj.mafiagame.util.NotifierInterractor;
 

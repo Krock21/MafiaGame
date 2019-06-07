@@ -27,8 +27,7 @@ import me.hwproj.mafiagame.impltest.TestPhaseServer;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.GamePhaseSerializer;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GamePhase;
-import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phase.GamePhase;
 
 import static org.junit.jupiter.api.Assertions.*;
 

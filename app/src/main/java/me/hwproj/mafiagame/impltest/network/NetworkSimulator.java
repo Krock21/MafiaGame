@@ -7,8 +7,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 
 import me.hwproj.mafiagame.networking.messaging.ClientByteSender;
 import me.hwproj.mafiagame.networking.messaging.ServerByteSender;
-import me.hwproj.mafiagame.startup.ClientGame;
-import me.hwproj.mafiagame.startup.ServerGame;
+import me.hwproj.mafiagame.gameadapter.ClientGame;
+import me.hwproj.mafiagame.gameadapter.ServerGame;
 import me.hwproj.mafiagame.util.MyConsumer;
 
 public class NetworkSimulator implements ClientByteSender, ServerByteSender {

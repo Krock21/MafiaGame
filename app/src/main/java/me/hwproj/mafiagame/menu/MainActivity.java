@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.menu;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -19,6 +19,8 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 
+import me.hwproj.mafiagame.gameinterface.GameActivity;
+import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.networking.NetworkData;
 import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
 
@@ -38,7 +40,7 @@ public class MainActivity extends AppCompatActivity {
         Button createGame = findViewById(R.id.createGame);
         createGame.setOnClickListener(v -> {
             if (NetworkData.getGoogleSignInAccount() != null) {
-                Intent intent = new Intent(this, GameCreate.class);
+                Intent intent = new Intent(this, GameActivity.class);
                 startActivity(intent);
             } else {
                 new AlertDialog.Builder(this).setMessage("Should be signed in at first")

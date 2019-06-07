@@ -7,15 +7,13 @@ import java.io.IOException;
 import me.hwproj.mafiagame.content.phases.abstractpick.PickAction;
 import me.hwproj.mafiagame.content.phases.abstractpick.PickServer;
 import me.hwproj.mafiagame.content.phases.abstractpick.PickState;
-import me.hwproj.mafiagame.content.phases.infoPhase.InfoAction;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GamePhaseServer;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.GameState;
+import me.hwproj.mafiagame.phase.PlayerAction;
 
 class InvServer extends PickServer {
     public InvServer(Server server) {

@@ -1,6 +1,6 @@
 package me.hwproj.mafiagame.networking;
 
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.PlayerAction;
 
 public interface ClientSender {
 

@@ -4,15 +4,14 @@ import android.util.Log;
 
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import me.hwproj.mafiagame.networking.FullGameState;
 import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerSender;
-import me.hwproj.mafiagame.phases.GamePhase;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.GamePhase;
+import me.hwproj.mafiagame.phase.GameState;
+import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class Server {
     // TODO private

@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.gameinterface;
 
 import android.util.Log;
 import android.view.WindowManager;
@@ -13,14 +13,15 @@ import com.google.android.gms.tasks.OnSuccessListener;
 
 import java.util.List;
 
+import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.networking.NetworkData;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
 
 class MyRoomStatusCallback extends RoomStatusUpdateCallback {
-    private GameCreate activity;
+    private GameActivity activity;
 
-    public MyRoomStatusCallback(GameCreate activity) {
+    public MyRoomStatusCallback(GameActivity activity) {
         this.activity = activity;
     }
         @Override

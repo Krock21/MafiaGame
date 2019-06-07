@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.util;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;

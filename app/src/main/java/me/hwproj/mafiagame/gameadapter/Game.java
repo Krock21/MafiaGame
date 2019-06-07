@@ -1,23 +1,21 @@
-package me.hwproj.mafiagame.startup;
+package me.hwproj.mafiagame.gameadapter;
 
-import android.content.Intent;
 import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
-import me.hwproj.mafiagame.GameConfigureFragment;
-import me.hwproj.mafiagame.GameCreate;
-import me.hwproj.mafiagame.MainActivity;
+import me.hwproj.mafiagame.gameinterface.GameConfigureFragment;
+import me.hwproj.mafiagame.gameinterface.GameActivity;
+import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
-import me.hwproj.mafiagame.persistence.DatabaseInteractor;
 
 public class Game {
 
-    private final GameCreate activity;
+    private final GameActivity activity;
 
     private boolean isServer;
     private ServerGame serverGame; // present if isServer
@@ -26,7 +24,7 @@ public class Game {
     private ClientGame clientGame; // after roomFinished
 
     // TODO take only callbacks
-    public Game(GameCreate activity) {
+    public Game(GameActivity activity) {
         this.activity = activity;
     }
 

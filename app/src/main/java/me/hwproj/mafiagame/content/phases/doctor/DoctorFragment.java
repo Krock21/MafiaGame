@@ -12,7 +12,7 @@ import me.hwproj.mafiagame.content.phases.abstractpick.PickFragment;
 import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameplay.Role;
-import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phase.GameState;
 import me.hwproj.mafiagame.util.ModifiableBoolean;
 
 import static me.hwproj.mafiagame.util.Alerter.alert;

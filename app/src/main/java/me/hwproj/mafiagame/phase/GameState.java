@@ -1,6 +1,4 @@
-package me.hwproj.mafiagame.phases;
-
-import android.os.Parcelable;
+package me.hwproj.mafiagame.phase;
 
 /**
  * Information which is sent from server to clients.

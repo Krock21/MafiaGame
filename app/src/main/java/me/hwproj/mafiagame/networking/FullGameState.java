@@ -10,9 +10,9 @@ import java.util.List;
 import me.hwproj.mafiagame.gameflow.ServerGameData;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GamePhaseClient;
-import me.hwproj.mafiagame.phases.GamePhaseServer;
-import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phase.GamePhaseClient;
+import me.hwproj.mafiagame.phase.GamePhaseServer;
+import me.hwproj.mafiagame.phase.GameState;
 
 public class FullGameState {
     private int phaseNumber;

@@ -16,7 +16,7 @@ import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameplay.Role;
-import me.hwproj.mafiagame.phases.PhaseFragment;
+import me.hwproj.mafiagame.phase.PhaseFragment;
 import me.hwproj.mafiagame.util.table.TablePick;
 
 // TODO make a factory

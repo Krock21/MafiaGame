@@ -3,8 +3,7 @@ package me.hwproj.mafiagame.gameflow;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.hwproj.mafiagame.phases.GamePhaseClient;
-import me.hwproj.mafiagame.phases.GamePhaseServer;
+import me.hwproj.mafiagame.phase.GamePhaseServer;
 
 public class ServerGameData {
     // TODO make everything private

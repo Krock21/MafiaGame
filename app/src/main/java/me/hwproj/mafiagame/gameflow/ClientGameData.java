@@ -3,10 +3,8 @@ package me.hwproj.mafiagame.gameflow;
 import java.util.ArrayList;
 import java.util.List;
 
-import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.networking.FullGameState;
-import me.hwproj.mafiagame.phases.GamePhase;
-import me.hwproj.mafiagame.phases.GamePhaseClient;
+import me.hwproj.mafiagame.phase.GamePhaseClient;
 
 public class ClientGameData {
     // TODO make everything private

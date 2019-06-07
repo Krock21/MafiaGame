@@ -1,7 +1,7 @@
 package me.hwproj.mafiagame.content.phases.doctor;
 
 import me.hwproj.mafiagame.content.phases.abstractpick.PickState;
-import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phase.GameState;
 
 public class DoctorState extends GameState {
     private PickState picks;

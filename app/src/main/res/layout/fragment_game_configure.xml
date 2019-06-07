@@ -7,7 +7,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    tools:context=".GameConfigureFragment">
+    tools:context=".gameinterface.GameConfigureFragment">
 
     <TextView
         android:id="@+id/mafiasExplainView"

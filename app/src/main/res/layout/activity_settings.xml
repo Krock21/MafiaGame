@@ -9,7 +9,7 @@
     android:orientation="vertical"
     android:gravity="center"
 
-    tools:context=".SettingsActivity">
+    tools:context=".menu.SettingsActivity">
 
     <EditText
         android:id="@+id/myName"

@@ -8,7 +8,7 @@
     android:orientation="vertical"
     android:gravity="center"
     
-    tools:context=".GameCreate">
+    tools:context=".gameinterface.GameActivity">
 
     <Button
         android:id="@+id/makeRoom"

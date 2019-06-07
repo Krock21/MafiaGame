@@ -1,6 +1,5 @@
-package me.hwproj.mafiagame.phases;
+package me.hwproj.mafiagame.phase;
 
-import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.Server;
 
 /**

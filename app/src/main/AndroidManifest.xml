@@ -12,11 +12,11 @@
         android:supportsRtl="true"
         android:theme="@style/ColoredBackground">
         <activity
-            android:name=".SettingsActivity"
+            android:name=".menu.SettingsActivity"
             android:label="@string/title_activity_settings"></activity>
-        <activity android:name=".GameCreate" />
+        <activity android:name=".gameinterface.GameActivity" />
 
-        <activity android:name=".MainActivity">
+        <activity android:name=".menu.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

@@ -8,16 +8,16 @@ import com.google.android.gms.tasks.Task;
 
 import java.util.HashSet;
 
-import me.hwproj.mafiagame.GameCreate;
+import me.hwproj.mafiagame.gameinterface.GameActivity;
 
 import static me.hwproj.mafiagame.networking.NetworkData.getRealTimeMultiplayerClient;
 import static me.hwproj.mafiagame.networking.NetworkData.getmMyParticipantId;
 import static me.hwproj.mafiagame.networking.NetworkData.getmRoom;
 
 public class Senders {
-    private GameCreate activity;
+    private GameActivity activity;
 
-    public Senders(GameCreate activity) {
+    public Senders(GameActivity activity) {
         this.activity = activity;
     }
 

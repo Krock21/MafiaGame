@@ -1,6 +1,5 @@
 package me.hwproj.mafiagame.content.phases.mafia;
 
-import android.app.AlertDialog;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,7 @@ import me.hwproj.mafiagame.content.phases.abstractpick.PickFragment;
 import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameplay.Role;
-import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phase.GameState;
 
 import static me.hwproj.mafiagame.util.Alerter.alert;
 

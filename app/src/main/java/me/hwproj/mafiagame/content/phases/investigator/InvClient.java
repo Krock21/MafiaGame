@@ -7,10 +7,10 @@ import java.io.IOException;
 import me.hwproj.mafiagame.gameflow.Client;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GamePhaseClient;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PhaseFragment;
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.GamePhaseClient;
+import me.hwproj.mafiagame.phase.GameState;
+import me.hwproj.mafiagame.phase.PhaseFragment;
+import me.hwproj.mafiagame.phase.PlayerAction;
 
 class InvClient implements GamePhaseClient {
     @Override

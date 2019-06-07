@@ -13,8 +13,8 @@ import org.jetbrains.annotations.NotNull;
 
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Client;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PhaseFragment;
+import me.hwproj.mafiagame.phase.GameState;
+import me.hwproj.mafiagame.phase.PhaseFragment;
 
 public class InfoFragment extends PhaseFragment {
 

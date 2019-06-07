@@ -9,7 +9,7 @@ import java.util.List;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameplay.Role;
-import me.hwproj.mafiagame.phases.GamePhaseServer;
+import me.hwproj.mafiagame.phase.GamePhaseServer;
 
 public abstract class PickServer implements GamePhaseServer {
 

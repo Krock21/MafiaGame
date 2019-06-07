@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame.startup;
+package me.hwproj.mafiagame.gameadapter;
 
 import android.util.Log;
 
@@ -17,7 +17,7 @@ import java.util.List;
 import java.util.ListIterator;
 import java.util.Map;
 
-import me.hwproj.mafiagame.MainActivity;
+import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.content.phases.infoPhase.InfoPhase;
 import me.hwproj.mafiagame.content.phases.wait.WaitPhase;
 import me.hwproj.mafiagame.gameflow.PlayerSettings;
@@ -29,8 +29,8 @@ import me.hwproj.mafiagame.networking.MetaInformation;
 import me.hwproj.mafiagame.networking.ServerSender;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GamePhase;
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.GamePhase;
+import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class ServerGame {
     public static final byte ACTION_HEADER = 101;

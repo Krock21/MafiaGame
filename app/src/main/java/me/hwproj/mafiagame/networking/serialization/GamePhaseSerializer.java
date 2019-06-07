@@ -2,8 +2,6 @@ package me.hwproj.mafiagame.networking.serialization;
 
 import androidx.core.util.Supplier;
 
-import com.google.android.gms.games.Game;
-
 import org.jetbrains.annotations.NotNull;
 
 import java.io.IOException;
@@ -16,7 +14,7 @@ import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.content.phases.wait.WaitPhase;
 import me.hwproj.mafiagame.impltest.TestPhase;
-import me.hwproj.mafiagame.phases.GamePhase;
+import me.hwproj.mafiagame.phase.GamePhase;
 
 public class GamePhaseSerializer {
     private static final PhaseIdentifier[] phases = {

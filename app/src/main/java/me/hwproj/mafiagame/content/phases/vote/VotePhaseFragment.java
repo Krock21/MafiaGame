@@ -1,7 +1,5 @@
 package me.hwproj.mafiagame.content.phases.vote;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -11,12 +9,10 @@ import android.widget.TableLayout;
 
 import org.jetbrains.annotations.NotNull;
 
-import me.hwproj.mafiagame.GameCreate;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Client;
-import me.hwproj.mafiagame.impltest.TestPhasePlayerAction;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PhaseFragment;
+import me.hwproj.mafiagame.phase.GameState;
+import me.hwproj.mafiagame.phase.PhaseFragment;
 import me.hwproj.mafiagame.util.table.TablePick;
 
 import static me.hwproj.mafiagame.util.Alerter.alert;

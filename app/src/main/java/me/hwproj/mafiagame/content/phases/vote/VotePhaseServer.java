@@ -11,9 +11,9 @@ import java.util.List;
 import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GamePhaseServer;
-import me.hwproj.mafiagame.phases.GameState;
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.GamePhaseServer;
+import me.hwproj.mafiagame.phase.GameState;
+import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class VotePhaseServer implements GamePhaseServer {
     private int[] playersChoices;

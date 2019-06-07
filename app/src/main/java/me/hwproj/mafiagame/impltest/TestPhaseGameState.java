@@ -2,7 +2,7 @@ package me.hwproj.mafiagame.impltest;
 
 import android.os.Parcel;
 
-import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phase.GameState;
 
 public class TestPhaseGameState extends GameState {
     private int sum;

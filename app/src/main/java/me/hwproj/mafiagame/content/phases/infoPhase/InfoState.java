@@ -8,7 +8,7 @@ import java.util.List;
 
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GameState;
+import me.hwproj.mafiagame.phase.GameState;
 
 public class InfoState extends GameState {
 //    private final boolean

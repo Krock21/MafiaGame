@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame.phases;
+package me.hwproj.mafiagame.phase;
 
 public abstract class PlayerAction {
 

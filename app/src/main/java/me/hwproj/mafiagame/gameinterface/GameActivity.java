@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame;
+package me.hwproj.mafiagame.gameinterface;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -30,22 +30,18 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import me.hwproj.mafiagame.gameflow.Server;
+import me.hwproj.mafiagame.R;
+import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.networking.messaging.Callbacks;
 import me.hwproj.mafiagame.networking.NetworkData;
 import me.hwproj.mafiagame.networking.messaging.ClientCallback;
 import me.hwproj.mafiagame.networking.messaging.Senders;
 
-import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 
 import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.networking.messaging.ServerCallback;
-import me.hwproj.mafiagame.networking.serialization.DeserializationException;
-import me.hwproj.mafiagame.startup.ClientGame;
-import me.hwproj.mafiagame.startup.Game;
-import me.hwproj.mafiagame.startup.ServerGame;
+import me.hwproj.mafiagame.gameadapter.Game;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
 
@@ -56,7 +52,7 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
  * All of this must be in the same activity because connection
  * to the multiplayer room cannot be passed between activities.
  */
-public class GameCreate extends AppCompatActivity implements GameConfigureFragment.ConfigurationCompleteListener {
+public class GameActivity extends AppCompatActivity implements GameConfigureFragment.ConfigurationCompleteListener {
 
     private boolean mWaitingRoomFinishedFromCode = false;
 

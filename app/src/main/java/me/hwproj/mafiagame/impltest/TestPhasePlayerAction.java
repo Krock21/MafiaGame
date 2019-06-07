@@ -1,6 +1,6 @@
 package me.hwproj.mafiagame.impltest;
 
-import me.hwproj.mafiagame.phases.PlayerAction;
+import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class TestPhasePlayerAction extends PlayerAction {
 

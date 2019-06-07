@@ -9,7 +9,7 @@ import java.util.List;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.GamePhaseSerializer;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
-import me.hwproj.mafiagame.phases.GamePhase;
+import me.hwproj.mafiagame.phase.GamePhase;
 
 public class Settings {
     public List<GamePhase> phases;

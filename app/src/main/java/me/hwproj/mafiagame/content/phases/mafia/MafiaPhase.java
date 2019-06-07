@@ -1,9 +1,9 @@
 package me.hwproj.mafiagame.content.phases.mafia;
 
 import me.hwproj.mafiagame.gameflow.Server;
-import me.hwproj.mafiagame.phases.GamePhase;
-import me.hwproj.mafiagame.phases.GamePhaseClient;
-import me.hwproj.mafiagame.phases.GamePhaseServer;
+import me.hwproj.mafiagame.phase.GamePhase;
+import me.hwproj.mafiagame.phase.GamePhaseClient;
+import me.hwproj.mafiagame.phase.GamePhaseServer;
 
 public class MafiaPhase extends GamePhase {
     @Override

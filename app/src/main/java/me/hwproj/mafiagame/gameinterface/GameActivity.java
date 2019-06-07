@@ -32,15 +32,15 @@ import java.util.Arrays;
 
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.menu.MainActivity;
-import me.hwproj.mafiagame.networking.messaging.Callbacks;
+import me.hwproj.mafiagame.networking.messaging.NetworkCallbacks;
 import me.hwproj.mafiagame.networking.NetworkData;
-import me.hwproj.mafiagame.networking.messaging.ClientCallback;
+import me.hwproj.mafiagame.networking.messaging.ClientNetworkCallback;
 import me.hwproj.mafiagame.networking.messaging.Senders;
 
 import java.util.List;
 
 import me.hwproj.mafiagame.gameflow.Settings;
-import me.hwproj.mafiagame.networking.messaging.ServerCallback;
+import me.hwproj.mafiagame.networking.messaging.ServerNetworkCallback;
 import me.hwproj.mafiagame.gameadapter.Game;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
@@ -56,13 +56,26 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
 
     private boolean mWaitingRoomFinishedFromCode = false;
 
-    public int minPlayerCount = 1; // minimum allowed number of other players in the room
-    public int maxPlayerCount = 7; // maximum allowed number of other players in the room
+    /**
+     * Minimal allowed number of other players in the room.
+     */
+    private int minPlayerCount = 1;
 
+    /**
+     * Maximal allowed number of other players in the room.
+     * It is public because {@link MyRoomStatusCallback} needs access to it.
+     */
+    public int maxPlayerCount = 7;
+
+    /**
+     * Network senders for game to use
+     */
     public final Senders senders = new Senders(this);
-    public final Callbacks callbacks = new Callbacks();
-    public final RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
-    public final RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
+    private final NetworkCallbacks networkCallbacks = new NetworkCallbacks();
+    private final RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
+    private final RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
+
+    private Game game;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -81,6 +94,10 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
         game = new Game(this);
     }
 
+    /**
+     * What to do when back button pressed.
+     * When game is started, going back is forbidden.
+     */
     @Override
     public void onBackPressed() {
         if (game.isStarted()) {
@@ -90,10 +107,19 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
         super.onBackPressed();
     }
 
+    /**
+     * Constructs a multiplayer client
+     * @return a newly constructed multiplayer client
+     */
     private RealTimeMultiplayerClient makeRealTimeMultiplayerClient() {
         return Games.getRealTimeMultiplayerClient(this, getGoogleSignInAccount());
     }
 
+    /**
+     * Launches player invitation screen.
+     * @param minPlayerCount min players invited
+     * @param maxPlayerCount max players invited
+     */
     private void invitePlayers(int minPlayerCount, int maxPlayerCount) {
         // launch the player selection screen
         // minimum: minPlayerCount other player; maximum: maxPlayerCount other players
@@ -112,6 +138,9 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
         }
     }
 
+    /**
+     * Here used to get results of google's activities for room management
+     */
     @Override
     protected void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -123,6 +152,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
             }
 
             // Get the invitee list.
+            assert data != null;
             final ArrayList<String> invitees = data.getStringArrayListExtra(Games.EXTRA_PLAYER_IDS);
 
             // Get Automatch criteria.
@@ -198,35 +228,45 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
         }
     }
 
+    /**
+     * Called when a message received from any player
+     * @param ParticipantId who send this message
+     * @param message       message contents
+     */
     public void messageReceived(String ParticipantId, byte[] message) {
-        Log.d(MainActivity.TAG, "MESSAGE RECIEVED FROM: " + ParticipantId + ", msg: " + Arrays.toString(message));
+        Log.d(MainActivity.TAG, "MESSAGE RECEIVED FROM: " + ParticipantId + ", msg: " + Arrays.toString(message));
         if (message[0] == (byte) 0) { // to client
             message = Senders.removeFromBegin(message);
-            if (callbacks.clientCallback != null)
-                callbacks.clientCallback.receiveServerMessage(message);
+            if (networkCallbacks.clientCallback != null)
+                networkCallbacks.clientCallback.receiveServerMessage(message);
         } else if (message[0] == (byte) 1) { // to server
             message = Senders.removeFromBegin(message);
-            if (callbacks.serverCallback != null)
-                callbacks.serverCallback.receiveClientMessage(ParticipantId, message);
+            if (networkCallbacks.serverCallback != null)
+                networkCallbacks.serverCallback.receiveClientMessage(ParticipantId, message);
         } else {
             Log.e(MainActivity.TAG, "message's first byte isn't 0 or 1");
         }
     }
 
-    private OnRealTimeMessageReceivedListener mMessageReceivedHandler =
-            new OnRealTimeMessageReceivedListener() {
-                @Override
-                public void onRealTimeMessageReceived(@NonNull RealTimeMessage realTimeMessage) {
-                    // Handle messages received here.
-                    byte[] message = realTimeMessage.getMessageData();
-                    // process message contents...
-                    messageReceived(realTimeMessage.getSenderParticipantId(), message);
-                }
+    /**
+     * That's what actually receives messages
+     */
+    private final OnRealTimeMessageReceivedListener mMessageReceivedHandler =
+            realTimeMessage -> {
+                // Handle messages received here.
+                byte[] message = realTimeMessage.getMessageData();
+                // process message contents...
+                messageReceived(realTimeMessage.getSenderParticipantId(), message);
             };
 
 
     // returns whether there are enough players to start the game
 
+    /**
+     * Decides whether room is ready to start the game
+     * @param room room to check
+     * @return if game should be started with provided room
+     */
     boolean shouldStartGame(Room room) {
         int connectedPlayers = 0;
         for (Participant p : room.getParticipants()) {
@@ -234,55 +274,41 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
                 ++connectedPlayers;
             }
         }
-        return connectedPlayers >= MIN_PLAYERS;
+        // minPlayerCount does not include host
+        return connectedPlayers >= minPlayerCount + 1;
     }
-    // Returns whether the room is in a state where the game should be canceled.
 
+    /**
+     * This method determines whether it is impossible to start a game in
+     * a provided room and it should be cancelled
+     *
+     * Currently always returns <code>false</code>
+     *
+     * @param room room to check
+     * @return if to room should be cancelled automatically
+     */
     boolean shouldCancelGame(Room room) {
-        // TODO: Your game-specific cancellation logic here. For example, you might decide to
-        // cancel the game if enough people have declined the invitation or left the room.
-        // You can check a participant's status with Participant.getStatus().
-        // (Also, your UI should have a Cancel button that cancels the game too)
+        // TODO
+        // actually player can himself decide that a room should be cancelled,
+        // so it is not very important
         return false;
     }
 
+    /**
+     * Shows an activity in which player waits for other players to connect
+     * @param room                  where other players are connecting
+     * @param maxPlayersToStartGame how many players are expected
+     */
     public void showWaitingRoom(Room room, int maxPlayersToStartGame) {
         Log.d(MainActivity.TAG, "showing Waiting Room");
         getRealTimeMultiplayerClient()
                 .getWaitingRoomIntent(room, maxPlayersToStartGame)
-                .addOnSuccessListener(new OnSuccessListener<Intent>() {
-                    @Override
-                    public void onSuccess(Intent intent) {
-                        startActivityForResult(intent, RC_WAITING_ROOM);
-                    }
-                });
+                .addOnSuccessListener(intent -> startActivityForResult(intent, RC_WAITING_ROOM));
     }
 
-    public void checkForInvitation() {
-        Games.getGamesClient(this, getGoogleSignInAccount())
-                .getActivationHint()
-                .addOnSuccessListener(
-                        new OnSuccessListener<Bundle>() {
-                            @Override
-                            public void onSuccess(Bundle bundle) {
-                                Invitation invitation = bundle.getParcelable(Multiplayer.EXTRA_INVITATION);
-                                if (invitation != null) {
-                                    RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)
-                                            .setInvitationIdToAccept(invitation.getInvitationId())
-                                            .setOnMessageReceivedListener(mMessageReceivedHandler)
-                                            .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler);
-                                    setmJoinedRoomConfig(builder.build());
-                                    getRealTimeMultiplayerClient()
-                                            .join(getmJoinedRoomConfig());
-                                    // prevent screen from sleeping during handshake
-                                    getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
-                                }
-                            }
-                        }
-                );
-
-    }
-
+    /**
+     * Shows an activity where a player can look at his invitations and accept them
+     */
     private void showInvitationInbox() {
         Games.getInvitationsClient(this, getGoogleSignInAccount())
                 .getInvitationInboxIntent()
@@ -296,15 +322,22 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
 
     // --------------------- for client -----------------------
 
+    /**
+     * Generates a new {@link FragmentTransaction} for this activity.
+     * This method is given to {@link me.hwproj.mafiagame.gameadapter.ClientGame} so that
+     * it could change fragments in this activity
+     * @return FragmentTransaction for this activity
+     */
     public FragmentTransaction transactionProvider() {
         return getSupportFragmentManager().beginTransaction();
     }
 
-    // ------------- interface for room callbacks -------------
-
-    Game game;
+    // ------------- interface for room networkCallbacks -------------
 
     private int peerCount = 0;
+
+    // this methods are called by networkCallbacks and handle various
+    // multiplayer room changes
 
     public void peersJoined(List<String> list) {
         Log.d(MainActivity.TAG, "peersJoined: " + list);
@@ -334,6 +367,9 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
 
     // ------------- for ConfigurationFragment --------------
 
+    /**
+     * {@inheritDoc}
+     */
     @Override
     public void onConfigurationFinished(Settings settings) {
         game.onConfigureFinished(settings);
@@ -341,11 +377,19 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
 
     // ----------------- interface for Game -----------------
 
-    public void setServerCallback(ServerCallback callback) {
-        callbacks.serverCallback = callback;
+    /**
+     * Sets {@link ServerNetworkCallback} to use
+     * @param callback callback to use
+     */
+    public void setServerCallback(ServerNetworkCallback callback) {
+        networkCallbacks.serverCallback = callback;
     }
 
-    public void setClientCallback(ClientCallback callback) {
-        callbacks.clientCallback = callback;
+    /**
+     * Sets {@link ClientNetworkCallback} to use
+     * @param callback callback to use
+     */
+    public void setClientCallback(ClientNetworkCallback callback) {
+        networkCallbacks.clientCallback = callback;
     }
 }

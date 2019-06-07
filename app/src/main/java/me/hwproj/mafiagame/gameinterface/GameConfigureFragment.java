@@ -115,8 +115,7 @@ public class GameConfigureFragment extends Fragment {
 
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void startGame() {
+    private void startGame() {
         if (mListener == null) {
             Log.d("Bug", "game configuration fragment: callback is not initialized");
             return;

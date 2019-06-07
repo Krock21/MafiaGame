@@ -46,4 +46,6 @@
     <string name="next_button">next</string>
     <string name="go_to_sleep">go to sleep now</string>
     <string name="not_your_turn">Not your turn</string>
+    <string name="your_device_runs_server">Your device runs server for this game. Please don\'t close the app until the game ends</string>
+    <string name="server_wait_toolbar">Wait for the game to end</string>
 </resources>

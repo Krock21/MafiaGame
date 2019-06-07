@@ -19,7 +19,6 @@ import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.phase.PhaseFragment;
 import me.hwproj.mafiagame.util.table.TablePick;
 
-// TODO make a factory
 abstract public class PickFragment extends PhaseFragment {
     private final boolean pickSelfRole;
     private final int[] thisRolePlayers;
@@ -134,9 +133,4 @@ abstract public class PickFragment extends PhaseFragment {
     protected abstract void onPickComplete(int pickedPlayer);
 
     protected abstract void sendPickAction(PickAction pickPhasePlayerAction);
-
-//    @Override
-//    public void onPhaseEnd() {
-//
-//    }
 }

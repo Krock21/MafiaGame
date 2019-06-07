@@ -36,7 +36,7 @@ public class Server {
     }
 
     /**
-     * Calling this to starts a server.
+     * Calling this starts a server.
      */
     public void initialize() {
         currentGameData.startNextPhase();
@@ -81,11 +81,6 @@ public class Server {
 
     private void finishGame(boolean goodWon) {
         sender.sendMetaInformation(MetaInformation.endGame(goodWon));
-    }
-
-    // not only for phases, but for effects too
-    public void addInfo(String s) {
-        currentGameData.infoToDisplay.add(s);
     }
 
     // -------- specifically for Info phase --------

@@ -1,5 +1,6 @@
 package me.hwproj.mafiagame.gameadapter;
 
+import android.content.Intent;
 import android.util.Log;
 import android.widget.TextView;
 
@@ -7,12 +8,17 @@ import androidx.appcompat.widget.Toolbar;
 
 import me.hwproj.mafiagame.gameinterface.GameConfigureFragment;
 import me.hwproj.mafiagame.gameinterface.GameActivity;
+import me.hwproj.mafiagame.gameinterface.ServerWaitFragment;
 import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
 
+/**
+ * Represents a game of mafia on any stage from not initialized
+ * to the end.
+ */
 public class Game {
 
     private final GameActivity activity;
@@ -101,7 +107,15 @@ public class Game {
         activity.senders.clientSender = null;
 
         // don't ruin server
-        // TODO end this somehow
-//        activity.startActivity(new Intent(activity, MainActivity.class));
+        if (!isServer) {
+            activity.startActivity(new Intent(activity, MainActivity.class));
+        } else {
+            activity.transactionProvider().add(R.id.fragmentLayout, new ServerWaitFragment()).commit();
+            
+            Toolbar toolbar = activity.findViewById(R.id.toolbar);
+            TextView toolbarText = toolbar.findViewById(R.id.toolbarTextView);
+            toolbarText.setText(activity.getString(R.string.server_wait_toolbar));
+        }
+
     }
 }

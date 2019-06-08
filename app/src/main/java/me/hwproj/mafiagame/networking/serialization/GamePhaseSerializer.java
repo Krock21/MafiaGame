@@ -16,6 +16,13 @@ import me.hwproj.mafiagame.content.phases.wait.WaitPhase;
 import me.hwproj.mafiagame.impltest.TestPhase;
 import me.hwproj.mafiagame.phase.GamePhase;
 
+/**
+ * Serializes and deserializes GamePhase-s.
+ * Server and client use this class to transfer information about phases in the game.
+ *
+ * It's PhaseIdentifier list is one of the three places, that should be modified to
+ * add a new role and phase. The other two is Role enum and GameConfigure fragment
+ */
 public class GamePhaseSerializer {
     private static final PhaseIdentifier[] phases = {
             new PhaseIdentifier(1, TestPhase::new, TestPhase.class),

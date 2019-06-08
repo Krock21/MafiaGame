@@ -16,6 +16,10 @@ import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
 import me.hwproj.mafiagame.persistence.PersistentString;
 import me.hwproj.mafiagame.persistence.PersistentStringDao;
 
+/**
+ * An activity where user can change app's settings.
+ * Currently the only setting is player's in-game name.
+ */
 public class SettingsActivity extends AppCompatActivity {
 
     @Override

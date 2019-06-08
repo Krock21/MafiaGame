@@ -1,5 +1,9 @@
 package me.hwproj.mafiagame.networking;
 
+/**
+ * Contains either Metainformation or a GameState.
+ * Used by Client to store all server messages in the single queue.
+ */
 public class ServerNetworkPackage {
     private final boolean isMeta;
     private final Object either;

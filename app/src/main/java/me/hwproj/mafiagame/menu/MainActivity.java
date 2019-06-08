@@ -26,6 +26,10 @@ import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
 
 import static me.hwproj.mafiagame.networking.NetworkData.*;
 
+/**
+ * Main menu activity.
+ * User signs in google play games here.
+ */
 public class MainActivity extends AppCompatActivity {
     public static String TAG = "MafiaGame";
     private static AppDatabaseInteractor databaseInteractor;

@@ -1,5 +1,7 @@
 package me.hwproj.mafiagame.networking.messaging;
 
+import android.util.Log;
+
 import androidx.annotation.NonNull;
 
 import com.google.android.gms.games.GamesCallbackStatusCodes;
@@ -10,6 +12,7 @@ import com.google.android.gms.tasks.Task;
 import java.util.HashSet;
 
 import me.hwproj.mafiagame.gameinterface.GameActivity;
+import me.hwproj.mafiagame.menu.MainActivity;
 
 import static me.hwproj.mafiagame.networking.NetworkData.getRealTimeMultiplayerClient;
 import static me.hwproj.mafiagame.networking.NetworkData.getmMyParticipantId;
@@ -23,7 +26,8 @@ public class Senders {
     }
 
     private void sendBytesToParticipant(String participantId, byte[] message, int sendsCount) {
-        if(sendsCount <= 0) {
+        if (sendsCount <= 0) {
+            Log.e(MainActivity.TAG, "sendBytes with sendsCount <= 0 to " + participantId);
             return;
         }
         if (!participantId.equals(getmMyParticipantId())) {
@@ -34,6 +38,7 @@ public class Senders {
                                 public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
                                     // handle the message being sent.
                                     if (statusCode != GamesCallbackStatusCodes.OK) {
+                                        Log.d(MainActivity.TAG, "Message Lost to " + recipientId + Integer.toString(sendsCount));
                                         sendBytesToParticipant(participantId, message, sendsCount - 1);
                                     }
                                 }

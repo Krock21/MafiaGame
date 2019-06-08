@@ -35,6 +35,7 @@ import me.hwproj.mafiagame.util.NotifierInterractor;
 
 /**
  * Represents client side of the game.
+ * Receives bytes from server and manages phases' fragments.
  */
 public class ClientGame {
     public static final byte INIT_PACKAGE_HEADER = 3;
@@ -256,7 +257,7 @@ public class ClientGame {
             startPhaseFragment(client.nextPhaseFragment());
 
             // TODO make vibration a callback for Client and remove this nonsense
-            if (client.getGameData().currentPhase.getClass() != WaitClient.class) {
+            if (client.getGameData().getCurrentPhase().getClass() != WaitClient.class) {
                 NotifierInterractor.vibrate(activityReference.getApplicationContext(), 200);
                 NotifierInterractor.playClick(activityReference.findViewById(R.id.fragmentLayout));
             }

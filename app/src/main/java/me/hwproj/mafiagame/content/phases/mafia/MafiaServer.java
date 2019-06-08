@@ -25,7 +25,7 @@ public class MafiaServer extends PickServer {
     @Override
     protected void onPickComplete(int pickedPlayer) {
 
-        Player victim = serv.currentGameData.players.get(pickedPlayer);
+        Player victim = serv.getGameData().players.get(pickedPlayer);
         victim.addEffect(new Murdered());
 
         serv.startNextPhase();

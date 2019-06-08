@@ -87,7 +87,7 @@ public class ServerGame {
             playerNumber++;
         }
 
-        server.initialize();
+        server.start();
 
     }
 
@@ -169,7 +169,7 @@ public class ServerGame {
         }
         try {
             int phaseNum = dataStream.readInt();
-            PlayerAction action = server.currentGameData.phases.get(phaseNum).deserialize(dataStream);
+            PlayerAction action = server.getGameData().phases.get(phaseNum).deserialize(dataStream);
             server.acceptPlayerAction(action);
         } catch (IOException e) {
             throw new DeserializationException(e);
@@ -188,7 +188,7 @@ public class ServerGame {
             DataOutputStream dout = new DataOutputStream(bout);
             try {
                 dout.writeByte(ClientGame.GAME_STATE_HEADER);
-                state.serialize(dout, server.currentGameData.phases);
+                state.serialize(dout, server.getGameData().phases);
             } catch (SerializationException | IOException e) {
                 Log.d("Net", "sendGameState: error while serializing");
                 e.printStackTrace();

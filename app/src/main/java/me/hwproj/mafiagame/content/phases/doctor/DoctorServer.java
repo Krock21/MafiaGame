@@ -23,7 +23,7 @@ public class DoctorServer extends PickServer {
 
     @Override
     protected void onPickComplete(int pickedPlayer) {
-        serv.currentGameData.players.get(pickedPlayer).addEffect(new Healed());
+        serv.getGameData().players.get(pickedPlayer).addEffect(new Healed());
         serv.startNextPhase();
     }
 

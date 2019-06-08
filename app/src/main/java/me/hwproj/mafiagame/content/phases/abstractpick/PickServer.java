@@ -63,8 +63,8 @@ public abstract class PickServer implements GamePhaseServer {
         fixedCount = 0;
 
         List<Integer> thisRoleIds = new ArrayList<>();
-        for (int i = 0; i < serv.playerCount(); i++) {
-            Player p = serv.currentGameData.players.get(i);
+        for (int i = 0; i < serv.getGameData().playerCount(); i++) {
+            Player p = serv.getGameData().players.get(i);
             if (p.role == pickersRole && !p.dead) {
                 thisRoleIds.add(i);
             }

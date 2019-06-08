@@ -5,7 +5,7 @@ import me.hwproj.mafiagame.phase.GamePhase;
 import me.hwproj.mafiagame.phase.GamePhaseClient;
 import me.hwproj.mafiagame.phase.GamePhaseServer;
 
-public class TestPhase extends GamePhase {
+public class TestPhase implements GamePhase {
 
     public static final String PHASE_NAME = "GamePhase";
 

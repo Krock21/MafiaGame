@@ -1,12 +1,14 @@
 package me.hwproj.mafiagame.util;
 
 import android.content.Context;
-import android.util.Log;
 import android.widget.RadioButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * A group of radiobuttons from which only one can be picked simultaneously.
+ */
 public class RadiobuttonList {
     private final List<RadioButton> buttons = new ArrayList<>();
     private int currentPick = -1;

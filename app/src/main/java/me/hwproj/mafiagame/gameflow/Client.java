@@ -18,7 +18,13 @@ import me.hwproj.mafiagame.phase.GameState;
 import me.hwproj.mafiagame.phase.PhaseFragment;
 import me.hwproj.mafiagame.phase.PlayerAction;
 
-// TODO separate phases' interface from interractor's and other code
+/**
+ * Mostly a callback for PhaseFragment.
+ *
+ * Also stores ServerNetworkPackage-s received from server (and passed to Client
+ * from ClientGame) and manipulates ClientGame through ClientCallbacks or
+ * LiveData currentPhaseNumber.
+ */
 public class Client {
 
     private final int thisPlayer;
@@ -33,8 +39,8 @@ public class Client {
     // from ClientGame
     public PhaseFragment nextPhaseFragment() {
         currentGameState.nextPhase();
-        callbacks.setToolbarText(currentGameState.currentPhase.toolbarText());
-        return currentGameState.currentPhase.createFragment(this);
+        callbacks.setToolbarText(currentGameState.getCurrentPhase().toolbarText());
+        return currentGameState.getCurrentPhase().createFragment(this);
     }
 
     // from ClientGame

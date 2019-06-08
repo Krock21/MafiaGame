@@ -51,4 +51,5 @@
     <string name="exit">exit</string>
     <string name="gg">GG</string>
     <string name="client_wait_toolbar">Game ended</string>
+    <string name="nobody_pick">Nobody</string>
 </resources>

@@ -5,7 +5,7 @@ import me.hwproj.mafiagame.phase.GamePhase;
 import me.hwproj.mafiagame.phase.GamePhaseClient;
 import me.hwproj.mafiagame.phase.GamePhaseServer;
 
-public class InfoPhase extends GamePhase {
+public class InfoPhase implements GamePhase {
     @Override
     public GamePhaseServer getServerPhase(Server server) {
         return new InfoServer(server);

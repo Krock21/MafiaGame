@@ -14,6 +14,9 @@ import me.hwproj.mafiagame.phase.GamePhaseClient;
 import me.hwproj.mafiagame.phase.GamePhaseServer;
 import me.hwproj.mafiagame.phase.GameState;
 
+/**
+ * All information sent from server to clients
+ */
 public class FullGameState {
     private int phaseNumber;
     private boolean[] isDead;
@@ -24,7 +27,7 @@ public class FullGameState {
         for (int i = 0; i < data.players.size(); i++) {
             isDead[i] = data.players.get(i).dead;
         }
-        phaseNumber = data.phaseNumber;
+        phaseNumber = data.getCurrentPhaseNumber();
         this.phaseState = phaseState;
     }
 
@@ -68,7 +71,7 @@ public class FullGameState {
             try {
                 phases.get(phaseNumber % phases.size()).serializeGameState(data, phaseState);
             } catch (SerializationException e) {
-                Log.d("Bug", "serialize state: phaseNumber = " + phaseNumber + ", phase state " + phaseState.getClass() + ", phase " + phases.get(phaseNumber % phases.size()).getClass());
+                Log.d("Bug", "serialize state: currentPhaseNumber = " + phaseNumber + ", phase state " + phaseState.getClass() + ", phase " + phases.get(phaseNumber % phases.size()).getClass());
                 throw new SerializationException(e);
             }
         } catch (IOException e) {

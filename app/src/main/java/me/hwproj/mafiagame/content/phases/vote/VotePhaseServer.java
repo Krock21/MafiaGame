@@ -28,7 +28,7 @@ public class VotePhaseServer implements GamePhaseServer {
 
     @Override
     public void initPhase() {
-        int playerCount = serv.currentGameData.players.size();
+        int playerCount = serv.getGameData().players.size();
         playersChoices = new int[playerCount];
         Arrays.fill(playersChoices, -1);
         choiceFixed = new boolean[playerCount];
@@ -58,11 +58,11 @@ public class VotePhaseServer implements GamePhaseServer {
         // update choiceFixed[p] and fixedCount
         updateFixed(p, castedAction.fixed);
 
-        if (fixedCount == serv.playerAliveCount()) { //
+        if (fixedCount == serv.getGameData().playerAliveCount()) { //
             Log.d("qwe", Arrays.toString(playersChoices));
 
-            int[] chosenBy = new int[serv.playerCount() + 1]; // +1 for peace
-            for (int i = 0; i < serv.playerCount(); i++) {
+            int[] chosenBy = new int[serv.getGameData().playerCount() + 1]; // +1 for peace
+            for (int i = 0; i < serv.getGameData().playerCount(); i++) {
                 if (playersChoices[i] != -1) {
                     chosenBy[playersChoices[i]]++;
                 }
@@ -84,8 +84,8 @@ public class VotePhaseServer implements GamePhaseServer {
                 VotePhaseGameState s = new VotePhaseGameState();
                 s.end = true;
                 s.killedPlayer = maxChosen.get(0);
-                if (s.killedPlayer != serv.playerCount()) {
-                    serv.currentGameData.players.get(s.killedPlayer).dead = true;
+                if (s.killedPlayer != serv.getGameData().playerCount()) {
+                    serv.getGameData().players.get(s.killedPlayer).dead = true;
                     Log.d("qwe", "processPlayerAction: killed " + s.killedPlayer);
                 }
                 serv.sendGameState(s);

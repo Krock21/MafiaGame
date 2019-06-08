@@ -4,6 +4,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+/**
+ * A test class which is not used in actual game
+ */
 public class TestStringHolder extends ViewModel {
 
     private final MutableLiveData<String> data;

@@ -4,22 +4,18 @@ import me.hwproj.mafiagame.gameflow.Server;
 
 /**
  * An abstract class for describing game phases.
- * Provides singletons of server-size and client-side descriptions of a phase.
+ * Provides server-size and client-side descriptions of a phase.
  */
-public abstract class GamePhase {
-//    /**
-//     * Name to check in sending and receiving network packages
-//     * Should return a constant
-//     */
-//    public abstract String getPhaseName(); OK this does not work TODO
-
+public interface GamePhase {
     /**
+     * This method is called once by a Server to get a server-side description of a phase
      * @return description of server-side phase behavior.
      */
-    public abstract GamePhaseServer getServerPhase(Server server);
+    GamePhaseServer getServerPhase(Server server);
 
     /**
+     * This method is called once by a Client to get a client-side description of a phase
      * @return description of client-side phase behavior.
      */
-    public abstract GamePhaseClient getClientPhase();
+    GamePhaseClient getClientPhase();
 }

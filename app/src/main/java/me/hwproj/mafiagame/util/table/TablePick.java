@@ -1,24 +1,26 @@
 package me.hwproj.mafiagame.util.table;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.ViewGroup;
 import android.widget.RadioButton;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-import java.util.List;
-
+import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.ClientGameData;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.util.RadiobuttonList;
 import me.hwproj.mafiagame.util.RadiolistPickListener;
 
+/**
+ * A table with a row for every players and a few columns with RadiobuttonList-s.
+ * Some of them are activated and some are not.
+ *
+ * It also provides interface for disabling/enabling ability to pick a certain player and
+ * change picked players
+ */
 public class TablePick {
-    private final ClientGameData data;
-    private final int columns;
 
     private final boolean[] disabledRows;
     private final boolean[] disabledColumns;
@@ -34,8 +36,7 @@ public class TablePick {
             rowCount++;
         }
 
-        this.data = data;
-        this.columns = enabledCount + disabledCount;
+        int columns = enabledCount + disabledCount;
         disabledRows = new boolean[rowCount];
         this.disabledColumns = new boolean[columns];
         this.columnsButtons = new RadiobuttonList[columns];
@@ -71,7 +72,7 @@ public class TablePick {
                     ViewGroup.LayoutParams.WRAP_CONTENT));
 
             TextView name = new TextView(context);
-            name.setText("Nobody");
+            name.setText(context.getString(R.string.nobody_pick));
             row.addView(name);
 
             for (int columnId = 0; columnId < columns; columnId++) {

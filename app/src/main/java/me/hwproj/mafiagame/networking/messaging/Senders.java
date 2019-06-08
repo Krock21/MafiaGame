@@ -2,6 +2,7 @@ package me.hwproj.mafiagame.networking.messaging;
 
 import androidx.annotation.NonNull;
 
+import com.google.android.gms.games.GamesCallbackStatusCodes;
 import com.google.android.gms.games.RealTimeMultiplayerClient;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -19,6 +20,28 @@ public class Senders {
 
     public Senders(GameActivity activity) {
         this.activity = activity;
+    }
+
+    private void sendBytesToParticipant(String participantId, byte[] message, int sendsCount) {
+        if(sendsCount <= 0) {
+            return;
+        }
+        if (!participantId.equals(getmMyParticipantId())) {
+            Task<Integer> task = getRealTimeMultiplayerClient()
+                    .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+                            new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
+                                @Override
+                                public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
+                                    // handle the message being sent.
+                                    if (statusCode != GamesCallbackStatusCodes.OK) {
+                                        sendBytesToParticipant(participantId, message, sendsCount - 1);
+                                    }
+                                }
+                            }
+                    );
+        } else {
+            activity.messageReceived(getmMyParticipantId(), message);
+        }
     }
 
     public static byte[] addToBegin(byte[] message, byte firstByte) {
@@ -41,57 +64,15 @@ public class Senders {
     public ServerByteSender serverSender = new ServerByteSender() {
         @Override
         public void broadcastMessage(byte[] message) {
-            message = addToBegin(message, (byte) 0); // to client
             for (String participantId : getmRoom().getParticipantIds()) {
-                if(!participantId.equals(getmMyParticipantId())) {
-                    Task<Integer> task = getRealTimeMultiplayerClient()
-                            .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
-                                    handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Integer> task) {
-                                    // Keep track of which messages are sent, if desired.
-                                    recordMessageToken(task.getResult());
-                                }
-                            });
-                } else {
-                    activity.messageReceived(getmMyParticipantId(), message);
-                }
+                sendMessage(participantId, message);
             }
         }
 
         @Override
         public void sendMessage(String participantId, byte[] message) {
             message = addToBegin(message, (byte) 0); // to client
-            if(!participantId.equals(getmMyParticipantId())) {
-                Task<Integer> task = getRealTimeMultiplayerClient()
-                        .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
-                                handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                            @Override
-                            public void onComplete(@NonNull Task<Integer> task) {
-                                // Keep track of which messages are sent, if desired.
-                                recordMessageToken(task.getResult());
-                            }
-                        });
-            } else {
-                activity.messageReceived(getmMyParticipantId(), message);
-            }
-        }
-
-        private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
-                new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
-                    @Override
-                    public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
-                        // handle the message being sent.
-                        synchronized (this) {
-                            pendingMessageSet.remove(tokenId);
-                        }
-                    }
-                };
-
-        HashSet<Integer> pendingMessageSet = new HashSet<>();
-
-        synchronized void recordMessageToken(int tokenId) {
-            pendingMessageSet.add(tokenId);
+            sendBytesToParticipant(participantId, message, 100);
         }
     };
 
@@ -101,37 +82,8 @@ public class Senders {
         public void sendBytesToServer(byte[] message) {
             message = addToBegin(message, (byte) 1); // to server
             for (String participantId : getmRoom().getParticipantIds()) {
-                if(!participantId.equals(getmMyParticipantId())) {
-                    Task<Integer> task = getRealTimeMultiplayerClient()
-                            .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
-                                    handleMessageSentCallback).addOnCompleteListener(new OnCompleteListener<Integer>() {
-                                @Override
-                                public void onComplete(@NonNull Task<Integer> task) {
-                                    // Keep track of which messages are sent, if desired.
-                                    recordMessageToken(task.getResult());
-                                }
-                            });
-                } else {
-                    activity.messageReceived(getmMyParticipantId(), message);
-                }
+                sendBytesToParticipant(participantId, message, 100);
             }
-        }
-
-        private RealTimeMultiplayerClient.ReliableMessageSentCallback handleMessageSentCallback =
-                new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
-                    @Override
-                    public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
-                        // handle the message being sent.
-                        synchronized (this) {
-                            pendingMessageSet.remove(tokenId);
-                        }
-                    }
-                };
-
-        HashSet<Integer> pendingMessageSet = new HashSet<>();
-
-        synchronized void recordMessageToken(int tokenId) {
-            pendingMessageSet.add(tokenId);
         }
     };
 

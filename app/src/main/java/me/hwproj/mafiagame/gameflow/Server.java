@@ -18,14 +18,14 @@ public class Server {
     public ServerGameData currentGameData;
     public Settings settings;
 
-    private ServerSender sender; // TODO make not public
+    private ServerSender sender;
 
     // ------------ interface for ServerGame ------------
 
     public Server(@NotNull Settings settings, ServerSender sender) {
         this.settings = settings;
         this.currentGameData = new ServerGameData();
-        this.sender = sender; // TODO pass it or smth
+        this.sender = sender;
 
         for (PlayerSettings p : settings.playerSettings) {
             currentGameData.players.add(p.constructPlayer());

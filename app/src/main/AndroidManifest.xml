@@ -13,6 +13,7 @@
         android:theme="@style/ColoredBackground">
         <activity
             android:name=".menu.SettingsActivity"
+            android:screenOrientation="portrait"
             android:label="@string/title_activity_settings"></activity>
         <activity android:name=".gameinterface.GameActivity" />
 

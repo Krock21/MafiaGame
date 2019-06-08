@@ -13,7 +13,7 @@ import me.hwproj.mafiagame.content.phases.investigator.InvPhase;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.content.phases.wait.WaitPhase;
-import me.hwproj.mafiagame.impltest.TestPhase;
+import me.hwproj.mafiagame.content.phases.impltest.TestPhase;
 import me.hwproj.mafiagame.phase.GamePhase;
 
 /**

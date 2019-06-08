@@ -90,7 +90,7 @@ public class MainActivity extends AppCompatActivity {
         if (GoogleSignIn.hasPermissions(account, signInOptions.getScopeArray())) {
             // Already signed in.
             // The signed in account is stored in the 'account' variable.
-            NetworkData.setGoogleSignInAccount(account);
+            setGoogleSignInAccount(account);
         } else {
             // Haven't been signed-in before. Try the silent sign-in first.
             GoogleSignInClient signInClient = GoogleSignIn.getClient(this, signInOptions);
@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
                                 public void onComplete(@NonNull Task<GoogleSignInAccount> task) {
                                     if (task.isSuccessful()) {
                                         // The signed in account is stored in the task's result.
-                                        NetworkData.setGoogleSignInAccount(task.getResult());
+                                        setGoogleSignInAccount(task.getResult());
                                     } else {
                                         // Player will need to sign-in explicitly using via UI.
                                         // See [sign-in best practices](http://developers.google.com/games/services/checklist) for guidance on how and when to implement Interactive Sign-in,
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity {
                 // The signed in account is stored in the result.
                 Log.d("MafiaGame", "SigningIn SUCCESS");
 
-                NetworkData.setGoogleSignInAccount(result.getSignInAccount());
+                setGoogleSignInAccount(result.getSignInAccount());
             } else {
                 String message = result.getStatus().toString();
                 if (message == null || message.isEmpty()) {
@@ -150,18 +150,14 @@ public class MainActivity extends AppCompatActivity {
                 GoogleSignInOptions.DEFAULT_GAMES_SIGN_IN);
         setGoogleSignInAccount(null);
         signInClient.signOut().addOnCompleteListener(this,
-                new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        // at this point, the user is signed out.
-                        new AlertDialog.Builder(MainActivity.this).setMessage("You has signed out")
-                                .setNeutralButton(android.R.string.ok, null).show();
-                    }
+                task -> {
+                    // at this point, the user is signed out.
+                    new AlertDialog.Builder(MainActivity.this).setMessage("You has signed out")
+                            .setNeutralButton(android.R.string.ok, null).show();
                 });
     }
 
     public static AppDatabaseInteractor getDatabaseInteractor() {
         return databaseInteractor;
     }
-
 }

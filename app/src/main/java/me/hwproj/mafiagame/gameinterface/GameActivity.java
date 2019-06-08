@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +19,6 @@ import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.OnRealTimeMessageReceivedListener;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
@@ -54,6 +52,7 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
  */
 public class GameActivity extends AppCompatActivity implements GameConfigureFragment.ConfigurationCompleteListener {
 
+    private final NetworkData networkData = new NetworkData();
     private boolean mWaitingRoomFinishedFromCode = false;
 
     /**
@@ -70,10 +69,10 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
     /**
      * Network senders for game to use
      */
-    public final Senders senders = new Senders(this);
+    public final Senders senders = new Senders(this, networkData);
     private final NetworkCallbacks networkCallbacks = new NetworkCallbacks();
-    private final RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
-    private final RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
+    private final RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this, networkData);
+    private final RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this, networkData);
 
     private Game game;
 
@@ -81,7 +80,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_create);
-        NetworkData.setRealTimeMultiplayerClient(makeRealTimeMultiplayerClient());
+        networkData.setRealTimeMultiplayerClient(makeRealTimeMultiplayerClient());
 
         Button makeRoom = findViewById(R.id.makeRoom);
         makeRoom.setOnClickListener(v -> {
@@ -123,15 +122,10 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
     private void invitePlayers(int minPlayerCount, int maxPlayerCount) {
         // launch the player selection screen
         // minimum: minPlayerCount other player; maximum: maxPlayerCount other players
-        if (NetworkData.getRealTimeMultiplayerClient() != null) {
-            NetworkData.getRealTimeMultiplayerClient()
+        if (networkData.getRealTimeMultiplayerClient() != null) {
+            networkData.getRealTimeMultiplayerClient()
                     .getSelectOpponentsIntent(minPlayerCount, maxPlayerCount, true)
-                    .addOnSuccessListener(new OnSuccessListener<Intent>() {
-                        @Override
-                        public void onSuccess(Intent intent) {
-                            startActivityForResult(intent, RC_SELECT_PLAYERS);
-                        }
-                    });
+                    .addOnSuccessListener(intent -> startActivityForResult(intent, RC_SELECT_PLAYERS));
         } else {
             new AlertDialog.Builder(this).setMessage("You Should get RealTimeMultiplayerClient at first")
                     .setNeutralButton(android.R.string.ok, null).show();
@@ -170,9 +164,9 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
             }
 
             // Save the roomConfig so we can use it if we call leave().
-            setmJoinedRoomConfig(roomBuilder.build());
-            getRealTimeMultiplayerClient()
-                    .create(getmJoinedRoomConfig());
+            networkData.setmJoinedRoomConfig(roomBuilder.build());
+            networkData.getRealTimeMultiplayerClient()
+                    .create(networkData.getmJoinedRoomConfig());
         }
         if (requestCode == RC_WAITING_ROOM) {
 
@@ -196,13 +190,13 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
                 // continue to connect in the background.
 
                 // in this example, we take the simple approach and just leave the room:
-                getRealTimeMultiplayerClient()
-                        .leave(getmJoinedRoomConfig(), getmRoom().getRoomId());
+                networkData.getRealTimeMultiplayerClient()
+                        .leave(networkData.getmJoinedRoomConfig(), networkData.getmRoom().getRoomId());
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                 // player wants to leave the room.
-                getRealTimeMultiplayerClient()
-                        .leave(getmJoinedRoomConfig(), getmRoom().getRoomId());
+                networkData.getRealTimeMultiplayerClient()
+                        .leave(networkData.getmJoinedRoomConfig(), networkData.getmRoom().getRoomId());
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }
@@ -219,9 +213,9 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
                         .setInvitationIdToAccept(invitation.getInvitationId())
                         .setOnMessageReceivedListener(mMessageReceivedHandler)
                         .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler);
-                setmJoinedRoomConfig(builder.build());
-                getRealTimeMultiplayerClient()
-                        .join(getmJoinedRoomConfig());
+                networkData.setmJoinedRoomConfig(builder.build());
+                networkData.getRealTimeMultiplayerClient()
+                        .join(networkData.getmJoinedRoomConfig());
                 // prevent screen from sleeping during handshake
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
@@ -301,7 +295,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
      */
     public void showWaitingRoom(Room room, int maxPlayersToStartGame) {
         Log.d(MainActivity.TAG, "showing Waiting Room");
-        getRealTimeMultiplayerClient()
+        networkData.getRealTimeMultiplayerClient()
                 .getWaitingRoomIntent(room, maxPlayersToStartGame)
                 .addOnSuccessListener(intent -> startActivityForResult(intent, RC_WAITING_ROOM));
     }

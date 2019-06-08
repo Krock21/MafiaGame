@@ -2,27 +2,21 @@ package me.hwproj.mafiagame.networking.messaging;
 
 import android.util.Log;
 
-import androidx.annotation.NonNull;
-
 import com.google.android.gms.games.GamesCallbackStatusCodes;
 import com.google.android.gms.games.RealTimeMultiplayerClient;
-import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-
-import java.util.HashSet;
 
 import me.hwproj.mafiagame.gameinterface.GameActivity;
 import me.hwproj.mafiagame.menu.MainActivity;
-
-import static me.hwproj.mafiagame.networking.NetworkData.getRealTimeMultiplayerClient;
-import static me.hwproj.mafiagame.networking.NetworkData.getmMyParticipantId;
-import static me.hwproj.mafiagame.networking.NetworkData.getmRoom;
+import me.hwproj.mafiagame.networking.NetworkData;
 
 public class Senders {
     private GameActivity activity;
+    private final NetworkData networkData;
 
-    public Senders(GameActivity activity) {
+    public Senders(GameActivity activity, NetworkData networkData) {
         this.activity = activity;
+        this.networkData = networkData;
     }
 
     private void sendBytesToParticipant(String participantId, byte[] message, int sendsCount) {
@@ -30,9 +24,9 @@ public class Senders {
             Log.e(MainActivity.TAG, "sendBytes with sendsCount <= 0 to " + participantId);
             return;
         }
-        if (!participantId.equals(getmMyParticipantId())) {
-            Task<Integer> task = getRealTimeMultiplayerClient()
-                    .sendReliableMessage(message, getmRoom().getRoomId(), participantId,
+        if (!participantId.equals(networkData.getmMyParticipantId())) {
+            Task<Integer> task = networkData.getRealTimeMultiplayerClient()
+                    .sendReliableMessage(message, networkData.getmRoom().getRoomId(), participantId,
                             new RealTimeMultiplayerClient.ReliableMessageSentCallback() {
                                 @Override
                                 public void onRealTimeMessageSent(int statusCode, int tokenId, String recipientId) {
@@ -45,7 +39,7 @@ public class Senders {
                             }
                     );
         } else {
-            activity.messageReceived(getmMyParticipantId(), message);
+            activity.messageReceived(networkData.getmMyParticipantId(), message);
         }
     }
 
@@ -69,7 +63,7 @@ public class Senders {
     public ServerByteSender serverSender = new ServerByteSender() {
         @Override
         public void broadcastMessage(byte[] message) {
-            for (String participantId : getmRoom().getParticipantIds()) {
+            for (String participantId : networkData.getmRoom().getParticipantIds()) {
                 sendMessage(participantId, message);
             }
         }
@@ -86,7 +80,7 @@ public class Senders {
         @Override
         public void sendBytesToServer(byte[] message) {
             message = addToBegin(message, (byte) 1); // to server
-            for (String participantId : getmRoom().getParticipantIds()) {
+            for (String participantId : networkData.getmRoom().getParticipantIds()) {
                 sendBytesToParticipant(participantId, message, 100);
             }
         }

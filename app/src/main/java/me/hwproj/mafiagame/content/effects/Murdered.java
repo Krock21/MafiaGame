@@ -7,6 +7,9 @@ import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameflow.ServerGameData;
 import me.hwproj.mafiagame.gameplay.Effect;
 
+/**
+ * Player marked with this tag will die unless healed with {@link Murdered#DELETE_TAG DELETE_TAG}
+ */
 public class Murdered extends Effect {
 
     public static final String PRIORITY = "M";

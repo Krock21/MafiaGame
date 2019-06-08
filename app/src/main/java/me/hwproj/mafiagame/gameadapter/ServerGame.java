@@ -64,11 +64,11 @@ public class ServerGame {
         settings.phases = actualPhases;
         this.settings = settings;
 
-        Collections.shuffle(settings.playerSettings);
-        if (settings.playerSettings.size() != idToName.size()) {
-            Log.d(MainActivity.TAG, "initialize: " + settings.playerSettings.size() + "players, but " + idToName.size() + "clients");
+        Collections.shuffle(settings.getPlayerSettings());
+        if (settings.getPlayerSettings().size() != idToName.size()) {
+            Log.d(MainActivity.TAG, "initialize: " + settings.getPlayerSettings().size() + "players, but " + idToName.size() + "clients");
         }
-        ListIterator<PlayerSettings> iter = settings.playerSettings.listIterator();
+        ListIterator<PlayerSettings> iter = settings.getPlayerSettings().listIterator();
         for (Map.Entry<String, String> idName : idToName.entrySet()) {
             if (!iter.hasNext()) {
                 break;
@@ -88,7 +88,6 @@ public class ServerGame {
         }
 
         server.start();
-
     }
 
     /**

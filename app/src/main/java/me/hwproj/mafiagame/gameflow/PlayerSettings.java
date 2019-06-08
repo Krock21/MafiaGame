@@ -6,18 +6,27 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
+import java.nio.charset.Charset;
 
 import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 
+/**
+ * A description of a player used while creating a game and
+ * initializing Client/Server
+ */
 public class PlayerSettings {
-    public Role role;
-    public String name; // TODO make private
+    private Role role;
+    public String name; // should be public
 
     public PlayerSettings(Role role, String name) {
         this.role = role;
         this.name = name;
+    }
+
+    public Role getRole() {
+        return role;
     }
 
     Player constructPlayer() {
@@ -35,10 +44,7 @@ public class PlayerSettings {
         Role r = Role.deserialize((byte) b);
         String name;
         try {
-            int len = stream.readInt();
-            byte[] bytes = new byte[len];
-            stream.read(bytes);
-            name = new String(bytes); // TODO specify charset
+            name = stream.readUTF();
         } catch (IOException e) {
             throw new DeserializationException("Cant read name", e);
         }
@@ -53,10 +59,8 @@ public class PlayerSettings {
             throw new SerializationException("Cant serialize role", e);
         }
 
-        byte[] nameBytes = name.getBytes(); // TODO charset
         try (DataOutputStream dataStream = new DataOutputStream(stream)) {
-            dataStream.writeInt(nameBytes.length);
-            dataStream.write(nameBytes);
+            dataStream.writeUTF(name);
         } catch (IOException e) {
             throw new SerializationException("Cant serialize name", e);
         }

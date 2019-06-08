@@ -1,10 +1,13 @@
 package me.hwproj.mafiagame.content.effects;
 
-import me.hwproj.mafiagame.gameflow.ClientGameData;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameflow.ServerGameData;
 import me.hwproj.mafiagame.gameplay.Effect;
 
+/**
+ * Heales player marked with Murdered effect by applying {@link Murdered#DELETE_TAG Murdered.DELETE_TAG}
+ * @see Murdered
+ */
 public class Healed extends Effect {
 
     public static final String PRIORITY = "H";

@@ -31,7 +31,7 @@ import me.hwproj.mafiagame.phase.GamePhase;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-public class serializationTest {
+public class SerializationTest {
 
     private ByteArrayOutputStream byteStream;
 
@@ -73,7 +73,7 @@ public class serializationTest {
         DataOutputStream dout = getOutput();
         example.serialize(dout);
         PlayerSettings deserialized = PlayerSettings.deserialize(getInput());
-        assertEquals(example.role, deserialized.role);
+        assertEquals(example.getRole(), deserialized.getRole());
         assertEquals(example.name, deserialized.name);
     }
 
@@ -99,14 +99,14 @@ public class serializationTest {
         Settings deserialized = Settings.deserialize(getInput());
 
         assertEquals(s.phases.size(), deserialized.phases.size());
-        assertEquals(s.playerSettings.size(), deserialized.playerSettings.size());
+        assertEquals(s.getPlayerSettings().size(), deserialized.getPlayerSettings().size());
         for (int i = 0; i < s.phases.size(); i++) {
             assertEquals(s.phases.get(i).getClass(), deserialized.phases.get(i).getClass());
         }
 
-        for (int i = 0; i < s.playerSettings.size(); i++) {
-            assertEquals(s.playerSettings.get(i).role, deserialized.playerSettings.get(i).role);
-            assertEquals(s.playerSettings.get(i).name, deserialized.playerSettings.get(i).name);
+        for (int i = 0; i < s.getPlayerSettings().size(); i++) {
+            assertEquals(s.getPlayerSettings().get(i).getRole(), deserialized.getPlayerSettings().get(i).getRole());
+            assertEquals(s.getPlayerSettings().get(i).name, deserialized.getPlayerSettings().get(i).name);
         }
     }
 

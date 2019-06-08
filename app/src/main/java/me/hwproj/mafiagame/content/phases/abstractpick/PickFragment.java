@@ -19,6 +19,10 @@ import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.phase.PhaseFragment;
 import me.hwproj.mafiagame.util.table.TablePick;
 
+/**
+ * This fragments helps to implement a phase, where players of one role select one
+ * player together.
+ */
 abstract public class PickFragment extends PhaseFragment {
     private final boolean pickSelfRole;
     private final int[] thisRolePlayers;

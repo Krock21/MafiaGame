@@ -7,7 +7,6 @@ import androidx.lifecycle.MutableLiveData;
 
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
 
 import me.hwproj.mafiagame.networking.ClientSender;
 import me.hwproj.mafiagame.networking.FullGameState;
@@ -30,25 +29,50 @@ public class Client {
     private final int thisPlayer;
     private final ClientCallbacks callbacks;
 
-    // from ClientGame
+
+    /**
+     * Send action to server.
+     * This is called by phases.
+     * @param action
+     */
     public void sendPlayerAction(PlayerAction action) {
         if (sender != null) { // TODO
             sender.sendPlayerAction(action);
         }
     }
-    // from ClientGame
+
+    // ------------- from ClientGame -------------
+
+    /**
+     * Starts next phase and gets it's fragment.
+     * Called from ClientGame.
+     * @return next phase's fragment
+     */
     public PhaseFragment nextPhaseFragment() {
         currentGameState.nextPhase();
         callbacks.setToolbarText(currentGameState.getCurrentPhase().toolbarText());
         return currentGameState.getCurrentPhase().createFragment(this);
     }
 
-    // from ClientGame
+    /**
+     * Called by ClientGame when this player is killed
+     */
+    public void onThisPlayerKilled() {
+        // currently does nothing
+        // cant do much since don't have Context
+    }
+
+    /**
+     * Receive a package from server
+     * @param pack package to handle
+     */
     public void receivePackage(ServerNetworkPackage pack) {
         Log.d("qwe", "receivePackage: meta: " + pack.isMeta());
         packageQueue.add(pack);
         packageData.postValue(pack); // mostly to call listeners
     }
+
+    // -------------------------------------------
 
     private void receiveState(FullGameState state) {
         Log.d("qwe", "receiveState: received");
@@ -66,7 +90,7 @@ public class Client {
         }
     }
 
-    public void startNextPhase(int number) {
+    private void startNextPhase(int number) {
         currentPhaseNumber.setValue(number);
     }
 
@@ -103,7 +127,7 @@ public class Client {
         for (GamePhase p : settings.phases) {
             currentGameState.phases.add(p.getClientPhase());
         }
-        for (PlayerSettings p : settings.playerSettings) {
+        for (PlayerSettings p : settings.getPlayerSettings()) {
             currentGameState.players.add(p.constructPlayer());
         }
 
@@ -119,6 +143,8 @@ public class Client {
         this.sender = sender;
         this.thisPlayer = thisPlayer;
     }
+
+    // ------------- various getters -------------
 
     public GameState getLatestGameState() {
         return latestGameState.getValue();
@@ -142,9 +168,5 @@ public class Client {
 
     public Player thisPlayer() {
         return getGameData().players.get(thisPlayerId());
-    }
-
-    public void onThisPlayerKilled() {
-        // currently does nothing
     }
 }

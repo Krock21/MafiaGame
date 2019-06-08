@@ -28,7 +28,7 @@ public class Server {
         this.currentGameData = new ServerGameData();
         this.sender = sender;
 
-        for (PlayerSettings p : settings.playerSettings) {
+        for (PlayerSettings p : settings.getPlayerSettings()) {
             getGameData().players.add(p.constructPlayer());
         }
         for (GamePhase p : settings.phases) {

@@ -11,6 +11,10 @@ import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.phase.GamePhaseServer;
 
+/**
+ * This class helps to implement a server part for a phase, where players of
+ * one role select one player.
+ */
 public abstract class PickServer implements GamePhaseServer {
 
     private int[] playersChoices;

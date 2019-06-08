@@ -38,6 +38,12 @@ import me.hwproj.mafiagame.util.Alerter;
  * to handle interaction events.
  * Use the {@link GameConfigureFragment#newInstance} factory method to
  * create an instance of this fragment.
+ *
+ *
+ * This is one of the three places, that should be modified to
+ * add a new role and phase. The other two are
+ * {@link me.hwproj.mafiagame.gameplay.Role Role enum}
+ * and {@link me.hwproj.mafiagame.networking.serialization.GamePhaseSerializer GamePhaseSerializer}
  */
 public class GameConfigureFragment extends Fragment {
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -116,6 +122,9 @@ public class GameConfigureFragment extends Fragment {
 
     }
 
+    /**
+     * Tries to start a game with configured roles
+     */
     private void startGame() {
         if (mListener == null) {
             Log.d("Bug", "game configuration fragment: callback is not initialized");

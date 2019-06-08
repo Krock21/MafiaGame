@@ -21,7 +21,9 @@ import me.hwproj.mafiagame.phase.GamePhase;
  * Server and client use this class to transfer information about phases in the game.
  *
  * It's PhaseIdentifier list is one of the three places, that should be modified to
- * add a new role and phase. The other two is Role enum and GameConfigure fragment
+ * add a new role and phase. The other two are
+ * {@link me.hwproj.mafiagame.gameplay.Role Role enum}
+ * and {@link me.hwproj.mafiagame.gameinterface.GameConfigureFragment GameConfigureFragment}
  */
 public class GamePhaseSerializer {
     private static final PhaseIdentifier[] phases = {

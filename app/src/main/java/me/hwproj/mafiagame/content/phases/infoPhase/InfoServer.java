@@ -39,11 +39,13 @@ public class InfoServer implements GamePhaseServer {
         }
         finished[a.playerNumber] = a.wantsNext;
 
+        server.sendGameState(new InfoState(info));
+        // send game state before starting next phase
+
         if (finishedCount >= server.getGameData().playerAliveCount()) {
             server.startNextPhase();
         }
 
-        server.sendGameState(new InfoState(info));
     }
 
     @Override

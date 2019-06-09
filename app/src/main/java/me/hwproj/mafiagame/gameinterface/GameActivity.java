@@ -53,7 +53,6 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
 public class GameActivity extends AppCompatActivity implements GameConfigureFragment.ConfigurationCompleteListener {
 
     private final NetworkData networkData = new NetworkData();
-    private boolean mWaitingRoomFinishedFromCode = false;
 
     /**
      * Minimal allowed number of other players in the room.
@@ -170,15 +169,6 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
         }
         if (requestCode == RC_WAITING_ROOM) {
 
-            // Look for finishing the waiting room from code, for example if a
-            // "start game" message is received.  In this case, ignore the result. TODO Start Game received
-            if (mWaitingRoomFinishedFromCode) {
-                Log.d("START", "calling onRoomFinished from higher if");
-                onRoomFinished(); // Vlad
-                // TODO idk if it really needs to be here
-                return;
-            }
-
             if (resultCode == Activity.RESULT_OK) {
                 // Start the game!
                 Log.d("START", "calling onRoomFinished from lower if");
@@ -189,7 +179,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
                 // match, or do something else like minimize the waiting room and
                 // continue to connect in the background.
 
-                // in this example, we take the simple approach and just leave the room:
+                // just leave the room:
                 networkData.getRealTimeMultiplayerClient()
                         .leave(networkData.getmJoinedRoomConfig(), networkData.getmRoom().getRoomId());
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
@@ -207,6 +197,13 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
                 return;
             }
             Log.d(MainActivity.TAG, "RC_INVITATION_INBOX is OK");
+
+            if (data == null || data.getExtras() == null) {
+                // We think this things are never null
+                Log.d("Bug", "onActivityResult: data = " + data + ", something is null");
+                return;
+            }
+
             Invitation invitation = data.getExtras().getParcelable(Multiplayer.EXTRA_INVITATION);
             if (invitation != null) {
                 RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)

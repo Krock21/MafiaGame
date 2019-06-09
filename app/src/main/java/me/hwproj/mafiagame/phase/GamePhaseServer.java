@@ -12,6 +12,7 @@ import me.hwproj.mafiagame.networking.serialization.SerializationException;
 public interface GamePhaseServer {
     /**
      * Handles received PlayerAction
+     * Note that this action might be from another phase.
      * @param action action to handle
      */
     void processPlayerAction(PlayerAction action);
@@ -27,7 +28,15 @@ public interface GamePhaseServer {
     void onEnd();
 
     /**
-     * How to serialize a game state sent by this phase
+     * How to serialize a game state sent by this phase.
+     *
+     * Actually if a phase tries to send a GameState after it starts next phase,
+     * that GameState will be serialized using next phase's serialization. So it is possible
+     * to get other phase's GameState here. But currently all phases do not do this.
+     *
+     * Anyway it is recommended to check if provided GameState is of correct type and
+     * throw a SerializationException if not.
+     *
      * @param state state sent by this phase's client
      */
     void serializeGameState(DataOutputStream dataOut, GameState state) throws SerializationException;

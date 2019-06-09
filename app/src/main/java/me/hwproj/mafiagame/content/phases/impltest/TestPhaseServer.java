@@ -27,12 +27,12 @@ public class TestPhaseServer implements GamePhaseServer {
 
         TestPhasePlayerAction castedAction = (TestPhasePlayerAction) action;
 
+        sum += castedAction.getAdded();
+        server.sendGameState(new TestPhaseGameState(sum));
+
         if (castedAction.isNext()) {
             server.startNextPhase();
         }
-
-        sum += castedAction.getAdded();
-        server.sendGameState(new TestPhaseGameState(sum));
     }
 
     @Override

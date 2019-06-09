@@ -44,7 +44,7 @@ public class Server {
     }
 
     /**
-     * Handles received PlayerAction. It is guaranteed
+     * Handles received PlayerAction
      * @param action action to handle
      */
     public void acceptPlayerAction(PlayerAction action) {
@@ -65,7 +65,10 @@ public class Server {
     }
 
     /**
-     * Starts next game phase
+     * Starts next game phase.
+     * Note that this method should be called after the phase finishes sending states.
+     * It won't ruin the game if a phase sends a GameState after this, but it will be
+     * serialized by the next phase
      */
     public void startNextPhase() {
         if (getGameData().getCurrentPhase() != null) {

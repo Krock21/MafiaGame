@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
@@ -67,8 +68,10 @@ abstract public class PickFragment extends PhaseFragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.generic_pick, container, false);
+        Button pickFinal = view.findViewById(R.id.pickFinal);
 
         if (isNotYourTurn()) {
+            pickFinal.setVisibility(View.GONE);
             TextView text = view.findViewById(R.id.pickNotYourTurn);
             text.setText(getString(R.string.not_your_turn));
             return view;
@@ -98,7 +101,8 @@ abstract public class PickFragment extends PhaseFragment {
             sendPickAction(new PickAction(currentPick, false, thisPlayerNumber));
         });
 
-        view.findViewById(R.id.pickFinal).setOnClickListener(v -> {
+        pickFinal.setVisibility(View.VISIBLE);
+        pickFinal.setOnClickListener(v -> {
             if (currentPick != -1) {
                 sendPickAction(new PickAction(currentPick, true, thisPlayerNumber));
             }

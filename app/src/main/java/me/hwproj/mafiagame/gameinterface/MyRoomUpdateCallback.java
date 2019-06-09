@@ -14,7 +14,7 @@ import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.networking.NetworkData;
 
 class MyRoomUpdateCallback extends RoomUpdateCallback {
-    private GameActivity activity;
+    private final GameActivity activity;
     private final NetworkData networkData;
 
     public MyRoomUpdateCallback(GameActivity activity, NetworkData networkData) {

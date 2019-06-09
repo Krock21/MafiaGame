@@ -5,7 +5,7 @@ import android.content.Context;
 import androidx.room.Room;
 
 public class DatabaseInteractor {
-    private AppDatabase database;
+    private final AppDatabase database;
 
     public DatabaseInteractor(Context context) {
         database = Room

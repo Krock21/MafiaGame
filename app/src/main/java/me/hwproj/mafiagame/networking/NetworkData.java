@@ -24,9 +24,6 @@ public class NetworkData {
     private final Lock realTimeMultiplayerClientLock = new ReentrantLock();
     private RealTimeMultiplayerClient realTimeMultiplayerClient;
 
-    // at least 2 players required for our game
-    public final int MIN_PLAYERS = 2;
-
     // are we already playing?
     private final Lock mPlayingLock = new ReentrantLock();
     private boolean mPlaying = false;
@@ -103,9 +100,4 @@ public class NetworkData {
         return answer;
     }
 
-    public void setmPlaying(boolean mPlaying) {
-        mPlayingLock.lock();
-        this.mPlaying = mPlaying;
-        mPlayingLock.unlock();
-    }
 }

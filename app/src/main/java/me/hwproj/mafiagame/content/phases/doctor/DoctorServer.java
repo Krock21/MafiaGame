@@ -17,7 +17,7 @@ import me.hwproj.mafiagame.phase.GameState;
 import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class DoctorServer extends PickServer {
-    protected DoctorServer(Server serv) {
+    DoctorServer(Server serv) {
         super(serv, Role.DOCTOR);
     }
 

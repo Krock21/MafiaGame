@@ -15,7 +15,7 @@ public class Player {
     final public Role role;
     final public String name;
     public boolean dead; // TODO make if a method or smth
-    private List<Effect> effects = new ArrayList<>();
+    private final List<Effect> effects = new ArrayList<>();
 
     public Player(Role role, String name) {
         this.role = role;

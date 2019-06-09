@@ -5,8 +5,6 @@ import androidx.room.Delete;
 import androidx.room.Insert;
 import androidx.room.Query;
 
-import java.util.List;
-
 @Dao
 public interface PersistentStringDao {
     @Query("SELECT * FROM persistent_strings WHERE tag = :tag LIMIT 1")

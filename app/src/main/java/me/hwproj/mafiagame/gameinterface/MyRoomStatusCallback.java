@@ -17,8 +17,8 @@ import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.networking.NetworkData;
 
 class MyRoomStatusCallback extends RoomStatusUpdateCallback {
-    private GameActivity activity;
-    private NetworkData networkData;
+    private final GameActivity activity;
+    private final NetworkData networkData;
 
     public MyRoomStatusCallback(GameActivity activity, NetworkData networkData) {
         this.activity = activity;
@@ -27,28 +27,30 @@ class MyRoomStatusCallback extends RoomStatusUpdateCallback {
         @Override
         public void onRoomConnecting(@Nullable Room room) {
             networkData.setmRoom(room);
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onRoomConnecting.");
+            if (room != null) {
+                Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onRoomConnecting.");
+            }
             // Update the UI status since we are in the process of connecting to a specific room. VLAD TODO
         }
 
         @Override
         public void onRoomAutoMatching(@Nullable Room room) {
             networkData.setmRoom(room);
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onRoomAutoMatching.");
+            Log.d(MainActivity.TAG, "Room " + (room != null ? room.getRoomId() : null) + " onRoomAutoMatching.");
             // Update the UI status since we are in the process of matching other players. VLAD TODO
         }
 
         @Override
         public void onPeerInvitedToRoom(@Nullable Room room, @NonNull List<String> list) {
             networkData.setmRoom(room);
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onPeerInvitedToRoom.");
+            Log.d(MainActivity.TAG, "Room " + (room != null ? room.getRoomId() : null) + " onPeerInvitedToRoom.");
             // Update the UI status since we are in the process of matching other players. VLAD TODO
         }
 
         @Override
         public void onPeerDeclined(@Nullable Room room, @NonNull List<String> list) {
             networkData.setmRoom(room);
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onPeerDeclined.");
+            Log.d(MainActivity.TAG, "Room " + (room != null ? room.getRoomId() : null) + " onPeerDeclined.");
             // Peer declined invitation, see if game should be canceled
             if (!networkData.ismPlaying() && activity.shouldCancelGame(room)) {
                 networkData.getRealTimeMultiplayerClient()
@@ -62,14 +64,14 @@ class MyRoomStatusCallback extends RoomStatusUpdateCallback {
             networkData.setmRoom(room);
 
             activity.peersJoined(list); // Vlad
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onPeerJoined.");
+            Log.d(MainActivity.TAG, "Room " + (room != null ? room.getRoomId() : null) + " onPeerJoined.");
         }
 
         @Override
         public void onPeerLeft(@Nullable Room room, @NonNull List<String> list) {
             activity.peersLeft(list); // Vlad
             networkData.setmRoom(room);
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onPeerLeft.");
+            Log.d(MainActivity.TAG, "Room " + (room != null ? room.getRoomId() : null) + " onPeerLeft.");
             // Peer left, see if game should be canceled.
             if (!networkData.ismPlaying() && activity.shouldCancelGame(room)) {
                 networkData.getRealTimeMultiplayerClient()
@@ -81,22 +83,17 @@ class MyRoomStatusCallback extends RoomStatusUpdateCallback {
 
         @Override
         public void onConnectedToRoom(@Nullable Room room) {
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onConnectedToRoom.");
+            Log.d(MainActivity.TAG, "Room " + (room != null ? room.getRoomId() : null) + " onConnectedToRoom.");
             // Connected to room, record the room Id.
             networkData.setmRoom(room);
-            Games.getPlayersClient(activity, networkData.getGoogleSignInAccount())
-                    .getCurrentPlayerId().addOnSuccessListener(new OnSuccessListener<String>() {
-                @Override
-                public void onSuccess(String playerId) {
-                    networkData.setmMyParticipantId(networkData.getmRoom().getParticipantId(playerId));
-                }
-            });
+            Games.getPlayersClient(activity, NetworkData.getGoogleSignInAccount())
+                    .getCurrentPlayerId().addOnSuccessListener(playerId -> networkData.setmMyParticipantId(networkData.getmRoom().getParticipantId(playerId)));
         }
 
         @Override
         public void onDisconnectedFromRoom(@Nullable Room room) {
             networkData.setmRoom(room);
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onDisconnectedFromRoom.");
+            Log.d(MainActivity.TAG, "Room " + (room != null ? room.getRoomId() : null) + " onDisconnectedFromRoom.");
             // This usually happens due to a network error, leave the game.
             networkData.getRealTimeMultiplayerClient()
                     .leave(networkData.getmJoinedRoomConfig(), room.getRoomId());
@@ -109,7 +106,7 @@ class MyRoomStatusCallback extends RoomStatusUpdateCallback {
         @Override
         public void onPeersConnected(@Nullable Room room, @NonNull List<String> list) {
             networkData.setmRoom(room);
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onPeersConnected.");
+            Log.d(MainActivity.TAG, "Room " + (room != null ? room.getRoomId() : null) + " onPeersConnected.");
             if (networkData.ismPlaying()) {
                 // add new player to an ongoing game
             } else if (activity.shouldStartGame(room)) {
@@ -120,7 +117,7 @@ class MyRoomStatusCallback extends RoomStatusUpdateCallback {
         @Override
         public void onPeersDisconnected(@Nullable Room room, @NonNull List<String> list) {
             networkData.setmRoom(room);
-            Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " onPeerDeclined.");
+            Log.d(MainActivity.TAG, "Room " + (room != null ? room.getRoomId() : null) + " onPeerDeclined.");
             if (networkData.ismPlaying()) {
                 // do game-specific handling of this -- remove player's avatar
                 // from the screen, etc. If not enough players are left for

@@ -19,10 +19,7 @@ class WaitFragment extends PhaseFragment {
 
     @Override
     public void processGameState(GameState state) {
-        if (!(state instanceof WaitState)) {
-            return;
-        }
-        // actually now I understand it isn't needed
+        // unused
     }
 
     @Override

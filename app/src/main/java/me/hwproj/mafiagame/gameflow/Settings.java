@@ -17,7 +17,7 @@ import me.hwproj.mafiagame.phase.GamePhase;
  */
 public class Settings {
     public List<GamePhase> phases; // should be public
-    private List<PlayerSettings> playerSettings;
+    private final List<PlayerSettings> playerSettings;
 
     public Settings(List<GamePhase> phases, List<PlayerSettings> players) {
         this.phases = phases;

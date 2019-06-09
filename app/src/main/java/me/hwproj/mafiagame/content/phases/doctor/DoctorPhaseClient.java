@@ -37,5 +37,5 @@ class DoctorPhaseClient implements GamePhaseClient {
         return "Doctor's turn";
     }
 
-    private ModifiableBoolean pickedSelfLastTime = new ModifiableBoolean(false);
+    private final ModifiableBoolean pickedSelfLastTime = new ModifiableBoolean(false);
 }

@@ -20,7 +20,7 @@ public class VotePhaseServer implements GamePhaseServer {
     private boolean[] choiceFixed;
     private boolean[] cantChoose;
     private int fixedCount;
-    private Server serv;
+    private final Server serv;
 
     public VotePhaseServer(Server server) {
         serv = server;

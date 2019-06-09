@@ -57,13 +57,13 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
     /**
      * Minimal allowed number of other players in the room.
      */
-    private int minPlayerCount = 1;
+    private final int minPlayerCount = 1;
 
     /**
      * Maximal allowed number of other players in the room.
      * It is public because {@link MyRoomStatusCallback} needs access to it.
      */
-    public int maxPlayerCount = 7;
+    public final int maxPlayerCount = 7;
 
     /**
      * Network senders for game to use
@@ -82,9 +82,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
         networkData.setRealTimeMultiplayerClient(makeRealTimeMultiplayerClient());
 
         Button makeRoom = findViewById(R.id.makeRoom);
-        makeRoom.setOnClickListener(v -> {
-            invitePlayers(minPlayerCount, maxPlayerCount);
-        });
+        makeRoom.setOnClickListener(v -> invitePlayers(minPlayerCount, maxPlayerCount));
 
         Button invitationInbox = findViewById(R.id.invitationInbox);
         invitationInbox.setOnClickListener(v -> showInvitationInbox());
@@ -278,6 +276,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
      * @param room room to check
      * @return if to room should be cancelled automatically
      */
+    @SuppressWarnings("unused")
     boolean shouldCancelGame(Room room) {
         // TODO
         // actually player can himself decide that a room should be cancelled,
@@ -303,12 +302,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
     private void showInvitationInbox() {
         Games.getInvitationsClient(this, getGoogleSignInAccount())
                 .getInvitationInboxIntent()
-                .addOnSuccessListener(new OnSuccessListener<Intent>() {
-                    @Override
-                    public void onSuccess(Intent intent) {
-                        startActivityForResult(intent, RC_INVITATION_INBOX);
-                    }
-                });
+                .addOnSuccessListener(intent -> startActivityForResult(intent, RC_INVITATION_INBOX));
     }
 
     // --------------------- for client -----------------------
@@ -351,7 +345,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
         game.onStartRoom();
     }
 
-    public void onRoomFinished() {
+    private void onRoomFinished() {
         Log.d(MainActivity.TAG, "Room finished called");
         game.onRoomFinished(1 + peerCount); // peer count does not include server device
     }

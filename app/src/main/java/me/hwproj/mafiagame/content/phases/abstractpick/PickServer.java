@@ -22,7 +22,7 @@ public abstract class PickServer implements GamePhaseServer {
     private int fixedCount;
     private int pickersCount;
     protected final Server serv;
-    private Role pickersRole;
+    private final Role pickersRole;
 
     protected PickServer(Server serv, Role pickersRole) {
         this.serv = serv;

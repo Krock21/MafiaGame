@@ -35,7 +35,7 @@ abstract public class PickFragment extends PhaseFragment {
         return notYourTurn;
     }
 
-    public PickFragment(Client client, Role pickersRole, boolean pickSelfRole) {
+    protected PickFragment(Client client, Role pickersRole, boolean pickSelfRole) {
         super(client);
         this.pickSelfRole = pickSelfRole;
 

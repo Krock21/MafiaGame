@@ -10,9 +10,9 @@ import me.hwproj.mafiagame.gameflow.Client;
  */
 public abstract class PhaseFragment extends Fragment {
 
-    protected Client client;
+    protected final Client client;
 
-    public PhaseFragment(Client client) {
+    protected PhaseFragment(Client client) {
         this.client = client;
     }
 

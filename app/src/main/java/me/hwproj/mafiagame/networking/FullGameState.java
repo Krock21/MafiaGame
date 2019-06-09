@@ -18,9 +18,9 @@ import me.hwproj.mafiagame.phase.GameState;
  * All information sent from server to clients
  */
 public class FullGameState {
-    private int phaseNumber;
-    private boolean[] isDead;
-    private GameState phaseState;
+    private final int phaseNumber;
+    private final boolean[] isDead;
+    private final GameState phaseState;
 
     public FullGameState(ServerGameData data, GameState phaseState) {
         isDead = new boolean[data.players.size()];
@@ -60,9 +60,9 @@ public class FullGameState {
         try {
             data.writeInt(phaseNumber);
             data.writeInt(isDead.length);
-            for (int i = 0; i < isDead.length; i++) {
+            for (boolean b : isDead) {
                 byte dead = 0;
-                if (isDead[i]) {
+                if (b) {
                     dead = 1;
                 }
                 data.writeByte(dead);

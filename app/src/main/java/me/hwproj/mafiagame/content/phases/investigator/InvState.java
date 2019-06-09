@@ -10,9 +10,9 @@ import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phase.GameState;
 
 public class InvState extends GameState {
-    private boolean isInvestigationResult;
+    private final boolean isInvestigationResult;
     private boolean isGood;
-    private PickState pickState;
+    private final PickState pickState;
 
     public InvState(PickState pickState) {
         this.pickState = pickState;
@@ -40,11 +40,6 @@ public class InvState extends GameState {
 
     public PickState getPickState() {
         return pickState;
-    }
-
-    @Override
-    public int hashCode() {
-        return super.hashCode();
     }
 
     void serialize(DataOutputStream dout) throws SerializationException, IOException {

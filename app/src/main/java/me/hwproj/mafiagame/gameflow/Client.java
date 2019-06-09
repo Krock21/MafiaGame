@@ -57,9 +57,11 @@ public class Client {
     /**
      * Called by ClientGame when this player is killed
      */
+    @SuppressWarnings("EmptyMethod")
     public void onThisPlayerKilled() {
         // currently does nothing
         // cant do much since don't have Context
+        // might need this method later
     }
 
     /**
@@ -113,12 +115,12 @@ public class Client {
         callbacks.finishGame(finishMessage);
     }
 
-    private ClientGameData currentGameState;
-    private ClientSender sender;
+    private final ClientGameData currentGameState;
+    private final ClientSender sender;
 
-    private MutableLiveData<GameState> latestGameState = new MutableLiveData<>();
-    private MutableLiveData<Integer> currentPhaseNumber = new MutableLiveData<>();
-    private MutableLiveData<ServerNetworkPackage> packageData = new MutableLiveData<>();
+    private final MutableLiveData<GameState> latestGameState = new MutableLiveData<>();
+    private final MutableLiveData<Integer> currentPhaseNumber = new MutableLiveData<>();
+    private final MutableLiveData<ServerNetworkPackage> packageData = new MutableLiveData<>();
     private final Queue<ServerNetworkPackage> packageQueue = new LinkedList<>();
 
     public Client(ClientSender sender, Settings settings, int thisPlayer, ClientCallbacks callbacks) {

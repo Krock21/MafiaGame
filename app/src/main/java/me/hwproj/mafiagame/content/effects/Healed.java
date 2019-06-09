@@ -10,6 +10,7 @@ import me.hwproj.mafiagame.gameplay.Effect;
  */
 public class Healed extends Effect {
 
+    @SuppressWarnings("WeakerAccess")
     public static final String PRIORITY = "H";
 
     public Healed() {

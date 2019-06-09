@@ -65,11 +65,12 @@ public class GamePhaseSerializer {
         throw new SerializationException("Unrecognized phase");
     }
 
+    @SuppressWarnings("WeakerAccess")
     private static class PhaseIdentifier {
         @NotNull
         private final Supplier<GamePhase> supplier;
         private final int phaseIdentifier;
-        private Class<? extends GamePhase> phaseClass;
+        private final Class<? extends GamePhase> phaseClass;
 
         public PhaseIdentifier(int phaseIdentifier,
                                 @NotNull Supplier<GamePhase> supplier,

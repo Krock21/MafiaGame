@@ -16,7 +16,7 @@ class WaitServer implements GamePhaseServer {
 
     private static final long WAIT_TIME = 5 * 1000; // ms
     private final Server serv;
-    private Handler handlerToPostTo = new Handler();
+    private final Handler handlerToPostTo = new Handler();
 
     public WaitServer(Server serv) {
         this.serv = serv;

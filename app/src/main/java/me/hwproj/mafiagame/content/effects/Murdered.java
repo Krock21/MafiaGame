@@ -2,7 +2,6 @@ package me.hwproj.mafiagame.content.effects;
 
 import android.util.Log;
 
-import me.hwproj.mafiagame.gameflow.ClientGameData;
 import me.hwproj.mafiagame.gameflow.Player;
 import me.hwproj.mafiagame.gameflow.ServerGameData;
 import me.hwproj.mafiagame.gameplay.Effect;
@@ -10,6 +9,7 @@ import me.hwproj.mafiagame.gameplay.Effect;
 /**
  * Player marked with this tag will die unless healed with {@link Murdered#DELETE_TAG DELETE_TAG}
  */
+@SuppressWarnings("WeakerAccess")
 public class Murdered extends Effect {
 
     public static final String PRIORITY = "M";

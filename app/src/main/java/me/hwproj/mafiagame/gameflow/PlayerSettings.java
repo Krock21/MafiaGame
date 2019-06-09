@@ -3,10 +3,7 @@ package me.hwproj.mafiagame.gameflow;
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.OutputStream;
-import java.nio.charset.Charset;
 
 import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
@@ -17,7 +14,7 @@ import me.hwproj.mafiagame.networking.serialization.SerializationException;
  * initializing Client/Server
  */
 public class PlayerSettings {
-    private Role role;
+    private final Role role;
     public String name; // should be public
 
     public PlayerSettings(Role role, String name) {

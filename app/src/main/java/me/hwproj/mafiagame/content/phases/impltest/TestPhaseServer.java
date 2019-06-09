@@ -13,7 +13,7 @@ import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class TestPhaseServer implements GamePhaseServer {
     private int sum = 0;
-    private Server server;
+    private final Server server;
 
     public TestPhaseServer(Server server) {
         this.server = server;

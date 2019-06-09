@@ -12,8 +12,8 @@ import me.hwproj.mafiagame.networking.serialization.SerializationException;
  * Sent by server to initialize a client
  */
 public class InitGamePackage {
-    private Settings gameSettings;
-    private int playerNumber;
+    private final Settings gameSettings;
+    private final int playerNumber;
 
     public InitGamePackage(Settings gameSettings, int playerNumber) {
         this.gameSettings = gameSettings;

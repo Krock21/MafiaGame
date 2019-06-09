@@ -44,8 +44,8 @@ public class ClientGame {
 
     private final ClientByteSender sender;
     private final AppCompatActivity activityReference;
-    private Supplier<FragmentTransaction> transactionSupplier;
-    private String desiredName;
+    private final Supplier<FragmentTransaction> transactionSupplier;
+    private final String desiredName;
     private final Runnable onClientEndCallback;
     private Client client;
     private boolean initialised;

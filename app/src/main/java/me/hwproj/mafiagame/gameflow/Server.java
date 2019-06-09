@@ -19,8 +19,8 @@ import me.hwproj.mafiagame.phase.PlayerAction;
  * game.
  */
 public class Server {
-    private ServerGameData currentGameData;
-    private ServerSender sender;
+    private final ServerGameData currentGameData;
+    private final ServerSender sender;
 
     // ------------ interface for ServerGame ------------
 

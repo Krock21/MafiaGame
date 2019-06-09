@@ -18,7 +18,7 @@ import me.hwproj.mafiagame.phase.GameState;
 import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class MafiaServer extends PickServer {
-    protected MafiaServer(Server serv) {
+    MafiaServer(Server serv) {
         super(serv, Role.MAFIA);
     }
 

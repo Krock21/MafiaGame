@@ -2,7 +2,7 @@ package me.hwproj.mafiagame.content.phases.infoPhase;
 
 import me.hwproj.mafiagame.phase.PlayerAction;
 
-public class InfoAction extends PlayerAction {
+class InfoAction extends PlayerAction {
     public final boolean wantsNext;
     public final int playerNumber;
 

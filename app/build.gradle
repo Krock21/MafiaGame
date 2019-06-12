@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
 android {
+    signingConfigs {
+        main {
+            storeFile file('~/.android/debug.keystore')
+            storePassword 'android'
+            keyAlias = 'debug.keystore'
+            keyPassword 'android'
+        }
+    }
     compileSdkVersion 28
     defaultConfig {
         applicationId "me.hwproj.mafiagame"

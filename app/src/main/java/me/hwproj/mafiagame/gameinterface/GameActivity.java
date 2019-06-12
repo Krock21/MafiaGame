@@ -7,7 +7,6 @@ import android.util.Log;
 import android.view.WindowManager;
 import android.widget.Button;
 
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
@@ -20,7 +19,6 @@ import com.google.android.gms.games.multiplayer.Invitation;
 import com.google.android.gms.games.multiplayer.Multiplayer;
 import com.google.android.gms.games.multiplayer.Participant;
 import com.google.android.gms.games.multiplayer.realtime.OnRealTimeMessageReceivedListener;
-import com.google.android.gms.games.multiplayer.realtime.RealTimeMessage;
 import com.google.android.gms.games.multiplayer.realtime.Room;
 import com.google.android.gms.games.multiplayer.realtime.RoomConfig;
 import com.google.android.gms.games.multiplayer.realtime.RoomStatusUpdateCallback;
@@ -54,26 +52,26 @@ import static me.hwproj.mafiagame.networking.NetworkData.*;
  */
 public class GameActivity extends AppCompatActivity implements GameConfigureFragment.ConfigurationCompleteListener {
 
-    private boolean mWaitingRoomFinishedFromCode = false;
+    private final NetworkData networkData = new NetworkData();
 
     /**
      * Minimal allowed number of other players in the room.
      */
-    private int minPlayerCount = 1;
+    private final int minPlayerCount = 1;
 
     /**
      * Maximal allowed number of other players in the room.
      * It is public because {@link MyRoomStatusCallback} needs access to it.
      */
-    public int maxPlayerCount = 7;
+    public final int maxPlayerCount = 7;
 
     /**
      * Network senders for game to use
      */
-    public final Senders senders = new Senders(this);
+    public final Senders senders = new Senders(this, networkData);
     private final NetworkCallbacks networkCallbacks = new NetworkCallbacks();
-    private final RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this);
-    private final RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this);
+    private final RoomUpdateCallback mRoomUpdateCallback = new MyRoomUpdateCallback(this, networkData);
+    private final RoomStatusUpdateCallback mRoomStatusCallbackHandler = new MyRoomStatusCallback(this, networkData);
 
     private Game game;
 
@@ -81,12 +79,10 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_game_create);
-        NetworkData.setRealTimeMultiplayerClient(makeRealTimeMultiplayerClient());
+        networkData.setRealTimeMultiplayerClient(makeRealTimeMultiplayerClient());
 
         Button makeRoom = findViewById(R.id.makeRoom);
-        makeRoom.setOnClickListener(v -> {
-            invitePlayers(minPlayerCount, maxPlayerCount);
-        });
+        makeRoom.setOnClickListener(v -> invitePlayers(minPlayerCount, maxPlayerCount));
 
         Button invitationInbox = findViewById(R.id.invitationInbox);
         invitationInbox.setOnClickListener(v -> showInvitationInbox());
@@ -123,15 +119,10 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
     private void invitePlayers(int minPlayerCount, int maxPlayerCount) {
         // launch the player selection screen
         // minimum: minPlayerCount other player; maximum: maxPlayerCount other players
-        if (NetworkData.getRealTimeMultiplayerClient() != null) {
-            NetworkData.getRealTimeMultiplayerClient()
+        if (networkData.getRealTimeMultiplayerClient() != null) {
+            networkData.getRealTimeMultiplayerClient()
                     .getSelectOpponentsIntent(minPlayerCount, maxPlayerCount, true)
-                    .addOnSuccessListener(new OnSuccessListener<Intent>() {
-                        @Override
-                        public void onSuccess(Intent intent) {
-                            startActivityForResult(intent, RC_SELECT_PLAYERS);
-                        }
-                    });
+                    .addOnSuccessListener(intent -> startActivityForResult(intent, RC_SELECT_PLAYERS));
         } else {
             new AlertDialog.Builder(this).setMessage("You Should get RealTimeMultiplayerClient at first")
                     .setNeutralButton(android.R.string.ok, null).show();
@@ -170,20 +161,11 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
             }
 
             // Save the roomConfig so we can use it if we call leave().
-            setmJoinedRoomConfig(roomBuilder.build());
-            getRealTimeMultiplayerClient()
-                    .create(getmJoinedRoomConfig());
+            networkData.setmJoinedRoomConfig(roomBuilder.build());
+            networkData.getRealTimeMultiplayerClient()
+                    .create(networkData.getmJoinedRoomConfig());
         }
         if (requestCode == RC_WAITING_ROOM) {
-
-            // Look for finishing the waiting room from code, for example if a
-            // "start game" message is received.  In this case, ignore the result. TODO Start Game received
-            if (mWaitingRoomFinishedFromCode) {
-                Log.d("START", "calling onRoomFinished from higher if");
-                onRoomFinished(); // Vlad
-                // TODO idk if it really needs to be here
-                return;
-            }
 
             if (resultCode == Activity.RESULT_OK) {
                 // Start the game!
@@ -195,14 +177,14 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
                 // match, or do something else like minimize the waiting room and
                 // continue to connect in the background.
 
-                // in this example, we take the simple approach and just leave the room:
-                getRealTimeMultiplayerClient()
-                        .leave(getmJoinedRoomConfig(), getmRoom().getRoomId());
+                // just leave the room:
+                networkData.getRealTimeMultiplayerClient()
+                        .leave(networkData.getmJoinedRoomConfig(), networkData.getmRoom().getRoomId());
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             } else if (resultCode == GamesActivityResultCodes.RESULT_LEFT_ROOM) {
                 // player wants to leave the room.
-                getRealTimeMultiplayerClient()
-                        .leave(getmJoinedRoomConfig(), getmRoom().getRoomId());
+                networkData.getRealTimeMultiplayerClient()
+                        .leave(networkData.getmJoinedRoomConfig(), networkData.getmRoom().getRoomId());
                 getWindow().clearFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
         }
@@ -213,15 +195,22 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
                 return;
             }
             Log.d(MainActivity.TAG, "RC_INVITATION_INBOX is OK");
+
+            if (data == null || data.getExtras() == null) {
+                // We think this things are never null
+                Log.d("Bug", "onActivityResult: data = " + data + ", something is null");
+                return;
+            }
+
             Invitation invitation = data.getExtras().getParcelable(Multiplayer.EXTRA_INVITATION);
             if (invitation != null) {
                 RoomConfig.Builder builder = RoomConfig.builder(mRoomUpdateCallback)
                         .setInvitationIdToAccept(invitation.getInvitationId())
                         .setOnMessageReceivedListener(mMessageReceivedHandler)
                         .setRoomStatusUpdateCallback(mRoomStatusCallbackHandler);
-                setmJoinedRoomConfig(builder.build());
-                getRealTimeMultiplayerClient()
-                        .join(getmJoinedRoomConfig());
+                networkData.setmJoinedRoomConfig(builder.build());
+                networkData.getRealTimeMultiplayerClient()
+                        .join(networkData.getmJoinedRoomConfig());
                 // prevent screen from sleeping during handshake
                 getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
             }
@@ -287,6 +276,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
      * @param room room to check
      * @return if to room should be cancelled automatically
      */
+    @SuppressWarnings("unused")
     boolean shouldCancelGame(Room room) {
         // TODO
         // actually player can himself decide that a room should be cancelled,
@@ -301,7 +291,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
      */
     public void showWaitingRoom(Room room, int maxPlayersToStartGame) {
         Log.d(MainActivity.TAG, "showing Waiting Room");
-        getRealTimeMultiplayerClient()
+        networkData.getRealTimeMultiplayerClient()
                 .getWaitingRoomIntent(room, maxPlayersToStartGame)
                 .addOnSuccessListener(intent -> startActivityForResult(intent, RC_WAITING_ROOM));
     }
@@ -312,12 +302,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
     private void showInvitationInbox() {
         Games.getInvitationsClient(this, getGoogleSignInAccount())
                 .getInvitationInboxIntent()
-                .addOnSuccessListener(new OnSuccessListener<Intent>() {
-                    @Override
-                    public void onSuccess(Intent intent) {
-                        startActivityForResult(intent, RC_INVITATION_INBOX);
-                    }
-                });
+                .addOnSuccessListener(intent -> startActivityForResult(intent, RC_INVITATION_INBOX));
     }
 
     // --------------------- for client -----------------------
@@ -360,7 +345,7 @@ public class GameActivity extends AppCompatActivity implements GameConfigureFrag
         game.onStartRoom();
     }
 
-    public void onRoomFinished() {
+    private void onRoomFinished() {
         Log.d(MainActivity.TAG, "Room finished called");
         game.onRoomFinished(1 + peerCount); // peer count does not include server device
     }

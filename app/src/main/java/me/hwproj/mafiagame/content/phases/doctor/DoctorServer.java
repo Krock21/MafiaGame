@@ -17,13 +17,13 @@ import me.hwproj.mafiagame.phase.GameState;
 import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class DoctorServer extends PickServer {
-    protected DoctorServer(Server serv) {
+    DoctorServer(Server serv) {
         super(serv, Role.DOCTOR);
     }
 
     @Override
     protected void onPickComplete(int pickedPlayer) {
-        serv.currentGameData.players.get(pickedPlayer).addEffect(new Healed());
+        serv.getGameData().players.get(pickedPlayer).addEffect(new Healed());
         serv.startNextPhase();
     }
 

@@ -30,7 +30,7 @@ class InvServer extends PickServer {
     @Override
     protected void sendPickState(PickState data) {
         if (data.end) {
-            Player pickedPlayer = serv.currentGameData.players.get(data.getPicked());
+            Player pickedPlayer = serv.getGameData().players.get(data.getPicked());
             serv.sendGameState(new InvState(data, pickedPlayer.role.isGood()));
         } else {
             serv.sendGameState(new InvState(data));

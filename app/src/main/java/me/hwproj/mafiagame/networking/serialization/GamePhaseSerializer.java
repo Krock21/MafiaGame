@@ -13,9 +13,18 @@ import me.hwproj.mafiagame.content.phases.investigator.InvPhase;
 import me.hwproj.mafiagame.content.phases.mafia.MafiaPhase;
 import me.hwproj.mafiagame.content.phases.vote.VotePhase;
 import me.hwproj.mafiagame.content.phases.wait.WaitPhase;
-import me.hwproj.mafiagame.impltest.TestPhase;
+import me.hwproj.mafiagame.content.phases.impltest.TestPhase;
 import me.hwproj.mafiagame.phase.GamePhase;
 
+/**
+ * Serializes and deserializes GamePhase-s.
+ * Server and client use this class to transfer information about phases in the game.
+ *
+ * It's PhaseIdentifier list is one of the three places, that should be modified to
+ * add a new role and phase. The other two are
+ * {@link me.hwproj.mafiagame.gameplay.Role Role enum}
+ * and {@link me.hwproj.mafiagame.gameinterface.GameConfigureFragment GameConfigureFragment}
+ */
 public class GamePhaseSerializer {
     private static final PhaseIdentifier[] phases = {
             new PhaseIdentifier(1, TestPhase::new, TestPhase.class),
@@ -56,11 +65,12 @@ public class GamePhaseSerializer {
         throw new SerializationException("Unrecognized phase");
     }
 
+    @SuppressWarnings("WeakerAccess")
     private static class PhaseIdentifier {
         @NotNull
         private final Supplier<GamePhase> supplier;
         private final int phaseIdentifier;
-        private Class<? extends GamePhase> phaseClass;
+        private final Class<? extends GamePhase> phaseClass;
 
         public PhaseIdentifier(int phaseIdentifier,
                                 @NotNull Supplier<GamePhase> supplier,

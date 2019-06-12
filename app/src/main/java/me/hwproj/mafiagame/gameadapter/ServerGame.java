@@ -64,11 +64,11 @@ public class ServerGame {
         settings.phases = actualPhases;
         this.settings = settings;
 
-        Collections.shuffle(settings.playerSettings);
-        if (settings.playerSettings.size() != idToName.size()) {
-            Log.d(MainActivity.TAG, "initialize: " + settings.playerSettings.size() + "players, but " + idToName.size() + "clients");
+        Collections.shuffle(settings.getPlayerSettings());
+        if (settings.getPlayerSettings().size() != idToName.size()) {
+            Log.d(MainActivity.TAG, "initialize: " + settings.getPlayerSettings().size() + "players, but " + idToName.size() + "clients");
         }
-        ListIterator<PlayerSettings> iter = settings.playerSettings.listIterator();
+        ListIterator<PlayerSettings> iter = settings.getPlayerSettings().listIterator();
         for (Map.Entry<String, String> idName : idToName.entrySet()) {
             if (!iter.hasNext()) {
                 break;
@@ -87,8 +87,7 @@ public class ServerGame {
             playerNumber++;
         }
 
-        server.initialize();
-
+        server.start();
     }
 
     /**
@@ -169,7 +168,7 @@ public class ServerGame {
         }
         try {
             int phaseNum = dataStream.readInt();
-            PlayerAction action = server.currentGameData.phases.get(phaseNum).deserialize(dataStream);
+            PlayerAction action = server.getGameData().phases.get(phaseNum).deserialize(dataStream);
             server.acceptPlayerAction(action);
         } catch (IOException e) {
             throw new DeserializationException(e);
@@ -188,7 +187,7 @@ public class ServerGame {
             DataOutputStream dout = new DataOutputStream(bout);
             try {
                 dout.writeByte(ClientGame.GAME_STATE_HEADER);
-                state.serialize(dout, server.currentGameData.phases);
+                state.serialize(dout, server.getGameData().phases);
             } catch (SerializationException | IOException e) {
                 Log.d("Net", "sendGameState: error while serializing");
                 e.printStackTrace();

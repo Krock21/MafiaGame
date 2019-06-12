@@ -61,7 +61,7 @@ public class InfoFragment extends PhaseFragment {
         Log.d("Info", "setInfo: " + info.getPhasesInformation() + " lines");
 
         // if first info
-        if (client.getGameData().phaseNumber < client.getGameData().phases.size()) {
+        if (client.getGameData().getCurrentPhaseNumber() < client.getGameData().phases.size()) {
             addStringOnScreen("Your role is " + client.thisPlayer().role);
             Log.d("Info", "setInfo: role information");
         }

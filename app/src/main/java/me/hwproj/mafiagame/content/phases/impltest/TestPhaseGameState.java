@@ -1,11 +1,11 @@
-package me.hwproj.mafiagame.impltest;
+package me.hwproj.mafiagame.content.phases.impltest;
 
 import android.os.Parcel;
 
 import me.hwproj.mafiagame.phase.GameState;
 
 public class TestPhaseGameState extends GameState {
-    private int sum;
+    private final int sum;
 
     public TestPhaseGameState(int sum) {
         this.sum = sum;

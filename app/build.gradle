@@ -14,8 +14,8 @@ android {
         applicationId "me.hwproj.mafiagame"
         minSdkVersion 15
         targetSdkVersion 28
-        versionCode 3
-        versionName "3.0"
+        versionCode 5
+        versionName "5.0"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
@@ -77,7 +77,7 @@ dependencies {
 }
 
 dependencies {
-    implementation 'androidx.legacy:legacy-support-v4:+'
+    implementation 'androidx.legacy:legacy-support-v4:1.0.0'
     implementation 'androidx.room:room-runtime:2.0.0'
     annotationProcessor 'androidx.room:room-compiler:2.0.0'
 }

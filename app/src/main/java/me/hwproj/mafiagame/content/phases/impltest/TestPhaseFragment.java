@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame.impltest;
+package me.hwproj.mafiagame.content.phases.impltest;
 
 import android.os.Bundle;
 import android.util.Log;

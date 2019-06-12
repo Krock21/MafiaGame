@@ -8,9 +8,12 @@ import me.hwproj.mafiagame.gameflow.Settings;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 
+/**
+ * Sent by server to initialize a client
+ */
 public class InitGamePackage {
-    private Settings gameSettings;
-    private int playerNumber;
+    private final Settings gameSettings;
+    private final int playerNumber;
 
     public InitGamePackage(Settings gameSettings, int playerNumber) {
         this.gameSettings = gameSettings;
@@ -30,7 +33,7 @@ public class InitGamePackage {
             int thisPlayer = message.readInt();
             Settings s = Settings.deserialize(message);
 
-            if (thisPlayer < 0 || thisPlayer > s.playerSettings.size()) {
+            if (thisPlayer < 0 || thisPlayer > s.getPlayerSettings().size()) {
                 throw new DeserializationException("Incorrect player number: " + thisPlayer);
             }
 

@@ -11,13 +11,21 @@ import me.hwproj.mafiagame.networking.serialization.GamePhaseSerializer;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phase.GamePhase;
 
+/**
+ * A description of the game before it started.
+ * Used to initialize server and clients.
+ */
 public class Settings {
-    public List<GamePhase> phases;
-    public List<PlayerSettings> playerSettings;
+    public List<GamePhase> phases; // should be public
+    private final List<PlayerSettings> playerSettings;
 
     public Settings(List<GamePhase> phases, List<PlayerSettings> players) {
         this.phases = phases;
         playerSettings = players;
+    }
+
+    public List<PlayerSettings> getPlayerSettings() {
+        return playerSettings;
     }
 
     public static Settings deserialize(DataInputStream stream) throws DeserializationException {

@@ -4,7 +4,6 @@ import java.io.DataInputStream;
 import java.io.DataOutputStream;
 
 import me.hwproj.mafiagame.gameflow.Client;
-import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 import me.hwproj.mafiagame.phase.GamePhaseClient;
 import me.hwproj.mafiagame.phase.GameState;
@@ -18,7 +17,7 @@ public class WaitClient implements GamePhaseClient {
     }
 
     @Override
-    public GameState deserializeGameState(DataInputStream dataStream) throws DeserializationException {
+    public GameState deserializeGameState(DataInputStream dataStream) {
         return new WaitState();
     }
 

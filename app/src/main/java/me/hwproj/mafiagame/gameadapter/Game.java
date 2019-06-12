@@ -1,23 +1,25 @@
 package me.hwproj.mafiagame.gameadapter;
 
-import android.content.Intent;
 import android.util.Log;
 import android.widget.TextView;
 
 import androidx.appcompat.widget.Toolbar;
 
-import me.hwproj.mafiagame.gameinterface.GameConfigureFragment;
-import me.hwproj.mafiagame.gameinterface.GameActivity;
-import me.hwproj.mafiagame.gameinterface.DeadWaitFragment;
-import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.R;
 import me.hwproj.mafiagame.gameflow.Settings;
+import me.hwproj.mafiagame.gameinterface.DeadWaitFragment;
+import me.hwproj.mafiagame.gameinterface.GameActivity;
+import me.hwproj.mafiagame.gameinterface.GameConfigureFragment;
+import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.persistence.AppDatabaseInteractor;
 
 /**
  * Represents a game of mafia on any stage from not initialized
  * to the end.
+ *
+ * This class stores a hierarchy of classes that define game logic. See second picture
+ * about architecture on <a href="https://wiki.compscicenter.ru/index.php/%D0%9C%D0%B0%D1%84%D0%B8%D1%8F">wiki</a>.
  */
 public class Game {
 

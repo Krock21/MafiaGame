@@ -14,8 +14,9 @@ import me.hwproj.mafiagame.phase.PlayerAction;
 
 class WaitServer implements GamePhaseServer {
 
-    private static final long WAIT_TIME = 5 * 1000;
+    private static final long WAIT_TIME = 5 * 1000; // ms
     private final Server serv;
+    private final Handler handlerToPostTo = new Handler();
 
     public WaitServer(Server serv) {
         this.serv = serv;
@@ -28,7 +29,7 @@ class WaitServer implements GamePhaseServer {
 
     @Override
     public void initPhase() {
-        new Handler().postDelayed(serv::startNextPhase, WAIT_TIME);
+        handlerToPostTo.postDelayed(serv::startNextPhase, WAIT_TIME);
     }
 
     @Override

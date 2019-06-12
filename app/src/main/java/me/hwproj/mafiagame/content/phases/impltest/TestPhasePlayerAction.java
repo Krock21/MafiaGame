@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame.impltest;
+package me.hwproj.mafiagame.content.phases.impltest;
 
 import me.hwproj.mafiagame.phase.PlayerAction;
 

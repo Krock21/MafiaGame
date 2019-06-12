@@ -18,14 +18,14 @@ import me.hwproj.mafiagame.phase.GameState;
 import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class MafiaServer extends PickServer {
-    protected MafiaServer(Server serv) {
+    MafiaServer(Server serv) {
         super(serv, Role.MAFIA);
     }
 
     @Override
     protected void onPickComplete(int pickedPlayer) {
 
-        Player victim = serv.currentGameData.players.get(pickedPlayer);
+        Player victim = serv.getGameData().players.get(pickedPlayer);
         victim.addEffect(new Murdered());
 
         serv.startNextPhase();

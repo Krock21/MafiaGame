@@ -3,6 +3,13 @@ package me.hwproj.mafiagame.gameplay;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 
+/**
+ * A enum of all player roles.
+ * This is one of the three places, that should be modified to
+ * add a new role and phase. The other two are
+ * {@link me.hwproj.mafiagame.networking.serialization.GamePhaseSerializer GamePhaseSerializer}
+ * and {@link me.hwproj.mafiagame.gameinterface.GameConfigureFragment GameConfigureFragment}
+ */
 public enum Role {
     CITIZEN(true),
     MAFIA(false),

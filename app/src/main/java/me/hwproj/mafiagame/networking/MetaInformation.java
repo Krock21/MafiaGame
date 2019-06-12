@@ -7,6 +7,10 @@ import java.io.IOException;
 import me.hwproj.mafiagame.networking.serialization.DeserializationException;
 import me.hwproj.mafiagame.networking.serialization.SerializationException;
 
+/**
+ * Metainformation sent by server to clients.
+ * Everything that does not contain a GameState is considered metainformation
+ */
 public class MetaInformation {
     public static final int NEXT_PHASE = 1;
     public static final int END_GAME = 2;

@@ -14,16 +14,18 @@ import me.hwproj.mafiagame.menu.MainActivity;
 import me.hwproj.mafiagame.networking.NetworkData;
 
 class MyRoomUpdateCallback extends RoomUpdateCallback {
-    private GameActivity activity;
+    private final GameActivity activity;
+    private final NetworkData networkData;
 
-    public MyRoomUpdateCallback(GameActivity activity) {
+    public MyRoomUpdateCallback(GameActivity activity, NetworkData networkData) {
         this.activity = activity;
+        this.networkData = networkData;
     }
 
     @Override
     public void onRoomCreated(int code, @Nullable Room room) {
         // Update UI and internal state based on room updates. VLAD TODO
-        NetworkData.setmRoom(room);
+        networkData.setmRoom(room);
         if (code == GamesCallbackStatusCodes.OK && room != null) {
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " created.");
 
@@ -40,7 +42,7 @@ class MyRoomUpdateCallback extends RoomUpdateCallback {
     @Override
     public void onJoinedRoom(int code, @Nullable Room room) {
         // Update UI and internal state based on room updates. VLAD TODO
-        NetworkData.setmRoom(room);
+        networkData.setmRoom(room);
         if (code == GamesCallbackStatusCodes.OK && room != null) {
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " joined.");
             activity.showWaitingRoom(room, activity.maxPlayerCount + 1);
@@ -58,7 +60,7 @@ class MyRoomUpdateCallback extends RoomUpdateCallback {
 
     @Override
     public void onRoomConnected(int code, @Nullable Room room) {
-        NetworkData.setmRoom(room);
+        networkData.setmRoom(room);
         if (code == GamesCallbackStatusCodes.OK && room != null) {
             Log.d(MainActivity.TAG, "Room " + room.getRoomId() + " connected.");
         } else {

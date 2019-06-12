@@ -11,6 +11,10 @@ import me.hwproj.mafiagame.gameflow.Server;
 import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.phase.GamePhaseServer;
 
+/**
+ * This class helps to implement a server part for a phase, where players of
+ * one role select one player.
+ */
 public abstract class PickServer implements GamePhaseServer {
 
     private int[] playersChoices;
@@ -18,7 +22,7 @@ public abstract class PickServer implements GamePhaseServer {
     private int fixedCount;
     private int pickersCount;
     protected final Server serv;
-    private Role pickersRole;
+    private final Role pickersRole;
 
     protected PickServer(Server serv, Role pickersRole) {
         this.serv = serv;
@@ -63,8 +67,8 @@ public abstract class PickServer implements GamePhaseServer {
         fixedCount = 0;
 
         List<Integer> thisRoleIds = new ArrayList<>();
-        for (int i = 0; i < serv.playerCount(); i++) {
-            Player p = serv.currentGameData.players.get(i);
+        for (int i = 0; i < serv.getGameData().playerCount(); i++) {
+            Player p = serv.getGameData().players.get(i);
             if (p.role == pickersRole && !p.dead) {
                 thisRoleIds.add(i);
             }

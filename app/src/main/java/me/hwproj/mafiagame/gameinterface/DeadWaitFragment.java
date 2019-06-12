@@ -25,7 +25,7 @@ import me.hwproj.mafiagame.menu.MainActivity;
 public class DeadWaitFragment extends Fragment {
 
 
-    private String content;
+    private final String content;
     private final boolean allowExit;
 
     /**

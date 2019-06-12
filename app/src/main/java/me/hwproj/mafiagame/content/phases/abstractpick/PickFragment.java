@@ -5,6 +5,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
@@ -19,6 +20,10 @@ import me.hwproj.mafiagame.gameplay.Role;
 import me.hwproj.mafiagame.phase.PhaseFragment;
 import me.hwproj.mafiagame.util.table.TablePick;
 
+/**
+ * This fragments helps to implement a phase, where players of one role select one
+ * player together.
+ */
 abstract public class PickFragment extends PhaseFragment {
     private final boolean pickSelfRole;
     private final int[] thisRolePlayers;
@@ -31,7 +36,7 @@ abstract public class PickFragment extends PhaseFragment {
         return notYourTurn;
     }
 
-    public PickFragment(Client client, Role pickersRole, boolean pickSelfRole) {
+    protected PickFragment(Client client, Role pickersRole, boolean pickSelfRole) {
         super(client);
         this.pickSelfRole = pickSelfRole;
 
@@ -63,8 +68,10 @@ abstract public class PickFragment extends PhaseFragment {
                              Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.generic_pick, container, false);
+        Button pickFinal = view.findViewById(R.id.pickFinal);
 
         if (isNotYourTurn()) {
+            pickFinal.setVisibility(View.GONE);
             TextView text = view.findViewById(R.id.pickNotYourTurn);
             text.setText(getString(R.string.not_your_turn));
             return view;
@@ -94,7 +101,8 @@ abstract public class PickFragment extends PhaseFragment {
             sendPickAction(new PickAction(currentPick, false, thisPlayerNumber));
         });
 
-        view.findViewById(R.id.pickFinal).setOnClickListener(v -> {
+        pickFinal.setVisibility(View.VISIBLE);
+        pickFinal.setOnClickListener(v -> {
             if (currentPick != -1) {
                 sendPickAction(new PickAction(currentPick, true, thisPlayerNumber));
             }

@@ -1,4 +1,4 @@
-package me.hwproj.mafiagame.impltest;
+package me.hwproj.mafiagame.content.phases.impltest;
 
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
@@ -13,7 +13,7 @@ import me.hwproj.mafiagame.phase.PlayerAction;
 
 public class TestPhaseServer implements GamePhaseServer {
     private int sum = 0;
-    private Server server;
+    private final Server server;
 
     public TestPhaseServer(Server server) {
         this.server = server;
@@ -27,12 +27,12 @@ public class TestPhaseServer implements GamePhaseServer {
 
         TestPhasePlayerAction castedAction = (TestPhasePlayerAction) action;
 
+        sum += castedAction.getAdded();
+        server.sendGameState(new TestPhaseGameState(sum));
+
         if (castedAction.isNext()) {
             server.startNextPhase();
         }
-
-        sum += castedAction.getAdded();
-        server.sendGameState(new TestPhaseGameState(sum));
     }
 
     @Override
